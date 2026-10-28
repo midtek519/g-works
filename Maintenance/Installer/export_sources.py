@@ -13,8 +13,11 @@ import re
 import stat
 import tempfile
 import zipfile
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+import versions
 
-PUBLIC_PRODUCTS = {'g-works', 'g-whiz', 'g-scope', 'g-vault', 'g-view', 'g-rater', 'g-report', 'g-keeper'}
+PUBLIC_PRODUCTS = {'g-works', 'g-whiz', 'g-scope', 'g-vault', 'g-view', 'g-rater', 'g-report', 'g-vault'}
 PUBLIC_IDENTIFIERS = PUBLIC_PRODUCTS | {'g-extension', 'g-motif', 'g-p', 'g-h', 'g-m', 'g-a'}
 PRODUCT = re.compile(r'\bG-[A-Za-z]+\b', re.I)
 MACHINE_PATH = re.compile(r'(?:[A-Za-z]:[/\\]+Users[/\\]+(?!Public\b|Default\b)[^/\\\s"\']+|\.cache[/\\]+codex-runtimes|Documents[/\\]+Codex|\.codex[/\\])', re.I)
@@ -22,9 +25,9 @@ CODE_SUFFIXES = {'.py', '.js', '.cjs', '.mjs', '.cs', '.css', '.html', '.json', 
 IMAGE_SUFFIXES = {'.png', '.ico', '.svg'}
 EXCLUDED_PARTS = {'data', 'audit', 'audits', 'teaching schedules', 'backups', 'records', 'credentials', 'output', 'outputs', 'temp', 'vendor', 'node_modules', '__pycache__', '.git', '.gworks'}
 STATE_NAMES = {'settings.json', 'author-profile.json', 'instructor-profile.json', 'vault-workspaces.json', 'schedule-mappings.json', 'signature.json'}
-LAUNCHER_SOURCES = ('Hub.cs', 'HubArt.cs', 'ReleaseUpdates.cs')
+LAUNCHER_SOURCES = ('Hub.cs', 'HubArt.cs', 'ReleaseUpdates.cs','SemVersion.cs')
 LAUNCHER_BRANDS = ('g-works', 'g-whiz', 'g-scope', 'g-vault', 'g-view', 'g-rater', 'g-report', 'chrome-extensions', 'settings')
-INSTALLER_SOURCES = ('engine.py', 'prerequisites.py', 'distribution.py', 'setup_content.py')
+INSTALLER_SOURCES = ('engine.py', 'prerequisites.py', 'distribution.py', 'setup_content.py','versions.py')
 
 
 def sha(data):
@@ -111,8 +114,7 @@ def build_snapshot(release, installer):
     if {a['name'] for a in catalogue.get('applications', [])} != {'G-Whiz', 'G-Scope', 'G-Vault'}:
         raise ValueError('Unexpected application catalogue.')
     version = catalogue['release']
-    if not re.fullmatch(r'\d+\.\d+\.\d+', version):
-        raise ValueError('Invalid release version.')
+    versions.key(version)
     inputs = {e['name']: e for e in manifest['files']}
     entries = {}
     provenance = []
@@ -138,12 +140,12 @@ def build_snapshot(release, installer):
         return path
 
     mappings = {
-        'shared-teaching-app.zip': 'Shared/TeachingApp/2.0.0',
+        'shared-teaching-app.zip': 'Shared/TeachingApp/Current',
         'shared-commands.zip': 'Shared/Commands',
         'teaching-support.zip': 'Shared/TeachingSupport',
         f'whiz-{version}.zip': 'Apps/G-Whiz',
         f'scope-{version}.zip': 'Apps/G-Scope',
-        f'spot-{version}.zip': 'Apps/G-Vault',
+        f'vault-{version}.zip': 'Apps/G-Vault',
     }
     for name, target in mappings.items():
         for member, data in archive_members(checked_archive(name)):
@@ -173,6 +175,7 @@ def build_snapshot(release, installer):
     add('Maintenance/Installer/Hub/g-works.ico', (installer / 'Hub/g-works.ico').read_bytes(), 'reviewed-launcher/g-works.ico')
     add('Maintenance/Installer/Hub/build.ps1', LAUNCHER_BUILD.encode(), 'generated/public-launcher-build')
     add('Maintenance/Installer/export_sources.py', Path(__file__).read_bytes(), 'reviewed-exporter/export_sources.py')
+    add('Maintenance/Installer/Hub/VersionInfo.cs', ('[assembly:System.Reflection.AssemblyVersion("'+versions.windows(version)+'")][assembly:System.Reflection.AssemblyFileVersion("'+versions.windows(version)+'")][assembly:System.Reflection.AssemblyInformationalVersion("'+version+'")]').encode(), 'generated/version')
     add('README.md', README.format(version=version).encode(), 'generated/readme')
     add('.gitignore', GITIGNORE.encode(), 'generated/gitignore')
     receipt = {
@@ -212,7 +215,7 @@ foreach ($brand in @('g-works','g-whiz','g-scope','g-vault','g-view','g-rater','
 }
 $arguments = @('/nologo','/target:winexe',('/out:' + (Join-Path $launcherRoot 'G-Works.exe')),('/win32icon:' + (Join-Path $launcherRoot 'g-works.ico'))) + $resources
 foreach ($library in @('System.Windows.Forms','System.Drawing','System.Web.Extensions','System.Numerics')) { $arguments += '/reference:' + $library + '.dll' }
-foreach ($source in @('Hub.cs','HubArt.cs','ReleaseUpdates.cs')) { $arguments += Join-Path $launcherRoot $source }
+foreach ($source in @('Hub.cs','HubArt.cs','ReleaseUpdates.cs','SemVersion.cs','VersionInfo.cs')) { $arguments += Join-Path $launcherRoot $source }
 & $compiler @arguments
 if ($LASTEXITCODE -ne 0) { throw 'Launcher compilation failed.' }
 '''
@@ -236,7 +239,7 @@ G-Scope currently requires G-Whiz. G-Vault starts with empty libraries and lets
 each instructor configure their profile and course databases. The Rutgers
 Mathematics framework and institutional letterhead remain available.
 
-The shared application source is in `Shared/TeachingApp/2.0.0`; app entries and
+The shared application source is in `Shared/TeachingApp/Current`; app entries and
 Vault module sources use their release-package layouts under `Apps`.
 Build the Windows launcher with `Maintenance/Installer/Hub/build.ps1`.
 This source snapshot is not a complete offline installer build environment:

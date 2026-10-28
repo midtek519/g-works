@@ -54,7 +54,7 @@ namespace GWorks {
         }
         if (args.Contains("--self-test")) {
           // Validate the signed public dependency graph without activating any private app.
-          Dictionary<string, object> options = new Dictionary<string, object>(); options["apps"] = new string[] {DefaultSuite=="personal"?"wizzy":"scope"};
+          Dictionary<string, object> options = new Dictionary<string, object>(); options["apps"] = new string[] {DefaultSuite=="personal"?"willikers":"scope"};
           ProcessStartInfo start = Engine("--plan");
           using (Process process = Process.Start(start)) {
             process.StandardInput.Write(Json.Serialize(options)); process.StandardInput.Close();
@@ -64,7 +64,9 @@ namespace GWorks {
           return 0;
         }
         Application.EnableVisualStyles(); Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new Wizard()); return 0;
+        var wizard=new Wizard();
+        if(DefaultSuite=="professional")wizard.BeginInstallerCheck();
+        Application.Run(wizard); return 0;
       } catch (Exception error) {
         if (args.Contains("--self-test")) Console.Error.WriteLine(error.Message);
         else MessageBox.Show(error.Message, SuiteName(DefaultSuite)+" Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -77,10 +79,9 @@ namespace GWorks {
       string executableFolder=Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
       string offline = Path.Combine(executableFolder, "Packages");
       if(!Directory.Exists(offline)&&File.Exists(Path.Combine(executableFolder,".gworks","root.json"))){
-        var manifest=Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(Path.Combine(scripts,"catalogue.json")));
         var rootRecord=Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(Path.Combine(executableFolder,".gworks","root.json")));
-        string releases=rootRecord.ContainsKey("release_root")?Path.GetFullPath(Convert.ToString(rootRecord["release_root"])):Path.Combine(executableFolder,"Maintenance","Releases");
-        string channel=Convert.ToString(manifest["channel"]);offline=Path.Combine(releases,Convert.ToString(manifest["release"]),channel=="owner"?"Owner":channel=="private"?"Private":"Public","Packages");
+        object registered;
+        if(rootRecord.TryGetValue("package_root",out registered)&&registered is string&&Path.IsPathRooted((string)registered))offline=Path.GetFullPath((string)registered);
       }
       if(!Directory.Exists(offline)&&!File.Exists(Path.Combine(executableFolder,".gworks","root.json")))offline=executableFolder;
       ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Bootstrap, "Python", "python.exe"));
@@ -94,7 +95,7 @@ namespace GWorks {
     readonly Dictionary<string,string> names=new Dictionary<string,string>();
     readonly CheckedListBox apps = new CheckedListBox(), courses=new CheckedListBox();
     readonly List<string> courseIds=new List<string>();
-    readonly TextBox folder=new TextBox(), code=new TextBox(), texBin=new TextBox(), model=new TextBox(), revision=new TextBox(), localUrl=new TextBox();
+    readonly TextBox folder=new TextBox(), texBin=new TextBox(), model=new TextBox(), revision=new TextBox(), localUrl=new TextBox();
     readonly TextBox customCourse=new TextBox(),customName=new TextBox(),instructorName=new TextBox(),instructorTitle=new TextBox(),instructorEmail=new TextBox(),instructorPhone=new TextBox(),instructorOffice=new TextBox(),instructorWebsite=new TextBox();
     readonly ComboBox texChoice=new ComboBox(), aiChoice=new ComboBox();
     readonly CheckBox verifyTex=new CheckBox(), repairTex=new CheckBox(), dependencyOnly=new CheckBox(), chatgpt=new CheckBox(), latest=new CheckBox(), launch=new CheckBox(), shortcuts=new CheckBox(), keepQuestions=new CheckBox();
@@ -104,12 +105,14 @@ namespace GWorks {
     readonly ProgressBar progress=new ProgressBar();
     readonly bool ownerMode;
     readonly string suite,suiteName;
-    int step=0; bool installing=false,complete=false,loadingDetection=false,hasSavedAI=false,sharedAiExternallyManaged=false; string installedRoot="";
+    int step=0; bool installing=false,complete=false,loadingDetection=false,hasSavedAI=false,sharedAiExternallyManaged=false,checkingInstaller=false; string installedRoot="";
+    public void BeginInstallerCheck(){checkingInstaller=true;Shown+=(s,e)=>System.Threading.ThreadPool.QueueUserWorkItem(delegate{UpdateNotice notice=null;try{var catalog=Program.Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(Path.Combine(Program.Bootstrap,"Installer/catalogue.json")));notice=ReleaseUpdates.FetchNotice(Convert.ToString(catalog["release"]),File.ReadAllText(Path.Combine(Program.Bootstrap,"Installer/public-key.json")));}catch{}try{BeginInvoke(new Action(delegate{checkingInstaller=false;if(notice!=null){try{ReleaseUpdates.PromptDownload(this,notice);}finally{Close();}}}));}catch{}});}
     public Wizard() {
       string localRoot=Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);bool localInstall=File.Exists(Path.Combine(localRoot,".gworks","root.json"));
       suite=Program.ReadSuite(localRoot);suiteName=Program.SuiteName(suite);
-      Text=suiteName+" Setup"; Width=730; Height=815; MinimumSize=new Size(700,795); StartPosition=FormStartPosition.CenterScreen; Font=new Font("Segoe UI",10); BackColor=Color.FromArgb(246,249,251);
-      Label title=new Label(); title.Text=suiteName; title.Font=new Font("Segoe UI",24,FontStyle.Bold); title.SetBounds(30,20,650,45); Controls.Add(title);
+      string release=Convert.ToString(Program.Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(Path.Combine(Program.Bootstrap,"Installer/catalogue.json")))["release"]);
+      Text=suiteName+" Setup — "+new SemVersion(release).Display; Width=730; Height=815; MinimumSize=new Size(700,795); StartPosition=FormStartPosition.CenterScreen; Font=new Font("Segoe UI",10); BackColor=Color.FromArgb(246,249,251);
+      Label title=new Label(); title.Text=suiteName+" · "+new SemVersion(release).Display; title.Font=new Font("Segoe UI",24,FontStyle.Bold); title.SetBounds(30,20,650,45); Controls.Add(title);
       Label subtitle=new Label(); subtitle.Text="Install, update or change your "+suiteName+" setup"; subtitle.ForeColor=Color.FromArgb(75,96,110); subtitle.SetBounds(33,68,650,25); Controls.Add(subtitle);
       page.SetBounds(32,110,650,565); page.Anchor=AnchorStyles.Top|AnchorStyles.Bottom|AnchorStyles.Left|AnchorStyles.Right; Controls.Add(page);
       back.Text="Back"; back.SetBounds(455,715,100,35); back.Anchor=AnchorStyles.Bottom|AnchorStyles.Right; back.Click+=(s,e)=>{step=(suite=="personal"&&step==2)?0:step-1;Draw();};Controls.Add(back);
@@ -119,10 +122,10 @@ namespace GWorks {
       ownerMode=Convert.ToString(catalog["channel"])=="owner";
       foreach(object value in (System.Collections.IEnumerable)catalog["applications"]) {
         Dictionary<string,object> app=(Dictionary<string,object>)value;string id=Convert.ToString(app["id"]),name=Convert.ToString(app["name"]);
-        string appSuite=app.ContainsKey("suite")?Convert.ToString(app["suite"]):(id=="wizzy"||id=="mods"?"personal":"professional");if(appSuite!=suite)continue;
-        if(id=="spot")name="G-Vault";
+        string appSuite=app.ContainsKey("suite")?Convert.ToString(app["suite"]):(id=="willikers"||id=="mods"?"personal":"professional");if(appSuite!=suite)continue;
+        if(id=="vault")name="G-Vault";
         ids.Add(id);names[id]=name;bool isPublic=suite=="professional";
-        apps.Items.Add(name+" — "+Convert.ToString(app["description"])+(isPublic?" · public":" · private repository"),localInstall?Directory.Exists(Path.Combine(localRoot,"Apps",name)):id==(suite=="personal"?"wizzy":"whiz"));
+        apps.Items.Add(name+" — "+Convert.ToString(app["description"])+(isPublic?" · public":" · private repository"),localInstall?Directory.Exists(Path.Combine(localRoot,"Apps",name)):id==(suite=="personal"?"willikers":"whiz"));
       }
       courses.CheckOnClick=true;courses.BorderStyle=BorderStyle.FixedSingle;
       if(suite=="professional"&&catalog.ContainsKey("courses"))foreach(object item in (System.Collections.IEnumerable)catalog["courses"]){var course=(Dictionary<string,object>)item;string id=Convert.ToString(course["id"]);if(id=="136")continue;courseIds.Add(id);courses.Items.Add(Convert.ToString(course["name"]),localInstall?File.Exists(Path.Combine(localRoot,"Shared","Courses",id,"manifest.json")):false);}
@@ -133,7 +136,7 @@ namespace GWorks {
         if(IsHandleCreated)BeginInvoke((Action)(()=>{courses.Enabled=Selected().Contains("whiz");keepQuestions.Enabled=suite=="professional"&&Selected().Contains("whiz")&&!dependencyOnly.Checked;}));
       };
       if(ids.Contains("scope")&&apps.GetItemChecked(ids.IndexOf("scope")))apps.SetItemChecked(ids.IndexOf("whiz"),true);
-      folder.Text=localInstall?localRoot:Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),suiteName);code.UseSystemPasswordChar=true;
+      folder.Text=localInstall?localRoot:Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),suiteName);
       sharedAiExternallyManaged=Program.SharedAiManagedExternally(folder.Text);
       texChoice.DropDownStyle=ComboBoxStyle.DropDownList;texChoice.Items.AddRange(new object[]{"Use existing TeX Live / MiKTeX","Install TeX Live Full","Install TeX Live Essentials"});texChoice.SelectedIndex=0;
       aiChoice.DropDownStyle=ComboBoxStyle.DropDownList;aiChoice.Items.AddRange(new object[]{"Keep current local AI (existing installation)","Use / install Ollama","Use another local AI server"});aiChoice.SelectedIndex=localInstall||sharedAiExternallyManaged?0:1;
@@ -163,7 +166,7 @@ namespace GWorks {
         LabelAt(suite=="personal"?"Your private applications.":"G-Scope requires G-Whiz. Choose course content:",143,50);if(suite=="professional"){Field(courses,171,70);LabelAt("Or start empty: course number / optional name",244);Field(customCourse,270);customCourse.Width=90;customCourse.MaxLength=3;customName.SetBounds(100,270,540,30);page.Controls.Add(customName);}courses.Enabled=Selected().Contains("whiz");
         LabelAt(suiteName+" installation folder",310);Field(folder,337);folder.Width=535;
         Button browse=new Button();browse.Text="Browse…";browse.SetBounds(545,336,95,32);browse.Click+=(s,e)=>{using(FolderBrowserDialog picker=new FolderBrowserDialog()){picker.Description="Choose the "+suiteName+" installation folder";if(picker.ShowDialog()==DialogResult.OK)folder.Text=picker.SelectedPath;}};page.Controls.Add(browse);
-        LabelAt(suite=="personal"?"Download the complete private release with your GitHub account. No activation code is required.":"G-Whiz, G-Scope and G-Vault are public. No activation code is required.",373,suite=="professional"?40:60);
+        LabelAt(suite=="personal"?"Download the complete private release with your GitHub account. ":"G-Whiz, G-Scope and G-Vault are public.",373,suite=="professional"?40:60);
         if(suite=="professional"){Field(latest,416);Field(shortcuts,446);Field(keepQuestions,476);Field(dependencyOnly,506);keepQuestions.Enabled=Selected().Contains("whiz")&&!dependencyOnly.Checked;}else{Field(latest,440);Field(shortcuts,470);Field(dependencyOnly,500);}
         next.Text="Next";
       } else if(step==1&&suite=="professional") {
@@ -171,7 +174,7 @@ namespace GWorks {
         LabelAt("Name",80);Field(instructorName,105);LabelAt("Title",145);Field(instructorTitle,170);LabelAt("Email",210);Field(instructorEmail,235);LabelAt("Phone",275);Field(instructorPhone,300);LabelAt("Office",340);Field(instructorOffice,365);LabelAt("Website",405);Field(instructorWebsite,430);
         LabelAt("Existing instructor details are kept when updating.",475,45);next.Text="Next";
       } else if(step==2) {
-        if(Selected().All(id=>id=="mods"||id=="schwing")){LabelAt("These apps use their own local settings. No TeX or AI setup is required.",0,60);next.Text="Apply / update";return;}
+        if(Selected().All(id=>id=="mods"||id=="spot")){LabelAt("These apps use their own local settings. No TeX or AI setup is required.",0,60);next.Text="Apply / update";return;}
         LabelAt("TeX compiler",0);Field(texChoice,27);Field(texBin,66);texBin.Width=535;texBin.AccessibleName="Existing TeX bin folder";
         var browseTex=new Button{Text="Browse…"};browseTex.SetBounds(545,65,95,32);browseTex.Click+=(s,e)=>{using(var picker=new FolderBrowserDialog()){picker.Description="Choose the TeX Live or MiKTeX bin folder";if(picker.ShowDialog()==DialogResult.OK){texBin.Text=picker.SelectedPath;texChoice.SelectedIndex=0;}}};page.Controls.Add(browseTex);
         if(sharedAiExternallyManaged){
@@ -215,6 +218,7 @@ namespace GWorks {
       } catch {} // Detection failure leaves explicit install choices available.
     }
     async void Next(object sender,EventArgs e) {
+      if(checkingInstaller){MessageBox.Show(this,"Checking whether a newer installer is available. Please try again in a moment.",Text);return;}
       if(complete) { if(launch.Checked) foreach(string app in Selected()) OpenApp(installedRoot,app);Close();return; }
       if(step==0){
         if(apps.CheckedItems.Count==0){MessageBox.Show("Choose at least one app.",Text);return;}
@@ -229,10 +233,10 @@ namespace GWorks {
       }
       if(step!=2)return;
       sharedAiExternallyManaged=Program.SharedAiManagedExternally(folder.Text);
-      bool needsTools=Selected().Any(id=>id!="mods"&&id!="schwing");
+      bool needsTools=Selected().Any(id=>id!="mods"&&id!="spot");
       if(needsTools&&!sharedAiExternallyManaged&&aiChoice.SelectedIndex==0&&!hasSavedAI){MessageBox.Show("Choose Ollama or another local AI server for this installation.",Text);return;}
       if(needsTools&&!sharedAiExternallyManaged&&String.IsNullOrWhiteSpace(model.Text)){MessageBox.Show("Choose a local model before installing.",Text);return;}
-      Dictionary<string,object> options=new Dictionary<string,object>();options["root"]=folder.Text;options["apps"]=Selected();options["courses"]=courses.CheckedIndices.Cast<int>().Select(i=>courseIds[i]).ToArray();options["activation_code"]=code.Text;options["tex_choice"]=new string[]{"existing","full","essentials"}[texChoice.SelectedIndex];options["tex_bin"]=texBin.Text;options["ai_choice"]=new string[]{"keep","ollama","openai-local"}[aiChoice.SelectedIndex];options["local_ai_url"]=localUrl.Text;options["change_dependencies"]=true;options["verify_packages"]=verifyTex.Checked;options["repair_packages"]=verifyTex.Checked&&repairTex.Checked;options["model"]=model.Text;options["connect_chatgpt"]=chatgpt.Checked;options["check_updates"]=latest.Checked;
+      Dictionary<string,object> options=new Dictionary<string,object>();options["root"]=folder.Text;options["apps"]=Selected();options["courses"]=courses.CheckedIndices.Cast<int>().Select(i=>courseIds[i]).ToArray();options["tex_choice"]=new string[]{"existing","full","essentials"}[texChoice.SelectedIndex];options["tex_bin"]=texBin.Text;options["ai_choice"]=new string[]{"keep","ollama","openai-local"}[aiChoice.SelectedIndex];options["local_ai_url"]=localUrl.Text;options["change_dependencies"]=true;options["verify_packages"]=verifyTex.Checked;options["repair_packages"]=verifyTex.Checked&&repairTex.Checked;options["model"]=model.Text;options["connect_chatgpt"]=chatgpt.Checked;options["check_updates"]=latest.Checked;
       options["suite"]=suite;
       if(!String.IsNullOrWhiteSpace(customCourse.Text))options["custom_course"]=new{code=customCourse.Text.Trim(),name=customName.Text.Trim()};
       if(!String.IsNullOrWhiteSpace(instructorName.Text))options["instructor_profile"]=new{name=instructorName.Text,title=instructorTitle.Text,email=instructorEmail.Text,phone=instructorPhone.Text,office=instructorOffice.Text,website=instructorWebsite.Text};
@@ -256,7 +260,7 @@ namespace GWorks {
         if(shortcuts.Checked){try{CreateShortcuts(installedRoot);}catch{status.Text+="\n\nStart menu shortcuts could not be created. Use the Open command in each installed app folder.";}}
         Draw();
       } catch(Exception error){installing=false;step=2;Draw();MessageBox.Show(error.Message,Text,MessageBoxButtons.OK,MessageBoxIcon.Error);}
-      finally{code.Clear();}
+      finally{}
     }
     string[] Selected(){return apps.CheckedIndices.Cast<int>().Select(i=>ids[i]).ToArray();}
     int Run(Dictionary<string,object> options) {
@@ -269,7 +273,7 @@ namespace GWorks {
     }
     void OpenApp(string root,string app) {
       string name=names[app];
-      if(app=="mods"||app=="schwing"){Process.Start(new ProcessStartInfo(Path.Combine(root,"Apps",name,"build",name+".exe")){UseShellExecute=false,WorkingDirectory=Path.Combine(root,"Apps",name)});return;}
+      if(app=="mods"||app=="spot"){Process.Start(new ProcessStartInfo(Path.Combine(root,"Apps",name,"build",name+".exe")){UseShellExecute=false,WorkingDirectory=Path.Combine(root,"Apps",name)});return;}
       string script=Path.Combine(root,"Apps",name,"App","Launch.ps1");
       ProcessStartInfo start=new ProcessStartInfo("powershell.exe","-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "+Program.Quote(script)+" -Desktop");start.UseShellExecute=false;start.CreateNoWindow=true;Process.Start(start);
     }

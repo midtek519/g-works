@@ -6,7 +6,7 @@ from tex_compile import compile_document
 
 def enabled(root):
     for path in (Path(root)/'Data/edition.json',Path(root)/'edition.json'):
-        if path.is_file():return json.loads(path.read_text('utf-8-sig')).get('edition')=='math135-instructor'
+        if path.is_file():return json.loads(path.read_text('utf-8-sig')).get('edition')=='materials'
     return False
 
 def requirements():return json.loads(Path(__file__).with_name('tex_requirements.json').read_text('utf-8'))

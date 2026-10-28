@@ -15,12 +15,12 @@ def materials_root():
     base=installation()
     return base/'Apps/G-Whiz' if base else Path(__file__).resolve().parents[5]
 
-def spot_root():
+def vault_root():
     base=installation()
     return base/'Apps/G-Vault' if base else Path(__file__).resolve().parents[5]
 
 def teaching_code(root=None):
-    root=Path(root) if root else (app_root() or spot_root())
+    root=Path(root) if root else (app_root() or vault_root())
     dependency=root/'Dependencies/TeachingApp'
     if dependency.is_dir():
         target=dependency.resolve();allowed=root.parent.parent/'Shared/TeachingApp'

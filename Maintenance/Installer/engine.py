@@ -3,10 +3,11 @@ from __future__ import annotations
 from pathlib import Path, PurePosixPath
 import argparse, base64, contextlib, hashlib, hmac, json, os, re, secrets, shutil, stat, subprocess, sys, time, urllib.request, urllib.parse, urllib.error, zipfile
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-APPS = {'whiz': 'G-Whiz', 'scope': 'G-Scope', 'spot': 'G-Vault'}
-APP_SUITES = {'whiz': 'professional', 'scope': 'professional', 'spot': 'professional'}
+import versions
+APPS = {'whiz': 'G-Whiz', 'scope': 'G-Scope', 'vault': 'G-Vault'}
+APP_SUITES = {'whiz': 'professional', 'scope': 'professional', 'vault': 'professional'}
 SUITE_NAMES = {'professional': 'G-Works'}
-DEPENDENCY_ROLES = {'Python', 'DesktopRuntime', 'Poppler', 'GeneralAI', 'IntegrityPython', 'WizzyPoppler'}
+DEPENDENCY_ROLES = {'Python', 'DesktopRuntime', 'Poppler', 'GeneralAI', 'IntegrityPython', 'WillikersPoppler'}
 SHARED_RUNTIME_ROLES = DEPENDENCY_ROLES | {'TeachingApp', 'TeachingSupport', 'ScopeVendor', 'TeXLive', 'Commands'}
 HEX = re.compile('^[a-f0-9]{64}$')
 
@@ -36,34 +37,21 @@ def installation_suite(root, apps, requested=None):
         raise ValueError('The selected apps belong to ' + SUITE_NAMES[selected] + ". Choose that suite's installation folder.")
     return current or requested or selected
 
-def previous_app_names(root, prior):
-    names = {'spot': 'G-Keeper', 'wizzy': 'Application', 'schwing': 'Application'}
-    record = prior.get('apps', {}).get('spot', {})
-    legacy_name = 'G-' + 'Spot'
-    original = record.get('name') == legacy_name or (record.get('version') and release_version(record['version']) < (2, 1, 0))
-    if original and root_suite(root) != 'personal' and (not (Path(root) / 'Apps/G-Keeper').exists()):
-        names['spot'] = legacy_name
-    return names
-
 def require_suite_release(catalog, options, suite):
-    if catalog.get('distribution_policy') == 2:
-        import distribution
-        distribution.validate(catalog)
-        if catalog['suite'] != suite:
-            raise ValueError('Choose the installer for this suite.')
-    legacy = catalog.get('suite_layout') != 1
-    if legacy and (not options.get('dependencies_only')):
-        raise ValueError('This release predates the G-Works / Application split. App updates require a split-compatible release. Choose Change dependencies only to maintain the installed apps.')
-    if not legacy:
-        for app in catalog.get('applications', []):
-            if app.get('id') in APPS and (app.get('name') != APPS[app['id']] or app.get('suite') != APP_SUITES[app['id']]):
-                raise ValueError('The release has inconsistent suite routing.')
-    return legacy
+    import distribution
+    distribution.validate(catalog, inventory=catalog.get('channel') == 'owner')
+    if catalog['suite'] not in (suite, 'local-inventory'):
+        raise ValueError('Choose the installer for this suite.')
+    if not catalog.get('compatibility_epoch'):
+        raise ValueError('Unsupported installation epoch. Download the current installer and choose a fresh installation folder.')
+    if catalog.get('suite_layout') != 1:
+        raise ValueError('Unsupported installer format. Download the current installer and choose a fresh installation folder.')
+    for app in catalog.get('applications', []):
+        if app.get('id') in APPS and (app.get('name') != APPS[app['id']] or app.get('suite') != APP_SUITES[app['id']]):
+            raise ValueError('The release has inconsistent suite routing.')
 
 def release_version(value):
-    if not isinstance(value, str) or not re.fullmatch('\\d+\\.\\d+\\.\\d+', value):
-        raise ValueError('Invalid release version.')
-    return tuple(map(int, value.split('.')))
+    return versions.key(value)
 
 def select_release_update(bundled, candidate):
     if candidate.get('channel') != 'public':
@@ -159,15 +147,14 @@ def catalogue(path, signature, key):
     for app in value.get('applications', []):
         if not re.fullmatch('[a-z][a-z0-9-]{0,39}', app.get('id', '')) or not re.fullmatch('G-[A-Za-z0-9-]{1,40}', app.get('name', '')) or app.get('visibility') not in ('public', 'private'):
             raise ValueError('Invalid application definition.')
-        legacy = app['id'] == 'spot' and app['name'] == 'Application' and (value.get('suite_layout') != 1) or (release_version(value.get('release', '0.0.0')) < (2, 2, 0) and app['name'] == {'spot': 'G-Keeper', 'wizzy': 'Application'}.get(app['id']))
-        if app['id'] not in APPS or (APPS[app['id']] != app['name'] and (not legacy)):
-            raise ValueError('An application changed its install folder.')
+        if app['id'] not in APPS or APPS[app['id']] != app['name']:
+            raise ValueError('This application definition is incompatible. Download the current installer for a fresh installation.')
         if value.get('suite_layout') == 1 and app.get('suite') != APP_SUITES[app['id']]:
             raise ValueError('Invalid application suite.')
         app_names[app['id']] = app['name']
     ids = set()
     for p in value['packages']:
-        if not re.fullmatch('[a-z0-9][a-z0-9.-]{0,79}', p.get('id', '')) or p['id'] in ids or (not HEX.fullmatch(p.get('sha256', ''))):
+        if not re.fullmatch('[A-Za-z0-9][A-Za-z0-9.+-]{0,119}', p.get('id', '')) or p['id'] in ids or (not HEX.fullmatch(p.get('sha256', ''))):
             raise ValueError('Invalid package catalogue.')
         ids.add(p['id'])
         if p.get('kind') not in ('app', 'course', 'runtime', 'tool-installer'):
@@ -179,7 +166,7 @@ def catalogue(path, signature, key):
             raise ValueError('Unexpected course destination.')
         if p['kind'] != 'app' and (not p['target'].startswith('Shared/')):
             raise ValueError('Unexpected shared destination.')
-    if value.get('distribution_policy') == 2 and release_version(value.get('release', '0.0.0')) >= (2, 2, 0):
+    if value.get('distribution_policy') == 2:
         import distribution
         distribution.validate(value, inventory=True)
     return value
@@ -213,40 +200,13 @@ def https_request(url, data=None, token=None, max_bytes=2000000):
     return raw
 
 def authorize(public, selected, code, key, workspace):
-    if public.get('distribution_policy') == 2:
-        import distribution
-        distribution.validate(public)
-        if not set(selected) <= {a['id'] for a in public['applications']}:
-            raise ValueError('The selected apps belong to another suite.')
-        return (public, None, None)
-    public_apps = {a['id'] for a in public.get('applications', []) if a.get('visibility') == 'public'}
-    private = set(selected) - public_apps
-    if not private or public.get('channel') == 'owner':
-        return (public, None, None)
-    service = public.get('activation_service', '').rstrip('/')
-    if not service:
-        raise ValueError('Private downloads are not connected yet. Configure the activation service before distributing this installer.')
-    if not isinstance(code, str) or not code.strip():
-        raise ValueError('Enter an activation code for the selected private apps. For an owner bundle, turn off the release-channel check to use the included offline release.')
-    result = json.loads(https_request(service + '/v1/activate', {'code': code, 'apps': sorted(private)}))
-    token = result.get('token')
-    if not isinstance(token, str) or len(token) > 4096:
-        raise ValueError('Activation did not return a valid download session.')
-    envelope = json.loads(https_request(service + '/v1/catalogue', token=token))
-    raw = base64.b64decode(envelope['catalogue'], validate=True)
-    path = Path(workspace) / 'private-catalogue.json'
-    path.write_bytes(raw)
-    signature = path.with_suffix('.sig')
-    signature.write_text(envelope['signature'], 'ascii')
-    private_catalogue = catalogue(path, signature, key)
-    if not private <= set(result.get('apps', [])):
-        raise ValueError('This activation does not allow all selected apps.')
-    if private_catalogue.get('release') != public.get('release'):
-        raise ValueError('The public and private release versions differ. Download the current installer.')
-    merged = {p['id']: p for p in public['packages']}
-    for package in private_catalogue['packages']:
-        merged[package['id']] = package
-    return ({**public, 'packages': list(merged.values())}, token, service)
+    if public.get('distribution_policy') != 2:
+        raise ValueError('Unsupported installer format. Download the current installer.')
+    import distribution
+    distribution.validate(public, inventory=public.get('channel') == 'owner')
+    if not set(selected) <= {a['id'] for a in public['applications']}:
+        raise ValueError('The selected apps belong to another suite.')
+    return (public, None, None)
 
 def get_package(package, offline, cache, token=None, service=None):
     cache = Path(cache)
@@ -263,7 +223,7 @@ def get_package(package, offline, cache, token=None, service=None):
         shutil.copyfile(origin, partial)
     else:
         if token and (not service or urllib.parse.urlsplit(source).netloc != urllib.parse.urlsplit(service).netloc):
-            raise ValueError('Private downloads must use the activation service.')
+            raise ValueError('Authenticated downloads must use their registered service.')
         with https_request(source, token=token, max_bytes=None) as response, partial.open('wb') as output:
             size = 0
             while (block := response.read(1024 * 1024)):
@@ -598,9 +558,6 @@ def archive_question_bank(transaction):
     active = contained(transaction.root, relative)
     source = active if active.is_dir() else None
     if source is None:
-        legacy = contained(transaction.root, prefix + 'mh-git/exercise-bank')
-        source = legacy if legacy.is_dir() else None
-    if source is None:
         settings = contained(transaction.root, prefix + 'Data/settings.json')
         configured = json.loads(settings.read_text('utf-8-sig')) if settings.is_file() else {}
         repository = configured.get('repository')
@@ -636,15 +593,6 @@ def archive_question_bank(transaction):
 def install_app(transaction, unpacked, app):
     files = list(app_files(unpacked, app))
     prefix = 'Apps/' + APPS[app] + '/'
-    profile = transaction.root / prefix / 'Data/edition.json'
-    if app == 'whiz' and profile.is_file():
-        current = json.loads(profile.read_text('utf-8-sig'))
-        if current.get('edition') == 'math135-instructor':
-            incoming = Path(unpacked) / 'Seed/edition.json'
-            if incoming.is_file():
-                value = json.loads(incoming.read_text('utf-8'))
-                if value.get('edition') == 'materials':
-                    transaction.put(incoming, prefix + 'Data/edition.json')
     trees = []
     if (unpacked / 'App').is_dir():
         trees.append((unpacked / 'App', prefix + 'App', False))
@@ -710,15 +658,15 @@ def app_files(unpacked, app):
             yield (file, 'Apps/Application/Data/catalog.json', True)
         elif app == 'mods':
             raise ValueError('A Application package contains an unapproved file category.')
-        elif app == 'schwing' and first == 'Binary' and (name == 'Application.exe'):
+        elif app == 'spot' and first == 'Binary' and (name == 'Application.exe'):
             yield (file, 'Apps/Application/build/Application.exe', False)
-        elif app == 'schwing' and first == 'Assets' and (file.suffix.lower() in ('.svg', '.png', '.ico', '.json')):
+        elif app == 'spot' and first == 'Assets' and (file.suffix.lower() in ('.svg', '.png', '.ico', '.json')):
             yield (file, 'Apps/Application/assets/' + name, False)
-        elif app == 'schwing' and first == 'Marker' and (name == 'app.json'):
+        elif app == 'spot' and first == 'Marker' and (name == 'app.json'):
             yield (file, 'Apps/Application/app.json', False)
         elif first == 'App':
             yield (file, 'Apps/' + APPS[app] + '/App/' + name, False)
-        elif first == 'LocalTools' and app == 'wizzy' and (rel.parts[1] in ('App', 'site') or name == 'THIRD-PARTY-NOTICES.txt' or name in ('scripts/open_party_test.ps1', 'scripts/stop_party_test.ps1') or (name in {'party/' + n for n in ('api.mjs', 'backup.mjs', 'd1-store.mjs', 'domain.mjs', 'local-server.mjs', 'sqlite-store.mjs', 'roll20-exporter.js')}) or (name in {'companions/Application/' + n for n in ('setup.py', 'setup.html', 'setup.mjs', 'Application.ico', 'icon.svg')}) or (name.startswith('companions/Application/extension/') and file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.ico', '.txt'))):
+        elif first == 'LocalTools' and app == 'willikers' and (rel.parts[1] in ('App', 'site') or name == 'THIRD-PARTY-NOTICES.txt' or name in ('scripts/open_party_test.ps1', 'scripts/stop_party_test.ps1') or (name in {'party/' + n for n in ('api.mjs', 'backup.mjs', 'd1-store.mjs', 'domain.mjs', 'local-server.mjs', 'sqlite-store.mjs', 'roll20-exporter.js')}) or (name in {'companions/Application/' + n for n in ('setup.py', 'setup.html', 'setup.mjs', 'Application.ico', 'icon.svg')}) or (name.startswith('companions/Application/extension/') and file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.ico', '.txt'))):
             yield (file, 'Application/' + name, False)
         elif first == 'Tools' and app == 'whiz' and (len(rel.parts) > 3) and (tuple(rel.parts[1:3]) == ('Course Organizer', 'extension')) and (file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.txt', '.ico')):
             yield (file, 'Apps/G-Whiz/Tools/' + name, False)
@@ -729,9 +677,9 @@ def app_files(unpacked, app):
         elif first == 'Content' and rel.parts[1] in ('mh-git', 'dnd-git', 'Question Bank'):
             prefix = 'Data/' if rel.parts[1] == 'Question Bank' else ''
             yield (file, 'Apps/' + APPS[app] + '/' + prefix + name, True)
-        elif first == 'Modules' and app == 'spot' and (len(rel.parts) > 4 and rel.parts[1] in ('Grader', 'Recommendations', 'Integrity') and (rel.parts[2] == 'tools') and (rel.parts[3] in ('App', 'vendor')) or (len(rel.parts) > 3 and rel.parts[1] == 'Math135' and (rel.parts[2] == 'App')) or (len(rel.parts) > 5 and tuple(rel.parts[1:5]) in {('Grader', 'tools', 'Rubric Lens', 'extension'), ('Integrity', 'tools', 'Form Autofill', 'Chrome Extension')} and (file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.txt')))):
+        elif first == 'Modules' and app == 'vault' and (len(rel.parts) > 4 and rel.parts[1] in ('Grader', 'Recommendations', 'Integrity') and (rel.parts[2] == 'tools') and (rel.parts[3] in ('App', 'vendor')) or (len(rel.parts) > 3 and rel.parts[1] == 'Math135' and (rel.parts[2] == 'App')) or (len(rel.parts) > 5 and tuple(rel.parts[1:5]) in {('Grader', 'tools', 'Rubric Lens', 'extension'), ('Integrity', 'tools', 'Form Autofill', 'Chrome Extension')} and (file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.txt')))):
             yield (file, 'Apps/G-Vault/Data/PrivateModules/' + name, False)
-        elif first == 'Framework' and app == 'spot' and (file.suffix.lower() in ('.py', '.cls', '.sty')):
+        elif first == 'Framework' and app == 'vault' and (file.suffix.lower() in ('.py', '.cls', '.sty')):
             yield (file, 'Apps/G-Vault/Data/PrivateSource/' + name, False)
         else:
             raise ValueError('An app package contains an unapproved file category.')
@@ -780,7 +728,7 @@ def stop_idle_backend(app_root):
         health = get('/api/health')
     except OSError:
         return
-    expected = 'GScope' if Path(app_root).name == 'G-Scope' else 'GWhizDnD' if Path(app_root).name == 'Application' else 'GWhiz'
+    expected = 'GScope' if Path(app_root).name == 'G-Scope' else 'GWillikers' if Path(app_root).name == 'Application' else 'GWhiz'
     if Path(health.get('root', '')).resolve() != Path(app_root).resolve() or health.get('app') != expected:
         raise ValueError('The service does not belong to this installation.')
     token = get('/api/bootstrap')['token']
@@ -881,28 +829,23 @@ def plan(catalog, apps, courses=None):
                 pending.append(index[ident])
     return sorted(needed.values(), key=lambda p: (p['kind'] == 'app', p['id']))
 
-def require_migrated_layout(root, catalog, apps):
-    """Do not let a code update hide records that still belong to the 1.x layout."""
-    if release_version(catalog['release']) < (2, 0, 0) or not set(apps) & {'spot', 'whiz', 'scope'}:
+def require_installation_epoch(root, catalog, apps):
+    expected = catalog.get('compatibility_epoch')
+    if not expected:
         return
     record = root / '.gworks/installation.json'
-    if not record.is_file():
-        return
-    previous = json.loads(record.read_text('utf-8-sig'))
-    if release_version(previous.get('release', '0.0.0')) >= (2, 0, 0):
-        return
-    current = {name for ident, name in APPS.items() if APP_SUITES[ident] == 'professional'}
-    legacy = any(((app / 'mh-git').exists() or any((app / 'Data/Question Bank').glob('*')) or (app / 'Data/PrivateModules/Grader/grader.sqlite').is_file() for app in (root / 'Apps').glob('*') if app.is_dir() and app.name not in current))
-    if legacy:
-        raise ValueError('This existing installation needs the G-Works 2.0 data migration before Setup can update it. Keep this installation folder and complete the owner migration first; your materials and grading records have not been moved or changed.')
+    prior = json.loads(record.read_text('utf-8-sig')) if record.is_file() else {}
+    occupied = bool(prior.get('apps')) or ((root / 'Apps').is_dir() and any((root / 'Apps').iterdir()))
+    if occupied and prior.get('compatibility_epoch') != expected:
+        raise ValueError(versions.display(catalog['release']) + ' requires a fresh installation folder. This beta does not migrate earlier installations. Your existing folder was left untouched.')
 
 def install(catalog, options, key, offline, *, report=emit, configure=None):
     root = validate_root(options['root'])
     apps = selected_apps(options['apps'])
     options['apps'] = apps
-    require_migrated_layout(root, catalog, apps)
+    require_installation_epoch(root, catalog, apps)
     suite = installation_suite(root, apps, options.get('suite'))
-    legacy_dependencies = require_suite_release(catalog, options, suite)
+    require_suite_release(catalog, options, suite)
     if configure:
         from prerequisites import validate_ai_ownership
         validate_ai_ownership(root, options)
@@ -935,11 +878,10 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
     try:
         installed = root / '.gworks/installation.json'
         prior = json.loads(installed.read_text('utf-8')) if installed.is_file() else {}
-        previous_names = previous_app_names(root, prior)
-        if any((process_running(root / 'Apps' / name) for app in apps for name in {APPS[app], previous_names.get(app, APPS[app])})):
+        if any((process_running(root / 'Apps' / APPS[app]) for app in apps)):
             raise ValueError('Close the selected desktop apps before updating them.')
         dependencies_only = bool(options.get('dependencies_only'))
-        if dependencies_only and any((app not in prior.get('apps', {}) or not (root / 'Apps' / APPS[app] / ('build/' + APPS[app] + '.exe' if app in ('mods', 'schwing') else 'App')).exists() for app in apps)):
+        if dependencies_only and any((app not in prior.get('apps', {}) or not (root / 'Apps' / APPS[app] / ('build/' + APPS[app] + '.exe' if app in ('mods', 'spot') else 'App')).exists() for app in apps)):
             raise ValueError('Install the selected apps before changing only their dependencies.')
         for app in apps:
             previous = prior.get('apps', {}).get(app, {}).get('version')
@@ -947,16 +889,12 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
                 raise ValueError('This installer is older than the installed app. Download the current release.')
         recover(root)
         transaction = Transaction(root)
-        for app, old_name in previous_names.items():
-            if app in apps and (root / 'Apps' / old_name).is_dir() and (not (root / 'Apps' / APPS[app]).exists()):
-                stop_idle_backend(root / 'Apps' / old_name)
-                transaction.move('Apps/' + old_name, 'Apps/' + APPS[app])
         catalog, token, service = authorize(catalog, apps, options.pop('activation_code', ''), key, transaction.folder)
         require_suite_release(catalog, options, suite)
         available = {p['course'] for p in catalog['packages'] if p.get('kind') == 'course'}
         selected_courses = [code for code in options.get('courses', prior.get('courses', [])) if code in available]
         custom = validate_custom_course(options.get('custom_course'))
-        if not dependencies_only and 'whiz' in apps and (release_version(catalog['release']) >= (2, 2, 0)):
+        if not dependencies_only and 'whiz' in apps and (catalog.get('channel') == 'public'):
             require_course_workspace(root, selected_courses, custom)
         planned = plan(catalog, apps, selected_courses)
         app_manifests = [p for p in planned if p['kind'] == 'app']
@@ -964,9 +902,6 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
             raise ValueError('An app dependency belongs to a different suite.')
         selected = [p for p in planned if not dependencies_only or p['kind'] not in ('app', 'course')]
         staged = []
-        if legacy_dependencies:
-            selected = [p for p in selected if p['kind'] == 'tool-installer' or p.get('runtime_role') in DEPENDENCY_ROLES]
-            report('Maintaining dependencies only. The pre-split app and launcher packages will not be applied.')
         if configure:
             from prerequisites import select_tools
             selected = select_tools(selected, options)
@@ -991,7 +926,7 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
         for app in apps:
             app_root = contained(root, 'Apps/' + APPS[app])
             stop_idle_backend(app_root)
-            if app == 'wizzy':
+            if app == 'willikers':
                 stop_local_tools(app_root)
         for app in apps:
             if dependencies_only:
@@ -1018,7 +953,7 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
             report('Installing ' + APPS[app])
             install_app(transaction, combined, app)
             launcher = transaction.folder / (app + '.cmd')
-            launcher.write_text('@echo off\nstart "" "%~dp0build\\' + APPS[app] + '.exe" %*\n' if app in ('mods', 'schwing') else '@echo off\nstart "" powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%~dp0App\\Launch.ps1" -Desktop %*\n', 'utf-8')
+            launcher.write_text('@echo off\nstart "" "%~dp0build\\' + APPS[app] + '.exe" %*\n' if app in ('mods', 'spot') else '@echo off\nstart "" powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%~dp0App\\Launch.ps1" -Desktop %*\n', 'utf-8')
             transaction.put(launcher, 'Apps/' + APPS[app] + '/Open ' + APPS[app] + '.cmd')
         for package, unpacked, _ in staged:
             if package['kind'] == 'course':
@@ -1028,18 +963,14 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
             for name, ident in package.get('runtime_links', {}).items():
                 if name not in ('python', 'DesktopRuntime', 'poppler', 'GeneralAI', 'texlive', 'TeachingApp', 'TeachingSupport', 'ScopeVendor'):
                     raise ValueError('Unexpected runtime link.')
-                if legacy_dependencies and ident not in runtime_index:
-                    continue
                 (transaction.local_runtime if name in ('python', 'GeneralAI', 'ScopeVendor', 'DesktopRuntime') else transaction.link)('Apps/' + APPS[package['app']] + '/Dependencies/' + name, root / runtime_index[ident]['target'])
             for relative in package.get('module_runtime_links', []):
-                if package['app'] != 'spot' or not re.fullmatch('Data/PrivateModules/(?:Math135/runtime|(?:Recommendations|Integrity)/tools/runtime)/python', relative):
+                if package['app'] != 'vault' or not re.fullmatch('Data/PrivateModules/(?:Math135/runtime|(?:Recommendations|Integrity)/tools/runtime)/python', relative):
                     raise ValueError('Unexpected module runtime path.')
                 ident = package.get('module_runtime_overrides', {}).get(relative, package['runtime_links']['python'])
-                if legacy_dependencies and ident not in runtime_index:
-                    continue
                 transaction.local_runtime('Apps/G-Vault/' + relative, root / runtime_index[ident]['target'])
             if package.get('local_tools_runtime'):
-                if package['app'] != 'wizzy':
+                if package['app'] != 'willikers':
                     raise ValueError('Unexpected local tools runtime.')
                 transaction.local_runtime('Application/Runtime/python', root / runtime_index[package['runtime_links']['python']]['target'])
         if not dependencies_only and 'whiz' in apps and custom:
@@ -1091,9 +1022,13 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
                 raise ValueError('The setup executable is unavailable.')
             if source.resolve() != target.resolve():
                 transaction.put(source, installer_name)
-        previous.update({'suite': suite, 'release': previous.get('release', catalog['release']) if legacy_dependencies else catalog['release'], 'installed_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'channel': catalog.get('channel', 'public')})
+        if catalog.get('compatibility_epoch'):
+            previous.update(compatibility_epoch=catalog['compatibility_epoch'], display_version=versions.display(catalog['release']))
+        previous.update({'suite': suite, 'release': catalog['release'], 'installed_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'channel': catalog.get('channel', 'public')})
         root_record = json.loads((root / '.gworks/root.json').read_text('utf-8-sig'))
         root_record['suite'] = suite
+        if suite == 'personal':
+            root_record['package_root'] = str(Path(offline).resolve())
         root_marker = transaction.folder / 'root.json'
         json_write(root_marker, root_record)
         transaction.put(root_marker, '.gworks/root.json')
@@ -1157,8 +1092,6 @@ def main():
             selected = select_release_update(value, candidate)
             if selected is value:
                 emit('No newer release is available; using the verified bundled release.')
-            elif value.get('channel') == 'owner':
-                emit('A newer online release is available. Private app downloads use an activation code; uncheck the release-channel option to use the owner bundle offline.')
             value = selected
         except (OSError, urllib.error.URLError):
             emit('The update channel is unavailable; using the verified bundled release.')

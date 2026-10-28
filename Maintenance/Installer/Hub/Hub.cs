@@ -20,7 +20,7 @@ namespace GWorks {
   public virtual AppChoice[] Apps {get{return new[]{
    new AppChoice{Id="whiz",Name="G-Whiz",Folder="G-Whiz",Description="Courses, questions & teaching materials",Color="#B72D49",Icon="g-whiz",SecondaryId="course-organizer",SecondaryLabel="G-View"},
    new AppChoice{Id="scope",Name="G-Scope",Folder="G-Scope",Description="Scans, rubrics & grading",Color="#A96A13",Icon="g-scope",SecondaryId="rubric-lens",SecondaryLabel="G-Rater"},
-   new AppChoice{Id="spot",Name="G-Vault",Folder="G-Vault",Description="Grades, letters & integrity records",Color="#245FB6",Icon="g-vault",SecondaryId="integrity-helper",SecondaryLabel="G-Report"}
+   new AppChoice{Id="vault",Name="G-Vault",Folder="G-Vault",Description="Grades, letters & integrity records",Color="#245FB6",Icon="g-vault",SecondaryId="integrity-helper",SecondaryLabel="G-Report"}
   };}}
   public virtual string AppFolder(AppChoice app){return Path.Combine(Program.Root,"Apps",app.Folder);}
   public virtual CompanionChoice[] ExtraCompanions {get{return new CompanionChoice[0];}}
@@ -29,7 +29,7 @@ namespace GWorks {
   public virtual Target ResolveExtra(string id){return null;}
  }
  static partial class Program {
-  public const string Version="3.0.0";
+  public const string Version="1.0.0-beta.3";
   public static string Root,Suite="professional";
   public static LauncherProfile Profile=new LauncherProfile();
   static partial void SelectProfile(ref LauncherProfile profile);
@@ -66,7 +66,6 @@ namespace GWorks {
     return new Target{File=setup,Arguments="",Directory=Root,Shell=true};
    }
    Target extra=Profile.ResolveExtra(id);if(extra!=null)return extra;
-   if(id=="vault"||id=="keeper")id="spot";
    var choice=Apps.FirstOrDefault(a=>a.Id==id||a.SecondaryId==id);
    if(choice==null)throw new Exception("Unknown workspace for "+SuiteName+".");
    string folder=AppFolder(choice),app=choice.Name;
@@ -143,7 +142,7 @@ namespace GWorks {
   readonly Label status=new Label();readonly ToolTip tips=new ToolTip();
   readonly System.Windows.Forms.Timer statusTimer=new System.Windows.Forms.Timer{Interval=4000};
   readonly LinkLabel aiStatus=new LinkLabel();readonly RaisedButton installButton;bool checkingAi,canStartAi,aiNeedsSettings,checkingUpdates;
-  public Hub(){statusTimer.Tick+=(sender,args)=>{statusTimer.Stop();status.Text="";};Disposed+=(sender,args)=>statusTimer.Dispose();Text=Program.SuiteName;ClientSize=new Size(HubArt.Width,HubArt.Height);FormBorderStyle=FormBorderStyle.FixedSingle;MaximizeBox=false;StartPosition=FormStartPosition.CenterScreen;AutoScaleDimensions=new SizeF(96,96);AutoScaleMode=AutoScaleMode.Dpi;BackColor=HubArt.Canvas;DoubleBuffered=true;Icon=Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+  public Hub(){statusTimer.Tick+=(sender,args)=>{statusTimer.Stop();status.Text="";};Disposed+=(sender,args)=>statusTimer.Dispose();Text=Program.SuiteName+" — "+new SemVersion(Program.Version).Display;ClientSize=new Size(HubArt.Width,HubArt.Height);FormBorderStyle=FormBorderStyle.FixedSingle;MaximizeBox=false;StartPosition=FormStartPosition.CenterScreen;AutoScaleDimensions=new SizeF(96,96);AutoScaleMode=AutoScaleMode.Dpi;BackColor=HubArt.Canvas;DoubleBuffered=true;Icon=Icon.ExtractAssociatedIcon(Application.ExecutablePath);
    for(int i=0;i<Program.Apps.Length;i++){
     AppChoice app=Program.Apps[i];RectangleF box=HubArt.TileBounds(i);var tile=new RaisedButton{App=app,SceneBounds=box,Bounds=Rectangle.Round(box),AccessibleName="Open "+app.Name,AccessibleDescription=app.Description,Enabled=Program.Available(app.Id),TabIndex=i*4};tile.Click+=(s,e)=>Run(app.Id);Controls.Add(tile);
    }
@@ -179,9 +178,9 @@ namespace GWorks {
    new Thread(()=>{
     string message="Local LLM check unavailable - Open AI settings.";bool canStart=false,warning=true;
     try{
-     string spot=Program.Apps.Select(Program.AppFolder).FirstOrDefault(p=>File.Exists(Path.Combine(p,"App","local_ai_startup.py")));if(spot==null)throw new Exception("Local AI helper is unavailable.");
-     string python=Path.Combine(spot,"Dependencies","python","python.exe"),helper=Path.Combine(spot,"App","local_ai_startup.py");
-     var info=new ProcessStartInfo(python,"-I -B "+Program.Quote(helper)+(start?" --start":" --check")){UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true,WorkingDirectory=spot};
+     string vault=Program.Apps.Select(Program.AppFolder).FirstOrDefault(p=>File.Exists(Path.Combine(p,"App","local_ai_startup.py")));if(vault==null)throw new Exception("Local AI helper is unavailable.");
+     string python=Path.Combine(vault,"Dependencies","python","python.exe"),helper=Path.Combine(vault,"App","local_ai_startup.py");
+     var info=new ProcessStartInfo(python,"-I -B "+Program.Quote(helper)+(start?" --start":" --check")){UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true,WorkingDirectory=vault};
      using(var process=Process.Start(info)){
       if(!process.WaitForExit(15000)){process.Kill();throw new Exception("Readiness check timed out.");}
       var data=new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(process.StandardOutput.ReadToEnd());
@@ -193,7 +192,8 @@ namespace GWorks {
     try{if(!IsDisposed)BeginInvoke(new Action(()=>{if(IsDisposed)return;checkingAi=false;canStartAi=canStart;aiNeedsSettings=warning&&!canStart;SetStatus(aiStatus,message,warning);aiStatus.Enabled=true;}));}catch{}
    }){IsBackground=true}.Start();
   }
-  void Run(string id){statusTimer.Stop();try{if(id=="install"&&Program.Profile.Installers.Length>1){var menu=new ContextMenuStrip();foreach(var entry in Program.Profile.Installers){var choice=entry;var item=menu.Items.Add(choice.Label);item.Enabled=Program.Available(choice.Id);item.Click+=(s,e)=>{try{Program.Open(choice.Id);}catch(Exception error){status.Text=error.Message;}};}menu.Closed+=(s,e)=>menu.Dispose();menu.Show(installButton,new Point(0,installButton.Height));return;}if(id=="extensions"){using(var window=new ExtensionMenu())window.ShowDialog(this);return;}Program.Open(id);var app=Program.Apps.FirstOrDefault(a=>a.Id==id);status.Text=app==null?"":"Opening "+app.Name+"...";if(status.Text.Length>0)statusTimer.Start();}catch(Exception error){status.Text=error.Message;}}
+  void LaunchInstaller(string id){var target=Program.Resolve(id);if(id=="install-professional"||!Program.Personal)ReleaseUpdates.OpenInstallerAsync(this,target.Directory,Program.Version);else Program.Open(id);}
+  void Run(string id){statusTimer.Stop();try{if(id=="install"&&Program.Profile.Installers.Length>1){var menu=new ContextMenuStrip();foreach(var entry in Program.Profile.Installers){var choice=entry;var item=menu.Items.Add(choice.Label);item.Enabled=Program.Available(choice.Id);item.Click+=(s,e)=>{try{LaunchInstaller(choice.Id);}catch(Exception error){status.Text=error.Message;}};}menu.Closed+=(s,e)=>menu.Dispose();menu.Show(installButton,new Point(0,installButton.Height));return;}if(id=="install"||id=="install-professional"){LaunchInstaller(id);return;}if(id=="extensions"){using(var window=new ExtensionMenu())window.ShowDialog(this);return;}Program.Open(id);var app=Program.Apps.FirstOrDefault(a=>a.Id==id);status.Text=app==null?"":"Opening "+app.Name+"...";if(status.Text.Length>0)statusTimer.Start();}catch(Exception error){status.Text=error.Message;}}
  }
  class ExtensionMenu:Form {
   public ExtensionMenu(){Text="Chrome Extensions";ClientSize=new Size(570,Math.Max(160,Program.Companions.Length*100+32));FormBorderStyle=FormBorderStyle.FixedDialog;MaximizeBox=false;MinimizeBox=false;StartPosition=FormStartPosition.CenterParent;Font=new Font("Segoe UI",9);BackColor=Color.FromArgb(255,253,248);AutoScaleMode=AutoScaleMode.Dpi;

@@ -7,6 +7,6 @@ foreach ($brand in @('g-works','g-whiz','g-scope','g-vault','g-view','g-rater','
 }
 $arguments = @('/nologo','/target:winexe',('/out:' + (Join-Path $launcherRoot 'G-Works.exe')),('/win32icon:' + (Join-Path $launcherRoot 'g-works.ico'))) + $resources
 foreach ($library in @('System.Windows.Forms','System.Drawing','System.Web.Extensions','System.Numerics')) { $arguments += '/reference:' + $library + '.dll' }
-foreach ($source in @('Hub.cs','HubArt.cs','ReleaseUpdates.cs')) { $arguments += Join-Path $launcherRoot $source }
+foreach ($source in @('Hub.cs','HubArt.cs','ReleaseUpdates.cs','SemVersion.cs','VersionInfo.cs')) { $arguments += Join-Path $launcherRoot $source }
 & $compiler @arguments
 if ($LASTEXITCODE -ne 0) { throw 'Launcher compilation failed.' }

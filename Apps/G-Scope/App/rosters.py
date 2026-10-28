@@ -90,7 +90,7 @@ class Rosters:
         # Reuse the existing CSV/REGIS/XLSX parser without constructing its Store:
         # constructing Math135.Store would migrate/write the grade database.
         if hasattr(self,'_roster_parser_module'):return self._roster_parser_module
-        folder=__import__('integration_paths').spot_root()/'Data/PrivateModules/Math135/App'
+        folder=__import__('integration_paths').vault_root()/'Data/PrivateModules/Math135/App'
         try:
             sys.path.insert(0,str(folder))
             spec=importlib.util.spec_from_file_location('_gscope_regis_parser',folder/'core.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
@@ -99,7 +99,7 @@ class Rosters:
         finally:
             if str(folder) in sys.path:sys.path.remove(str(folder))
 
-    def _roster_math_path(self):return __import__('integration_paths').spot_root()/'Data/PrivateModules/Math135/Math_135_Central.sqlite'
+    def _roster_math_path(self):return __import__('integration_paths').vault_root()/'Data/PrivateModules/Math135/Math_135_Central.sqlite'
 
     def _roster_math(self,term):
         p=self._roster_parser();semester=p.semester(term)

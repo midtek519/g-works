@@ -10,7 +10,7 @@ import integration_paths
 APP_ROOT=integration_paths.app_root()
 if APP_ROOT:os.environ['GWORKS_APP_ROOT']=str(APP_ROOT)
 sys.path.insert(0,str(APP_ROOT/'Dependencies/ScopeVendor' if APP_ROOT else HERE.parent/'vendor'))
-GSPOT=integration_paths.spot_root()
+GVAULT=integration_paths.vault_root()
 TEACHING=integration_paths.teaching_code()
 AI_ASSETS=TEACHING/'private_module_ui'
 sys.path.insert(0,str(AI_ASSETS));sys.path.insert(0,str(HERE))
@@ -24,7 +24,7 @@ def make_server(store,port=0):
     if not __import__('re').fullmatch(r'http://127\.0\.0\.1:\d+',parent):parent=''
     static=HERE/'static'
     public_root=APP_ROOT if APP_ROOT and store.root==APP_ROOT/'Data' else store.root
-    account=__import__('chatgpt_account').Account(APP_ROOT or GSPOT)
+    account=__import__('chatgpt_account').Account(APP_ROOT or GVAULT)
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass
         def guard(self,write=False):
@@ -46,7 +46,7 @@ def make_server(store,port=0):
         def do_GET(self):
             try:
                 self.guard();url=urlsplit(self.path);parts=url.path.strip('/').split('/');query=parse_qs(url.query)
-                if url.path=='/api/health':return self.respond(200,{'reviewedOnlineGrading':1,'codeGeneration':__import__('os').environ.get('GWORKS_CODE_GENERATION',''),'app':'GScope','responseGrading':3,'answerGrouping':1,'choiceMarkReader':1,'questionVersionBatch':1,'assignmentWorkflow':1,'root':str(public_root),'dataRoot':str(store.root),'aiRouting':1,'generalAITransport':2,'draftingContext':2,'projectTrashClear':1,'busy':store.archive_busy(),'version':'2.0.0'})
+                if url.path=='/api/health':return self.respond(200,{'reviewedOnlineGrading':1,'codeGeneration':__import__('os').environ.get('GWORKS_CODE_GENERATION',''),'app':'GScope','responseGrading':3,'answerGrouping':1,'choiceMarkReader':1,'questionVersionBatch':1,'assignmentWorkflow':1,'root':str(public_root),'dataRoot':str(store.root),'aiRouting':1,'generalAITransport':2,'draftingContext':2,'projectTrashClear':1,'busy':store.archive_busy(),'version':'1.0.0-beta.3'})
                 if url.path=='/online-grading.js':return self.respond(200,(static/'online-grading.js').read_bytes(),'text/javascript; charset=utf-8')
                 if url.path=='/api/general-ai/settings':return self.respond(200,{'configuration':__import__('general_ai').settings(),'account':account.status()})
                 if url.path=='/api/general-ai/account':return self.respond(200,account.status())
@@ -112,6 +112,7 @@ def make_server(store,port=0):
         def do_POST(self):
             with store.lock:return self.post_action()
         def post_action(self):
+            self._post_body_read=False
             try:
                 url=urlsplit(self.path);parts=url.path.strip('/').split('/');query=parse_qs(url.query)
                 if url.path=='/__gwhiz/stop':
@@ -121,6 +122,7 @@ def make_server(store,port=0):
                 self.guard(True);length=int(self.headers.get('Content-Length','0'))
                 if not 0<length<=200_000_000:raise ValueError('Choose a nonempty request up to 200 MB.')
                 raw=self.rfile.read(length)
+                self._post_body_read=True
                 if len(raw)!=length:raise ValueError('The upload did not finish.')
                 if len(parts)==4 and parts[:2]==['api','projects'] and parts[3]=='roster-upload':return self.respond(200,store.roster_upload(parts[2],query.get('name',[''])[0],raw))
                 if len(parts)==4 and parts[:2]==['api','projects'] and parts[3]=='intake-files':
@@ -243,7 +245,16 @@ def make_server(store,port=0):
                 elif len(parts)==4 and parts[:2]==['api','proposals'] and parts[3]=='review':result=store.review(parts[2],data)
                 else:return self.respond(404,{'error':'This local action is unavailable.'})
                 return self.respond(200,result)
-            except PermissionError as error:self.respond(403,{'error':str(error)})
+            except PermissionError as error:
+                self.close_connection=True
+                timeout=self.connection.gettimeout()
+                try:
+                    length=int(self.headers.get('Content-Length','0'))
+                    if not self._post_body_read and 0<length<=64*1024:
+                        self.connection.settimeout(.25);self.rfile.read(length)
+                except (OSError,ValueError):pass
+                finally:self.connection.settimeout(timeout)
+                self.respond(403,{'error':str(error)})
             except ValueError as error:
                 message=str(error)
                 self.respond(400,{'error':message if len(message)<250 and '\\' not in message and '\n' not in message else 'Check the local project fields and retry.'})

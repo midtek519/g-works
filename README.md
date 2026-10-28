@@ -8,7 +8,7 @@ G-Works is a local desktop suite for Rutgers Mathematics instructors.
 | G-Scope | Scans, rubrics and grading | G-Rater |
 | G-Vault | Course grades, recommendations and integrity records | G-Report |
 
-This is the reviewed program-source snapshot for release **3.0.0**.
+This is the reviewed program-source snapshot for release **1.0.0-beta.3**.
 `SOURCE_MANIFEST.json` records the origin and SHA-256 of every exported file.
 Installable releases supply the required Python, desktop and PDF runtimes and
 optional course packages. Those dependencies, third-party vendor files, course
@@ -18,7 +18,7 @@ G-Scope currently requires G-Whiz. G-Vault starts with empty libraries and lets
 each instructor configure their profile and course databases. The Rutgers
 Mathematics framework and institutional letterhead remain available.
 
-The shared application source is in `Shared/TeachingApp/2.0.0`; app entries and
+The shared application source is in `Shared/TeachingApp/Current`; app entries and
 Vault module sources use their release-package layouts under `Apps`.
 Build the Windows launcher with `Maintenance/Installer/Hub/build.ps1`.
 This source snapshot is not a complete offline installer build environment:

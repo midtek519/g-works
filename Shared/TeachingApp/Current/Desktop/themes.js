@@ -1,0 +1,59 @@
+/* Desktop theme only: no record contents or application settings cross this bridge. */
+(function initialize(){
+ const config=__DESKTOP_APPEARANCE__;
+ if(!document.head){document.addEventListener('DOMContentLoaded',initialize,{once:true});return;}
+ if(window.GWorksAppearance){window.GWorksAppearance.apply(config.theme);return;}
+ let selected=config.theme;const choices=config.choices,ids=new Set(choices.map(c=>c.id)),style=document.createElement('style');
+ style.textContent=`
+ html[data-gworks-theme]{--desktop-frame:#edf1f7;--desktop-frame-ink:#24364b;--desktop-menu:#e7edf5;font-family:'Segoe UI',system-ui,sans-serif}
+ html[data-gworks-theme] .topbar{background:var(--desktop-frame)!important;color:var(--desktop-frame-ink)!important;border-bottom-color:var(--desktop-menu)!important;box-shadow:none!important}
+ html[data-gworks-theme] .topbar .brand,html[data-gworks-theme] .topbar .brand *,html[data-gworks-theme] .topbar button,html[data-gworks-theme] .topbar .desktop-navigation{color:var(--desktop-frame-ink)!important}
+ html[data-gworks-theme] .topbar .header-page-heading :is(h1,p){color:var(--desktop-frame-ink)!important}
+ html[data-gworks-theme] .topbar button{background:transparent!important;border-color:transparent!important}html[data-gworks-theme] .topbar button:hover{background:var(--desktop-menu)!important}
+ html[data-gworks-theme] .layout>aside{background:var(--desktop-frame)!important;color:var(--desktop-frame-ink)!important;border-color:var(--desktop-menu)!important}
+ html[data-gworks-theme] .layout>aside button,html[data-gworks-theme] .layout>aside a,html[data-gworks-theme] .layout>aside .nav-heading,html[data-gworks-theme] .layout>aside .private-section-label{color:var(--desktop-frame-ink)!important}
+ html[data-gworks-theme] .layout>aside .help,html[data-gworks-theme] .layout>aside small{color:var(--desktop-frame-ink)!important;opacity:.7}
+ html[data-gworks-theme] .layout>aside button{background:transparent!important}html[data-gworks-theme] .layout>aside button:hover,html[data-gworks-theme] .layout>aside button.active,html[data-gworks-theme] .layout>aside [aria-current=page]{background:var(--desktop-menu)!important}
+ html[data-gworks-theme=signature]{--accent:var(--signature-accent)!important;--paper:var(--signature-paper)!important;--ink:var(--signature-ink)!important;--muted:var(--signature-muted)!important;--line:var(--signature-line)!important;--hover:var(--signature-hover)!important}
+ html[data-gworks-theme=signature] body,html[data-gworks-theme=signature] .layout>main{background:var(--signature-paper)!important;color:var(--signature-ink)!important}
+ html[data-gworks-theme=signature] .topbar{position:relative;background:linear-gradient(180deg,var(--signature-highlight) 0%,var(--desktop-frame) 44%,var(--signature-shade) 49%,var(--desktop-frame) 54%,var(--signature-highlight) 100%)!important;border-bottom:2px solid var(--signature-secondary)!important;box-shadow:inset 0 1px #ffffffbb,inset 0 -1px #ffffff55!important}
+ html.gworks-integrated[data-gworks-theme=signature] .topbar:after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;pointer-events:none;background:var(--signature-accent)}
+ html[data-gworks-theme=signature] .layout>aside{background:linear-gradient(180deg,var(--signature-surface),var(--signature-paper) 42%,var(--desktop-frame))!important}
+ html[data-gworks-theme=signature] .brand{font-weight:650;letter-spacing:.025em}html[data-gworks-theme=signature] .layout>aside{padding-top:17px!important}
+ html[data-gworks-theme=signature] .layout>aside button.active,html[data-gworks-theme=signature] .layout>aside [aria-current=page]{box-shadow:inset 3px 0 var(--signature-secondary);border-radius:0 7px 7px 0!important}
+ html[data-gworks-theme=signature] :is(.panel,.card,.gs-solution-preview,.dialog-footer,.desktop-toolbar-menu,.shell-menu){background:var(--signature-surface)!important;border-color:var(--signature-line)!important;border-radius:11px;box-shadow:0 3px 12px #1839570a}
+ html[data-gworks-theme=signature] :is(button.primary,.primary.button){background:var(--signature-accent)!important;border-color:var(--signature-accent)!important;color:white!important}
+ html[data-gworks-theme=signature] :is(input,select,textarea,.latex-editor-host){border-color:var(--signature-line)!important}html[data-gworks-theme=signature] :is(input,select,textarea):focus,html[data-gworks-theme=signature] .latex-editor-host:focus-within{border-color:var(--signature-accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--signature-accent) 18%,transparent)!important}
+ html[data-gworks-theme=signature] .topbar button:focus-visible{outline-color:var(--signature-fuchsia)!important}
+ html[data-gworks-theme=signature] :is(button,a.button){color:var(--signature-accent);border-color:var(--signature-line);background:linear-gradient(180deg,#ffffff,#f5f7fa);box-shadow:inset 0 1px #fff,0 1px 2px #15283f12}
+ html[data-gworks-theme=signature] .layout>aside :is(button,a,.nav-heading,.private-section-label,.private-section-icon,.private-module-label){color:var(--signature-ink)!important;border-color:transparent!important}
+ html[data-gworks-theme=signature] .layout>aside :is(button.active,a.active,[aria-current=page]){color:var(--signature-accent)!important;background:var(--signature-surface)!important;border:1px solid var(--signature-line)!important;box-shadow:inset 3px 0 var(--signature-accent),0 2px 6px #15283f0c!important}
+ html[data-gworks-theme=signature]{--gscope-accent:var(--signature-accent);--gscope-tint:var(--signature-paper);--gscope-border:var(--signature-line)}
+ html[data-gworks-theme=signature] :is(a,button,a.button){color:var(--signature-accent)}
+ html[data-gworks-theme=signature] :is(input[type=checkbox],input[type=radio],progress){accent-color:var(--signature-accent)!important}
+ html[data-gworks-theme=signature] :is(.tabs button.active,.proposal-list button.active){color:var(--signature-accent)!important;background:var(--signature-paper)!important;border-color:var(--signature-accent)!important}
+ html[data-gworks-theme=midnight]{color-scheme:dark;--paper:#1d2430!important;--ink:#e4eaf5!important;--muted:#acb9cd!important;--line:#45546c!important;--hover:#34445b!important;color:#e4eaf5}
+ html[data-gworks-theme=midnight] body,html[data-gworks-theme=midnight] main,html[data-gworks-theme=midnight] .layout>main{background:#1d2430!important;color:#e4eaf5!important}
+ html[data-gworks-theme=midnight] :is(.panel,.card,.dialog-footer,.desktop-toolbar-menu,.shell-menu,dialog,.gs-solution-preview,.tools-technical pre){background:#252e3e!important;color:#e4eaf5!important;border-color:#45546c!important}
+ html[data-gworks-theme=midnight] :is(input,textarea,select,.latex-editor-host,.cm-editor,.cm-gutters){background:#1b2330!important;color:#e4eaf5!important;border-color:#45546c!important}
+ html[data-gworks-theme=midnight] :is(button,a.button){background:#29364b;color:#d9e7ff;border-color:#566885}html[data-gworks-theme=midnight] button.primary{background:#7050b1!important;color:white!important}
+ html[data-gworks-theme=midnight] :is(.notice,.warning,.help,.muted,label,h1,h2,h3){color:inherit}html[data-gworks-theme=midnight] .help,html[data-gworks-theme=midnight] .muted{color:#acb9cd!important}html[data-gworks-theme=midnight] .notice{background:#29364b!important}html[data-gworks-theme=midnight] .warning{background:#463823!important;color:#f5ddad!important}
+ .desktop-theme-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}.desktop-theme-choice{position:relative;display:block;border:2px solid var(--line,#cbd6e6);border-radius:10px;overflow:hidden;cursor:pointer;font-size:13px;padding:0 0 12px}.desktop-theme-choice:has(input:checked){border-color:var(--accent,#2465ab);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}.desktop-theme-choice input{position:absolute;top:12px;right:10px;z-index:1;accent-color:var(--accent,#2465ab)}.desktop-theme-swatch{position:relative;display:block;height:105px;background:var(--theme-paper);padding:12px 10px 12px 43px;border-top:22px solid var(--theme-frame);box-shadow:inset 30px 0 var(--theme-frame)}.desktop-theme-swatch:after{content:'';display:block;height:60px;background:var(--theme-surface);border-radius:3px;box-shadow:0 0 0 1px #80808040}.desktop-theme-swatch[data-theme-swatch=signature]:before{content:'';position:absolute;top:-22px;left:0;right:0;height:22px;background:linear-gradient(180deg,var(--theme-highlight),var(--theme-frame) 44%,var(--theme-shade) 50%,var(--theme-frame) 56%,var(--theme-highlight));border-bottom:2px solid var(--theme-teal)}.desktop-theme-choice strong,.desktop-theme-choice .help{display:block;padding:0 12px;margin:9px 0 0}.desktop-theme-choice .help{font-weight:400;line-height:1.5}
+ `;document.head.append(style);
+ function apply(id){
+  if(!ids.has(id))return;selected=id;const palette=choices.find(c=>c.id===id).palette;document.documentElement.dataset.gworksTheme=id;document.documentElement.dataset.gworksBrand=config.brand;document.documentElement.style.setProperty('--accent',palette.accent);document.documentElement.style.setProperty('--gscope-accent',palette.accent);for(const [key,value] of Object.entries({frame:palette.frame,'frame-ink':palette.frameInk,menu:palette.menu}))document.documentElement.style.setProperty('--desktop-'+key,value);if(id==='signature')for(const [key,value] of Object.entries(palette))document.documentElement.style.setProperty('--signature-'+key,value);
+  for(const frame of document.querySelectorAll('iframe'))frame.contentWindow?.postMessage({type:'gworks-appearance',theme:id},'*');
+ }
+ function view(){return `<section class="panel"><p class="help">Choose the desktop appearance for this app. Changes save automatically.</p><div class="desktop-theme-choices">${choices.map(c=>`<label class="desktop-theme-choice"><input type="radio" name="desktop-theme" data-desktop-theme value="${c.id}" ${c.id===selected?'checked':''}><span class="desktop-theme-swatch" data-theme-swatch="${c.id}" style="--theme-frame:${c.palette.frame};--theme-paper:${c.palette.paper};--theme-surface:${c.palette.surface};--theme-menu:${c.palette.menu};--theme-highlight:${c.palette.highlight||c.palette.frame};--theme-shade:${c.palette.shade||c.palette.frame};--theme-teal:${c.palette.secondary||c.palette.menu}" aria-hidden="true"></span><strong>${c.name}</strong><span class="help">${c.description}</span></label>`).join('')}</div><p class="help" data-desktop-theme-status role="status"></p></section>`;}
+ let saving=false;
+ document.addEventListener('change',async event=>{
+  const input=event.target;if(!input.matches?.('[data-desktop-theme]')||saving||!ids.has(input.value))return;const previous=selected,status=document.querySelector('[data-desktop-theme-status]');saving=true;for(const field of document.querySelectorAll('[data-desktop-theme]'))field.disabled=true;
+  try{await window.pywebview.api.set_theme(input.value);apply(input.value);if(status)status.textContent='Theme saved for this app.';}catch{apply(previous);const prior=document.querySelector('[data-desktop-theme][value="'+previous+'"]');if(prior)prior.checked=true;if(status)status.textContent='The theme could not be saved.';}
+  finally{saving=false;for(const field of document.querySelectorAll('[data-desktop-theme]'))field.disabled=false;}
+ });
+ window.addEventListener('message',event=>{
+  if(event.source===parent&&parent!==window&&event.data?.type==='gworks-appearance')apply(event.data.theme);
+  if(event.data?.type==='gworks-appearance-request'&&[...document.querySelectorAll('iframe')].some(f=>f.contentWindow===event.source))event.source.postMessage({type:'gworks-appearance',theme:selected},event.origin);
+ });
+ window.GWorksAppearance={apply,view};apply(selected);window.dispatchEvent(new Event('gworks-appearance-ready'));if(parent!==window)parent.postMessage({type:'gworks-appearance-request'},'*');
+})();

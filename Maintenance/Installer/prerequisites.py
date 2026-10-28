@@ -58,11 +58,6 @@ def configured_settings(root):
             tex = value.get('tex_bin') or value.get('texlive_bin')
             if tex and 'tex_bin' not in result:
                 result['tex_bin'] = str((app / tex).resolve())
-        local = app / 'Data/PrivateModules/Integration/local-ai.json'
-        if not external and local.is_file() and ('local_ai' not in result):
-            value = json.loads(local.read_text('utf-8-sig'))
-            if set(value) == {'provider', 'url', 'model', 'revision', 'vision'}:
-                result['local_ai'] = value
     return result
 
 def local_origin(value):
@@ -110,7 +105,7 @@ def verify_publisher(executable, publisher):
         raise ValueError('The dependency installer publisher could not be verified.')
 
 def select_tools(packages, options):
-    if set(options.get('apps', [])) <= {'mods', 'schwing'}:
+    if set(options.get('apps', [])) <= {'mods', 'spot'}:
         return packages
     found = discover(options.get('root'))
     result = []
@@ -143,7 +138,7 @@ def installed_support(root, staged, options, role):
 def configure(root, staged, options, report):
     if os.name != 'nt':
         raise ValueError('The desktop installer currently supports Windows.')
-    if set(options['apps']) <= {'mods', 'schwing'}:
+    if set(options['apps']) <= {'mods', 'spot'}:
         report('Application uses its own local settings; no TeX or AI setup is required.')
         return
     validate_ai_ownership(root, options)
@@ -184,7 +179,7 @@ def configure(root, staged, options, report):
         raise ValueError('A working TeX installation is required. Choose its bin folder or install TeX Live.')
     version = run([Path(tex) / 'pdflatex.exe', '--version'], capture_output=True, text=True).stdout
     options['_tex_distribution'] = 'miktex' if 'miktex' in version.casefold() else 'texlive'
-    if set(options['apps']) & {'spot', 'wizzy'}:
+    if set(options['apps']) & {'vault', 'willikers'}:
         if not (Path(tex) / 'latexmk.exe').is_file():
             raise ValueError('G-Vault and Application require latexmk. Choose TeX Live Full or a compiler installation that includes it.')
         run([Path(tex) / 'latexmk.exe', '--version'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -204,18 +199,18 @@ def tex_requirements(root, staged, options):
     if helpers is None:
         raise ValueError('The shared TeX checking tools are missing from this release.')
     manifest = json.loads((helpers / 'tex_requirements.json').read_text('utf-8'))
-    required = set(manifest['required_files']) if set(options['apps']) & {'spot', 'whiz', 'scope'} else {'article.cls'}
+    required = set(manifest['required_files']) if set(options['apps']) & {'vault', 'whiz', 'scope'} else {'article.cls'}
     libraries = []
     math_libraries = []
-    if set(options['apps']) & {'spot', 'whiz', 'scope'}:
+    if set(options['apps']) & {'vault', 'whiz', 'scope'}:
         support = installed_support(root, staged, options, 'TeachingSupport')
         if support is None or not (support / 'lib/mhdocument.cls').is_file():
             raise ValueError('The shared MathHouse support library is missing from this release.')
         math_libraries = [support / 'lib']
-    if 'wizzy' in options['apps']:
+    if 'willikers' in options['apps']:
         for package, unpacked, _ in staged:
             library = unpacked / 'Content/dnd-git/lib'
-            if package.get('app') == 'wizzy' and library.is_dir():
+            if package.get('app') == 'willikers' and library.is_dir():
                 libraries.append(library)
         if not libraries and (root / 'Apps/Application/dnd-git/lib').is_dir():
             libraries.append(root / 'Apps/Application/dnd-git/lib')
@@ -268,13 +263,13 @@ def verify_tex(root, staged, options, report):
     spec.loader.exec_module(compiler)
     documents = []
     checks = []
-    if 'wizzy' in options['apps']:
+    if 'willikers' in options['apps']:
         if not (folder / 'lualatex.exe').is_file():
             raise ValueError('Application requires LuaLaTeX. Choose a complete TeX installation.')
         documents.append(('lualatex', '\\documentclass[graphics=final,paper=false,art=false,ornaments=false]{dndbook}\\begin{document}G-Works publication compiler check.\\end{document}'))
     report('Compiling dependency test documents.')
     with tempfile.TemporaryDirectory(prefix='dependency-check-', dir=root / '.gworks') as directory:
-        if set(options['apps']) & {'spot', 'whiz', 'scope'}:
+        if set(options['apps']) & {'vault', 'whiz', 'scope'}:
             if not math_libraries:
                 raise ValueError('The MathHouse TeX library is missing from this release.')
             workspace = Path(directory) / 'math'
@@ -403,7 +398,7 @@ def configure_ai(root, tools, options, report, found):
         report('The selected model is text-only. Grading images will require a vision-capable local model.')
 
 def seed_configuration(root, apps, options, transaction):
-    if set(apps) <= {'mods', 'schwing'}:
+    if set(apps) <= {'mods', 'spot'}:
         return
     external = validate_ai_ownership(root, options)
     local = root / 'Shared/Settings/local-ai.json'
@@ -414,7 +409,7 @@ def seed_configuration(root, apps, options, transaction):
         json_write(temp, selected)
         transaction.put(temp, 'Shared/Settings/local-ai.json')
     for app in apps:
-        if app in ('mods', 'schwing'):
+        if app in ('mods', 'spot'):
             continue
         from engine import APPS
         prefix = 'Apps/' + APPS[app]
@@ -428,14 +423,14 @@ def seed_configuration(root, apps, options, transaction):
             value['tex_setup'] = options['_tex_checks']
         elif options.get('change_dependencies'):
             value.pop('tex_setup', None)
-        if app in ('spot', 'whiz'):
+        if app in ('vault', 'whiz'):
             value.setdefault('portable_output', True)
-        if app == 'wizzy' and (options.get('change_dependencies') or 'latexmk' not in value):
+        if app == 'willikers' and (options.get('change_dependencies') or 'latexmk' not in value):
             value['latexmk'] = str(Path(options['_tex_bin']) / 'latexmk.exe')
         temp = transaction.folder / (app + '-settings.json')
         json_write(temp, value)
         transaction.put(temp, prefix + '/Data/settings.json')
-        if app == 'spot':
+        if app == 'vault':
             source = root / prefix / 'Data/PrivateSource'
             compiler = str(Path(options['_tex_bin']) / 'pdflatex.exe')
             module_defaults = {'Recommendations': {'grade_database': '', 'mh_git': str(source), 'pdflatex': compiler, 'academic_year_start_month': 7}, 'Integrity': {'sender': {'name': '', 'title': '', 'department': 'Department of Mathematics, Rutgers University', 'contact_lines': []}, 'signature_file': str(source / 'img/signature.png'), 'renderer': str(source / 'professional-correspondence/recommendations/render_letter.py'), 'pdflatex': compiler, 'integrity_catalog': str(source / 'professional-correspondence/integrity/catalog.json')}}
@@ -453,7 +448,7 @@ def seed_configuration(root, apps, options, transaction):
         ready = transaction.folder / (app + '-ready.json')
         json_write(ready, {'ready': True, 'installer': 'G-Works'})
         transaction.put(ready, prefix + '/Data/Setup/windows.json', True)
-        if options.get('connect_chatgpt') and app in ('spot', 'whiz', 'scope'):
+        if options.get('connect_chatgpt') and app in ('vault', 'whiz', 'scope'):
             pending = transaction.folder / (app + '-ai-setup.json')
             json_write(pending, {'open': True})
             transaction.put(pending, prefix + '/Data/Setup/general-ai.json')

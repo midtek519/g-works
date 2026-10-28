@@ -1,8 +1,9 @@
 """Suite release boundaries. Private repository access never permits bundling records."""
 from pathlib import Path
 import json
-SUITES = {'professional': {'name': 'G-Works', 'repository': 'midtek519/g-works', 'visibility': 'public', 'apps': ('whiz', 'scope', 'spot')}}
-APPS = [{'id': 'whiz', 'name': 'G-Whiz', 'suite': 'professional', 'visibility': 'public', 'description': 'Teaching materials for every course'}, {'id': 'scope', 'name': 'G-Scope', 'suite': 'professional', 'visibility': 'public', 'description': 'Grading with G-Whiz handouts'}, {'id': 'spot', 'name': 'G-Vault', 'suite': 'professional', 'visibility': 'public', 'description': 'Course grades, recommendations and integrity'}]
+import versions
+SUITES = {'professional': {'name': 'G-Works', 'repository': 'midtek519/g-works', 'visibility': 'public', 'apps': ('whiz', 'scope', 'vault')}}
+APPS = [{'id': 'whiz', 'name': 'G-Whiz', 'suite': 'professional', 'visibility': 'public', 'description': 'Teaching materials for every course'}, {'id': 'scope', 'name': 'G-Scope', 'suite': 'professional', 'visibility': 'public', 'description': 'Grading with G-Whiz handouts'}, {'id': 'vault', 'name': 'G-Vault', 'suite': 'professional', 'visibility': 'public', 'description': 'Course grades, recommendations and integrity'}]
 
 def validate(value, inventory=False):
     if value.get('distribution_policy') != 2:
@@ -53,10 +54,10 @@ def selected_packages(packages, apps):
 def catalogues(version, packages, courses):
     result = {}
     for suite, policy in SUITES.items():
-        value = {'schema': 1, 'suite_layout': 1, 'distribution_policy': 2, 'suite': suite, 'channel': policy['visibility'], 'repository': policy['repository'], 'release': version, 'applications': [dict(a) for a in APPS if a['suite'] == suite], 'courses': courses if suite == 'professional' else [], 'activation_service': '', 'catalogue_url': 'https://github.com/' + policy['repository'] + '/releases/latest/download/public-catalogue-envelope.json' if suite == 'professional' else '', 'access': 'public' if suite == 'professional' else 'repository', 'packages': selected_packages(packages, set(policy['apps']))}
+        value = {'schema': 1, 'suite_layout': 1, 'distribution_policy': 2, 'compatibility_epoch': versions.epoch(version), 'display_version': versions.display(version), 'suite': suite, 'channel': policy['visibility'], 'repository': policy['repository'], 'release': version, 'applications': [dict(a) for a in APPS if a['suite'] == suite], 'courses': courses if suite == 'professional' else [], 'activation_service': '', 'catalogue_url': 'https://github.com/' + policy['repository'] + '/releases/download/v' + version + '/public-catalogue-envelope.json' if suite == 'professional' else '', 'access': 'public' if suite == 'professional' else 'repository', 'packages': selected_packages(packages, set(policy['apps']))}
         validate(value)
         result[policy['visibility']] = value
-    result['owner'] = {'schema': 1, 'suite_layout': 1, 'distribution_policy': 2, 'suite': 'local-inventory', 'channel': 'owner', 'release': version, 'applications': APPS, 'packages': packages, 'courses': courses}
+    result['owner'] = {'schema': 1, 'suite_layout': 1, 'distribution_policy': 2, 'compatibility_epoch': versions.epoch(version), 'display_version': versions.display(version), 'suite': 'local-inventory', 'channel': 'owner', 'release': version, 'applications': APPS, 'packages': packages, 'courses': courses}
     return result
 
 def verify_local_policy():
