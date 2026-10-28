@@ -7,15 +7,15 @@ namespace GWorks {
  static class HubArt {
   public const int Width=886;
   public static int Rows {get{return (Program.Apps.Length+2)/3;}}
-  public static int ActionY {get{return 110+Rows*168;}}
-  public static int StatusY {get{return ActionY+114;}}
+  public static int ActionY {get{return 110+Rows*124;}}
+  public static int StatusY {get{return ActionY+58;}}
   public static int Height {get{return StatusY+58;}}
   public static readonly Color Canvas=ColorOf("#FFFDF8"),Ink=ColorOf("#33435C");
-  public static RectangleF TileBounds(int index){return new RectangleF(26+(index%3)*284,110+(index/3)*168,268,155);}
-  public static RectangleF ActionBounds(int index){return new RectangleF(26+index*284,ActionY,268,44);}
-  public static RectangleF InstallBounds {get{return new RectangleF(26,ActionY+56,168,44);}}
-  public static RectangleF FolderBounds {get{return new RectangleF(210,ActionY+56,210,44);}}
-  public static RectangleF SettingsBounds {get{return new RectangleF(436,ActionY+56,140,44);}}
+  public static RectangleF TileBounds(int index){return new RectangleF(26+(index%3)*284,110+(index/3)*124,268,112);}
+  public static RectangleF ActionBounds(int index){var action=Program.Actions[index];if(action.Parent==null)return new RectangleF(210,ActionY,268,44);int parent=Array.FindIndex(Program.Apps,a=>a.Id==action.Parent);var tile=TileBounds(parent);int slot=Program.Actions.Take(index).Count(a=>a.Parent==action.Parent);return new RectangleF(tile.X+12+slot*123,tile.Y+74,120,30);}
+  public static RectangleF InstallBounds {get{return new RectangleF(26,ActionY,168,44);}}
+  public static RectangleF FolderBounds {get{return new RectangleF(494,ActionY,44,44);}}
+  public static RectangleF SettingsBounds {get{return new RectangleF(554,ActionY,44,44);}}
   public static Color ColorOf(string value){return ColorTranslator.FromHtml(value);}
   public static Color Blend(Color a,Color b,float t){return Color.FromArgb((int)(a.R+(b.R-a.R)*t),(int)(a.G+(b.G-a.G)*t),(int)(a.B+(b.B-a.B)*t));}
   public static GraphicsPath Round(RectangleF r,float radius){var p=new GraphicsPath();float d=radius*2;p.AddArc(r.X,r.Y,d,d,180,90);p.AddArc(r.Right-d,r.Y,d,d,270,90);p.AddArc(r.Right-d,r.Bottom-d,d,d,0,90);p.AddArc(r.X,r.Bottom-d,d,d,90,90);p.CloseFigure();return p;}
@@ -80,17 +80,16 @@ namespace GWorks {
    using(var line=new Pen(Color.FromArgb(240,Color.White),1))g.DrawLine(line,face.X+9,face.Y+1.5f,face.Right-9,face.Y+1.5f);
    if(!compact)using(var gold=new Pen(ColorOf("#c7ae7b"),1)){g.DrawLine(gold,face.Right-16,face.Y+7,face.Right-7,face.Y+7);g.DrawLine(gold,face.Right-7,face.Y+7,face.Right-7,face.Y+16);}
   }
-  public static void Tile(Graphics g,AppChoice app,bool hover,bool pressed,bool enabled,bool focus){Quality(g);Color accent=ColorOf(app.Color);if(!enabled)accent=Blend(accent,Color.Gray,.55f);Surface(g,new RectangleF(0,0,268,155),accent,hover,pressed,enabled,false);var state=g.Save();if(pressed)g.TranslateTransform(0,2);
+  public static void Tile(Graphics g,AppChoice app,bool hover,bool pressed,bool enabled,bool focus){Quality(g);Color accent=ColorOf(app.Color);if(!enabled)accent=Blend(accent,Color.Gray,.55f);Surface(g,new RectangleF(0,0,268,112),accent,hover,pressed,enabled,false);var state=g.Save();if(pressed)g.TranslateTransform(0,2);
    Logo(g,new RectangleF(19,22,48,48),accent,false,app.Id);Text(g,app.Name,"Georgia",24,FontStyle.Regular,accent,new RectangleF(81,26,170,34));
-   Text(g,app.Description,"Segoe UI",13,FontStyle.Regular,ColorOf("#586d7e"),new RectangleF(20,78,229,39));
    Glyph(g,"arrow",new RectangleF(237,57,13,13),Blend(accent,Color.White,.32f));
-   if(focus)using(var pen=new Pen(accent,1){DashStyle=DashStyle.Dot})using(var path=Round(new RectangleF(7,7,250,133),6))g.DrawPath(pen,path);
+   if(focus)using(var pen=new Pen(accent,1){DashStyle=DashStyle.Dot})using(var path=Round(new RectangleF(7,7,250,90),6))g.DrawPath(pen,path);
    g.Restore(state);
   }
   public static void Utility(Graphics g,string label,string glyph,Color accent,float width,float height,bool hover,bool pressed,bool enabled,bool focus,string detail=null){Quality(g);if(!enabled)accent=Blend(accent,Color.Gray,.6f);Surface(g,new RectangleF(0,0,width,height),accent,hover,pressed,enabled,true);float y=pressed?2:0;bool small=height<40;float size=small?21:23;
    Glyph(g,glyph,new RectangleF(string.IsNullOrEmpty(label)?(width-size)/2:(small?10:13),(height-6-size)/2+1+y,size,size),accent);
-   if(string.IsNullOrEmpty(detail))Text(g,label,"Segoe UI",small?12:13,FontStyle.Regular,accent,new RectangleF(small?37:45,1+y,width-(small?44:52),height-7),true);
-   else{
+   if(!string.IsNullOrEmpty(label)&&string.IsNullOrEmpty(detail))Text(g,label,"Segoe UI",small?12:13,FontStyle.Regular,accent,new RectangleF(small?37:45,1+y,width-(small?44:52),height-7),true);
+   else if(!string.IsNullOrEmpty(detail)){
     Text(g,label,"Segoe UI",13,FontStyle.Regular,accent,new RectangleF(45,3+y,width-52,18),true);
     Text(g,detail,"Segoe UI",10,FontStyle.Bold,accent,new RectangleF(45,21+y,width-52,14),true);
    }
@@ -100,25 +99,25 @@ namespace GWorks {
   // any translucent shadows; Button's themed background is intentionally bypassed.
   public static void PaintButton(Graphics g,RectangleF bounds,AppChoice app,string label,string glyph,Color accent,bool hover,bool pressed,bool enabled,bool focus,AppChoice underlay,bool underlayHover,bool underlayPressed,bool underlayEnabled,bool underlayFocus,string detail=null){
    g.Clear(Canvas);Background(g);
-   if(underlay!=null){var parent=g.Save();RectangleF box=TileBounds(underlay.Id=="spot"?0:2);g.TranslateTransform(box.X,box.Y);Tile(g,underlay,underlayHover,underlayPressed,underlayEnabled,underlayFocus);g.Restore(parent);}
+   if(underlay!=null){var parent=g.Save();RectangleF box=TileBounds(Array.FindIndex(Program.Apps,a=>a.Id==underlay.Id));g.TranslateTransform(box.X,box.Y);Tile(g,underlay,underlayHover,underlayPressed,underlayEnabled,underlayFocus);g.Restore(parent);}
    var state=g.Save();g.TranslateTransform(bounds.X,bounds.Y);
    if(app!=null)Tile(g,app,hover,pressed,enabled,focus);else Utility(g,label,glyph,accent,bounds.Width,bounds.Height,hover,pressed,enabled,focus,detail);
    g.Restore(state);
   }
-  class ButtonSpec {public RectangleF Bounds;public AppChoice App;public string Label,Glyph,Detail;public Color Accent;}
+  class ButtonSpec {public RectangleF Bounds;public AppChoice App,Parent;public string Label,Glyph,Detail;public Color Accent;}
   static ButtonSpec[] Buttons(){
    var buttons=new System.Collections.Generic.List<ButtonSpec>();
    for(int i=0;i<Program.Apps.Length;i++){AppChoice app=Program.Apps[i];buttons.Add(new ButtonSpec{Bounds=TileBounds(i),App=app,Accent=ColorOf(app.Color)});}
-   for(int i=0;i<Program.Actions.Length;i++){var action=Program.Actions[i];buttons.Add(new ButtonSpec{Bounds=ActionBounds(i),Label=action.Label,Glyph=action.Icon,Accent=Ink});}
+   for(int i=0;i<Program.Actions.Length;i++){var action=Program.Actions[i];buttons.Add(new ButtonSpec{Bounds=ActionBounds(i),Label=action.ShortLabel??action.Label,Glyph=action.Icon,Accent=Ink,Parent=Program.Apps.FirstOrDefault(a=>a.Id==action.Parent)});}
    buttons.Add(new ButtonSpec{Bounds=InstallBounds,Label="Install / update",Glyph="install",Accent=Ink});
-   buttons.Add(new ButtonSpec{Bounds=FolderBounds,Label="Open "+Program.SuiteName+" folder",Glyph="folder",Accent=Ink});
-   buttons.Add(new ButtonSpec{Bounds=SettingsBounds,Label="Settings",Glyph="settings",Accent=Ink});
+   buttons.Add(new ButtonSpec{Bounds=FolderBounds,Label="",Glyph="folder",Accent=Ink});
+   buttons.Add(new ButtonSpec{Bounds=SettingsBounds,Label="",Glyph="settings",Accent=Ink});
    return buttons.ToArray();
   }
   static Bitmap ButtonBuffer(ButtonSpec button,float scale,bool hover,bool pressed,bool enabled,bool focus){
    RectangleF bounds=button.Bounds;var bitmap=new Bitmap((int)Math.Ceiling(bounds.Width*scale),(int)Math.Ceiling(bounds.Height*scale),PixelFormat.Format32bppArgb);
    using(var g=Graphics.FromImage(bitmap)){g.Clear(Color.Magenta);g.ScaleTransform(bitmap.Width/bounds.Width,bitmap.Height/bounds.Height);g.TranslateTransform(-bounds.X,-bounds.Y);
-    PaintButton(g,bounds,button.App,button.Label,button.Glyph,button.Accent,hover,pressed,enabled,focus,null,false,false,true,false,button.Detail);
+    PaintButton(g,bounds,button.App,button.Label,button.Glyph,button.Accent,hover,pressed,enabled,focus,button.Parent,false,false,true,false,button.Detail);
    }return bitmap;
   }
   public static object CheckPaint(){int cases=0,pixels=0;
@@ -126,6 +125,7 @@ namespace GWorks {
     for(int y=0;y<bitmap.Height;y++)for(int x=0;x<bitmap.Width;x++){Color pixel=bitmap.GetPixel(x,y);if(pixel.A!=255||pixel.ToArgb()==Color.Magenta.ToArgb()||(pixel.R==0&&pixel.G==0&&pixel.B==0))throw new Exception("An unpainted button pixel remains.");pixels++;}
     using(var backdrop=new Bitmap(bitmap.Width,bitmap.Height))using(var g=Graphics.FromImage(backdrop)){
      g.ScaleTransform(bitmap.Width/button.Bounds.Width,bitmap.Height/button.Bounds.Height);g.TranslateTransform(-button.Bounds.X,-button.Bounds.Y);g.Clear(Canvas);Background(g);
+     if(button.Parent!=null){var box=TileBounds(Array.FindIndex(Program.Apps,a=>a.Id==button.Parent.Id));g.TranslateTransform(box.X,box.Y);Tile(g,button.Parent,false,false,true,false);g.TranslateTransform(-box.X,-box.Y);}
      foreach(var point in new[]{new Point(0,0),new Point(bitmap.Width-1,0),new Point(0,bitmap.Height-1),new Point(bitmap.Width-1,bitmap.Height-1)})if(bitmap.GetPixel(point.X,point.Y)!=backdrop.GetPixel(point.X,point.Y))throw new Exception("A button corner does not match its backdrop.");
     }cases++;
    }return new{suite=Program.Suite,cases=cases,pixels=pixels,opaque=true,cornersMatchBackdrop=true,nativeUIOpened=false};

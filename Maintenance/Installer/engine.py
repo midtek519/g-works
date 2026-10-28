@@ -36,6 +36,15 @@ def installation_suite(root, apps, requested=None):
         raise ValueError('The selected apps belong to ' + SUITE_NAMES[selected] + ". Choose that suite's installation folder.")
     return current or requested or selected
 
+def previous_app_names(root, prior):
+    names = {'spot': 'G-Keeper', 'wizzy': 'Application', 'schwing': 'Application'}
+    record = prior.get('apps', {}).get('spot', {})
+    legacy_name = 'G-' + 'Spot'
+    original = record.get('name') == legacy_name or (record.get('version') and release_version(record['version']) < (2, 1, 0))
+    if original and root_suite(root) != 'personal' and (not (Path(root) / 'Apps/G-Keeper').exists()):
+        names['spot'] = legacy_name
+    return names
+
 def require_suite_release(catalog, options, suite):
     if catalog.get('distribution_policy') == 2:
         import distribution
@@ -924,11 +933,11 @@ def install(catalog, options, key, offline, *, report=emit, configure=None):
         os.fsync(stream.fileno())
     transaction = None
     try:
-        previous_names = {'spot': 'G-Keeper', 'wizzy': 'Application', 'schwing': 'Application'}
-        if any((process_running(root / 'Apps' / name) for app in apps for name in {APPS[app], previous_names.get(app, APPS[app])})):
-            raise ValueError('Close the selected desktop apps before updating them.')
         installed = root / '.gworks/installation.json'
         prior = json.loads(installed.read_text('utf-8')) if installed.is_file() else {}
+        previous_names = previous_app_names(root, prior)
+        if any((process_running(root / 'Apps' / name) for app in apps for name in {APPS[app], previous_names.get(app, APPS[app])})):
+            raise ValueError('Close the selected desktop apps before updating them.')
         dependencies_only = bool(options.get('dependencies_only'))
         if dependencies_only and any((app not in prior.get('apps', {}) or not (root / 'Apps' / APPS[app] / ('build/' + APPS[app] + '.exe' if app in ('mods', 'schwing') else 'App')).exists() for app in apps)):
             raise ValueError('Install the selected apps before changing only their dependencies.')

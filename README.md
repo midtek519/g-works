@@ -8,7 +8,7 @@ G-Works is a local desktop suite for Rutgers Mathematics instructors.
 | G-Scope | Scans, rubrics and grading | G-Rater |
 | G-Vault | Course grades, recommendations and integrity records | G-Report |
 
-This is the reviewed program-source snapshot for release **2.2.0**.
+This is the reviewed program-source snapshot for release **3.0.0**.
 `SOURCE_MANIFEST.json` records the origin and SHA-256 of every exported file.
 Installable releases supply the required Python, desktop and PDF runtimes and
 optional course packages. Those dependencies, third-party vendor files, course

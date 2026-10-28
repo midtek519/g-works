@@ -13,7 +13,7 @@ namespace GWorks {
  class AppChoice {public string Id,Name,Folder,Description,Color,SecondaryId,SecondaryLabel,Icon;}
  class Target {public string File,Arguments,Directory;public bool Shell;}
  class CompanionChoice {public string id,label,parent,description,icon;}
- class LauncherAction {public string Id,Label,Icon,UnavailableLabel;}
+ class LauncherAction {public string Id,Label,Icon,UnavailableLabel,Parent,ShortLabel;}
  class LauncherProfile {
   public virtual string Name {get{return "G-Works";}}
   public virtual string Icon {get{return "g-works";}}
@@ -29,7 +29,7 @@ namespace GWorks {
   public virtual Target ResolveExtra(string id){return null;}
  }
  static partial class Program {
-  public const string Version="2.2.0";
+  public const string Version="3.0.0";
   public static string Root,Suite="professional";
   public static LauncherProfile Profile=new LauncherProfile();
   static partial void SelectProfile(ref LauncherProfile profile);
@@ -147,17 +147,17 @@ namespace GWorks {
    for(int i=0;i<Program.Apps.Length;i++){
     AppChoice app=Program.Apps[i];RectangleF box=HubArt.TileBounds(i);var tile=new RaisedButton{App=app,SceneBounds=box,Bounds=Rectangle.Round(box),AccessibleName="Open "+app.Name,AccessibleDescription=app.Description,Enabled=Program.Available(app.Id),TabIndex=i*4};tile.Click+=(s,e)=>Run(app.Id);Controls.Add(tile);
    }
-   for(int i=0;i<Program.Actions.Length;i++){var action=Program.Actions[i];var button=Utility(action.Label,action.Icon,HubArt.Ink,HubArt.ActionBounds(i),20+i,action.Id);button.Enabled=Program.Available(action.Id);if(!button.Enabled){button.Detail=action.UnavailableLabel;button.AccessibleDescription=Program.UnavailableReason(action.Id);tips.SetToolTip(button,button.AccessibleDescription);}Controls.Add(button);}
+   for(int i=0;i<Program.Actions.Length;i++){var action=Program.Actions[i];var button=Utility(action.ShortLabel??action.Label,action.Icon,HubArt.Ink,HubArt.ActionBounds(i),20+i,action.Id);button.Enabled=Program.Available(action.Id);if(!button.Enabled){button.Detail=action.UnavailableLabel;button.AccessibleDescription=Program.UnavailableReason(action.Id);tips.SetToolTip(button,button.AccessibleDescription);}if(action.Parent!=null){button.Underlay=Controls.OfType<RaisedButton>().First(b=>b.App!=null&&b.App.Id==action.Parent);button.AccessibleName=action.Label;}Controls.Add(button);button.BringToFront();}
    installButton=Utility("Install / update","install",HubArt.Ink,HubArt.InstallBounds,12,"install");Controls.Add(installButton);
-   Controls.Add(Utility("Open "+Program.SuiteName+" folder","folder",HubArt.Ink,HubArt.FolderBounds,13,"folder"));
-   Controls.Add(Utility("Settings","settings",HubArt.Ink,HubArt.SettingsBounds,14,"settings"));
+   Controls.Add(Utility("","folder",HubArt.Ink,HubArt.FolderBounds,13,"folder"));
+   Controls.Add(Utility("","settings",HubArt.Ink,HubArt.SettingsBounds,14,"settings"));
    bool usesAi=Program.NeedsAiReadiness();
    aiStatus.SetBounds(26,HubArt.StatusY,(HubArt.Width-68)/2,23);aiStatus.TabIndex=15;aiStatus.LinkColor=HubArt.ColorOf("#176b70");aiStatus.ActiveLinkColor=Color.White;aiStatus.Font=new Font("Segoe UI",8.5f);aiStatus.BackColor=Color.Transparent;aiStatus.AutoEllipsis=true;aiStatus.Visible=usesAi;aiStatus.Text=usesAi?"Checking local LLM...":"";aiStatus.AccessibleName="Local LLM readiness";aiStatus.LinkClicked+=(s,e)=>{if(aiNeedsSettings)Run("ai-settings");else CheckAi(canStartAi);};if(usesAi)Controls.Add(aiStatus);
    if(usesAi)Shown+=(s,e)=>CheckAi(true);
    status.SetBounds(26,HubArt.StatusY+26,HubArt.Width-52,22);status.ForeColor=HubArt.ColorOf("#4f6069");status.BackColor=Color.Transparent;status.AutoEllipsis=true;status.Font=new Font("Segoe UI",9);Controls.Add(status);
    Shown+=(s,e)=>CheckUpdates(false);
   }
-  RaisedButton Utility(string label,string glyph,Color accent,RectangleF box,int order,string id){var button=new RaisedButton{Label=label,Glyph=glyph,Accent=accent,SceneBounds=box,Bounds=Rectangle.Round(box),AccessibleName=label,TabIndex=order};button.Click+=(s,e)=>Run(id);return button;}
+  RaisedButton Utility(string label,string glyph,Color accent,RectangleF box,int order,string id){var button=new RaisedButton{Label=label,Glyph=glyph,Accent=accent,SceneBounds=box,Bounds=Rectangle.Round(box),AccessibleName=String.IsNullOrEmpty(label)?(id=="folder"?"Open "+Program.SuiteName+" folder":"Settings"):label,TabIndex=order};if(String.IsNullOrEmpty(label))tips.SetToolTip(button,button.AccessibleName);button.Click+=(s,e)=>Run(id);return button;}
   protected override void OnPaint(PaintEventArgs e){var state=e.Graphics.Save();e.Graphics.ScaleTransform(ClientSize.Width/(float)HubArt.Width,ClientSize.Height/(float)HubArt.Height);HubArt.Background(e.Graphics);HubArt.Header(e.Graphics);e.Graphics.Restore(state);base.OnPaint(e);}
   void SetStatus(LinkLabel label,string message,bool warning){
    string text=(warning?"\u26a0 ":"")+message;Color color=warning?HubArt.ColorOf("#b31d2c"):HubArt.ColorOf("#176b70");
