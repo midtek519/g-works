@@ -43,3 +43,20 @@ def windows(value):
     if any((n > 65535 for n in (*values, tail))):
         raise ValueError('Version exceeds Windows file-version limits.')
     return '.'.join(map(str, (*values, tail)))
+
+def chrome(value):
+    """Numeric Chrome update version; version_name carries the exact SemVer."""
+    values = key(value)[:3]
+    pre = re.fullmatch(PATTERN, value)[4]
+    serial = 65535
+    if pre:
+        match = re.fullmatch('(alpha|beta|rc)\\.(\\d+)(?:\\.(\\d+))?', pre)
+        if not match:
+            raise ValueError('Chrome builds require alpha.N, beta.N or rc.N with an optional patch number.')
+        number, patch = (int(match[2]), int(match[3] or 0))
+        if number >= 200 or patch >= 100:
+            raise ValueError('Chrome prerelease counters exceed their numeric slots.')
+        serial = {'alpha': 0, 'beta': 20000, 'rc': 40000}[match[1]] + number * 100 + patch
+    if any((n > 65535 for n in (*values, serial))) or not any((*values, serial)):
+        raise ValueError('Version exceeds Chrome manifest limits.')
+    return '.'.join(map(str, (*values, serial)))

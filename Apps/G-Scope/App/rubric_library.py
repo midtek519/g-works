@@ -38,7 +38,7 @@ class RubricLibrary:
             for row in self.rows('SELECT v.id,v.raw_rubric,o.data FROM versions v JOIN version_rubric_outline o ON o.version_id=v.id LEFT JOIN version_structured_rubrics s ON s.version_id=v.id WHERE s.version_id IS NULL'):
                 try:
                     data=json.loads(row['raw_rubric'])
-                    value=validate_export({'format':'rubric-lens-rubric-export','version':2,'title':'','text':row['raw_rubric'],**data})
+                    value=validate_export({'format':'g-rater-rubric-export','version':2,'title':'','text':row['raw_rubric'],**data})
                     if value['outline']!=json.loads(row['data']):continue
                     saved={json.loads(q['data'])['key']:json.loads(q['data']) for q in self.rows('SELECT data FROM questions WHERE version_id=?',(row['id'],))}
                     if all(q['key'] in saved and saved[q['key']]['items'] for q in value['questions']):
@@ -84,11 +84,11 @@ class RubricLibrary:
         # Scan only the named inbox, with no recursion or symlink/junction exits.
         if any(part.is_symlink() or getattr(part,'is_junction',lambda:False)() for part in (folder.parent,folder)):return
         if not folder.is_dir():return
-        pattern=re.compile(r'rubric-lens-([a-f0-9]{64})(?: \(\d+\))?\.json')
+        pattern=re.compile(r'g-rater-([a-f0-9]{64})(?: \(\d+\))?\.json')
         for index,path in enumerate(sorted(folder.glob('*.json'))):
             if index>=1000:break
             match=pattern.fullmatch(path.name)
-            if path.name.startswith('rubric-lens-') and not match:continue
+            if path.name.startswith('g-rater-') and not match:continue
             try:
                 if path.is_symlink() or not path.is_file() or path.resolve().parent!=folder.resolve() or path.stat().st_size>1_000_000:continue
                 raw=path.read_bytes()
@@ -218,7 +218,7 @@ class RubricLibrary:
             # exclude version-specific solutions, question geometry and record IDs.
             text=json.dumps({'questions':questions},ensure_ascii=False,indent=2)
         portable=reviewed_export(v,title) if prepared else None
-        value=self.library_import(portable or {'format':'rubric-lens-rubric-export','version':1,'title':title,'text':text})
+        value=self.library_import(portable or {'format':'g-rater-rubric-export','version':1,'title':title,'text':text})
         rid=value['id']
         if prepared:
             with self.connect() as db:db.execute('UPDATE rubric_library SET questions=?,updated=? WHERE id=?',(json.dumps(questions,ensure_ascii=False),stamp(),rid))

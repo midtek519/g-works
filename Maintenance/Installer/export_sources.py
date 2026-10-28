@@ -55,10 +55,10 @@ def allowed_member(name):
     if p.suffix.lower() == '.json':
         # JSON is also a record format: copy only known program metadata.
         return name in ('tex_requirements.json', 'Seed/edition.json', 'Modules/Math135/App/lookups.json') or bool(re.fullmatch(r'course_adapters/\d{3}/project\.json', name)) or name in (
-            'Tools/Course Organizer/extension/manifest.json',
-            'Tools/Rubric Lens/extension/manifest.json',
-            'Modules/Integrity/tools/Form Autofill/Chrome Extension/manifest.json',
-            'Modules/Integrity/tools/Form Autofill/Chrome Extension/form-schema.json',
+            'Companions/G-View/extension/manifest.json',
+            'Companions/G-Rater/extension/manifest.json',
+            'Companions/G-Report/extension/manifest.json',
+            'Companions/G-Report/extension/form-schema.json',
         )
     if p.suffix.lower() in CODE_SUFFIXES:
         return True

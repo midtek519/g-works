@@ -266,7 +266,7 @@ class ExamWorkflow:
             questions.extend({**q,'key':prefix+q['key']} for q in batch['questions'])
             entries.extend({**entry,'questionKey':prefix+entry['questionKey']} for entry in batch['entries'])
         snapshot_hash=fingerprint([{'batch':b['batchId'],'snapshot':b['snapshotHash']} for b in batches])
-        return {'format':'rubric-lens-batch','version':2,'batchId':snapshot_hash[:32],'created':stamp(),'snapshotHash':snapshot_hash,
+        return {'format':'g-rater-batch','version':2,'batchId':snapshot_hash[:32],'created':stamp(),'snapshotHash':snapshot_hash,
                 'rubricHash':fingerprint([b['rubricHash'] for b in batches]),'identityMatching':batches[0]['identityMatching'],
                 'exam':{'course':project['course'],'term':project['term'],'exam':project['title'],'version':'All versions'},
                 'model':'per-version','modelDigest':'per-version','booklets':booklets,'questions':questions,'entries':entries,'complete':True,'mappingRequired':True}

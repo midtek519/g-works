@@ -645,6 +645,7 @@ class Universal:
             tag=payload.get('semester','');term(tag);kind=payload.get('kind')
             if kind not in ('quiz','exam','final','worksheet'):raise ValueError('Choose Quiz, Exam, Final Exam, or Worksheet.')
             title=plain(payload.get('title',''),'assignment title',150)
+            if kind=='worksheet':title=re.sub(r'(?i)\b(?:recitation[ ~_-]+worksheet|group[ -]?work)\b','Worksheet',title)
             if not title:raise ValueError('Enter an assignment title.')
             versions=integer(payload.get('versions',1),'Student versions',1,26)
             if kind=='worksheet' and versions!=1:raise ValueError('Worksheets use Version A. Set student versions to 1.')

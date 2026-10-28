@@ -365,8 +365,8 @@ html[data-gworks-theme] .bank-view .question-row,.bank-view .question-row{positi
 
 
 /* Course-wide manual and semester syllabuses share the Exams column. */
-.handout-exam-column{display:grid;gap:16px;min-width:0}.handout-exam-column>.panel{width:100%;margin:0}.handout-special-panel{border-top:3px solid color-mix(in srgb,var(--accent) 55%,var(--line));background:linear-gradient(145deg,var(--white),color-mix(in srgb,var(--accent) 4%,var(--white)))}
-.handout-special-panel>.panel-header{flex-wrap:wrap;gap:8px}.handout-special-panel>.panel-header h2{flex:1;margin:0}.handout-special-panel>.panel-header button{font-size:11px;white-space:nowrap;padding:7px 10px}.handout-manual-body{display:flex;flex-direction:column;gap:7px;align-items:flex-start;border-top:1px solid var(--line);padding-top:10px}.handout-manual-body .manual-launch-meta{margin:0;font-size:11px}.handout-manual-body>.saved-handout-title{width:100%;text-align:left}
+.handout-course-column{display:grid;gap:16px;min-width:0}.handout-course-column>.panel{width:100%;margin:0}.handout-special-panel{border-top:3px solid color-mix(in srgb,var(--accent) 55%,var(--line));background:linear-gradient(145deg,var(--white),color-mix(in srgb,var(--accent) 4%,var(--white)))}
+.handout-special-panel>.panel-header{flex-wrap:wrap;gap:8px}.handout-special-panel>.panel-header h2{flex:1;margin:0}.handout-special-panel>.panel-header button{font-size:11px;white-space:nowrap;padding:7px 10px}.handout-manual-body{display:flex;flex-direction:row;flex-wrap:wrap;gap:7px 12px;align-items:center;border-top:1px solid var(--line);padding-top:10px}.handout-manual-body .manual-launch-meta{margin:0;font-size:11px;white-space:nowrap}.handout-manual-body>.saved-handout-title{width:auto;text-align:left}
 .saved-syllabus-row{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:10px 0}.saved-syllabus-row>.saved-handout-title{display:flex;flex:1;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;white-space:normal;text-align:left}.saved-syllabus-row>.saved-handout-title>span{font-size:11px;font-weight:400;color:var(--muted)}.handout-syllabus-documents{font-size:10px;color:var(--muted);white-space:nowrap}.handout-special-panel .empty{padding:10px 0 0;margin:0;font-size:12px}.sb-handout-return{margin:0 0 10px;gap:12px}.sb-handout-return button{font-size:12px;padding:8px 11px}
 .builder-start-panel .handout-action-groups{grid-template-columns:minmax(285px,.85fr) minmax(0,2.2fr)}.builder-start-panel .handout-create-group{border:0;padding:0}.builder-start-panel .handout-saved-group{grid-column:auto}
 @media(max-width:1000px){.handout-syllabus-documents{display:none}}
@@ -386,3 +386,16 @@ html[data-gworks-theme] .bank-view .question-row,.bank-view .question-row{positi
 #content .panel :is(.bank-row-meta,.bank-row-flags,.bank-question-actions button){font-size:11px}
 #content .saved-syllabus-row>.saved-handout-title{flex-direction:row;align-items:center;gap:8px 12px;flex-wrap:wrap}
 #content .saved-syllabus-row>.saved-handout-title>strong{font-size:13px}
+
+/* Course-wide resources anchor the first column; creation belongs to each type. */
+.builder-start-panel .handout-action-groups{grid-template-columns:minmax(290px,.8fr) minmax(0,2.2fr)}
+.builder-start-panel .handout-saved-group{grid-column:auto;border-left:1px solid var(--line);border-top:0;padding:0 0 0 18px}
+.builder-start-panel+.handout-groups{margin-top:10px}
+.handout-groups{grid-template-columns:minmax(300px,1.12fr) repeat(3,minmax(0,1fr));align-items:start}
+.handout-manual-panel{border:3px solid transparent;background:linear-gradient(var(--white),var(--white)) padding-box,linear-gradient(135deg,#f4f6f8 0%,#a9b2bd 24%,#edf0f4 43%,#8794a3 66%,#dbe1e8 100%) border-box;box-shadow:inset 0 0 0 1px #ffffff70,0 2px 7px #24364b12}
+.handout-syllabus-panel{border:2px solid color-mix(in srgb,var(--accent) 22%,#aab5c1)}
+.handout-type-panel .panel-header .new-handout-icon{display:inline-flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;min-width:0;padding:4px;margin-left:auto}
+.new-handout-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:1350px){.handout-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:950px){.builder-start-panel .handout-action-groups{grid-template-columns:minmax(0,1fr)}.builder-start-panel .handout-saved-group{border-left:0;border-top:1px solid var(--line);padding:14px 0 0}}
+@media(max-width:760px){.handout-groups{grid-template-columns:minmax(0,1fr)}}

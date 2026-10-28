@@ -1,8 +1,8 @@
 (() => {
-  if (globalThis.__rubricLensInstalled) return;
-  globalThis.__rubricLensInstalled = true;
+  if (globalThis.__gRaterInstalled) return;
+  globalThis.__gRaterInstalled = true;
   const host = document.createElement('div');
-  host.id = 'rubric-lens-host';
+  host.id = 'g-rater-host';
   host.style.cssText = 'all:initial;position:fixed;inset:0;z-index:2147483647;pointer-events:none;';
   const root = host.attachShadow({ mode: 'closed' });
   // This HTML is static extension UI, never page content or model output.
@@ -46,7 +46,7 @@
   const panel = root.querySelector('.panel');
   let profile = null, epoch = 0, dirty = false, lastHref = location.href, selecting = false, busy = false, savedRegions = [], suggestionMarks = [], start = null, draft = [], accepting = false;
   const send = async data => {
-    const response = await chrome.runtime.sendMessage({ app:'rubric-lens', ...data });
+    const response = await chrome.runtime.sendMessage({ app:'g-rater', ...data });
     if (!response?.ok) throw new Error(response?.error || 'The extension could not complete the action.');
     return response;
   };
@@ -73,7 +73,7 @@
     $('mode').textContent = 'Prepared G-Scope suggestions · no AI connection';
     $('analyze').textContent=mode==='batch'?'Show saved suggestion':'Show saved suggestion';
   }
-  function pageIdentity(){try{return globalThis.__rubricLensActions.readIdentity(location.href);}catch{return null;}}
+  function pageIdentity(){try{return globalThis.__gRaterActions.readIdentity(location.href);}catch{return null;}}
   function frame() { return { width:innerWidth, height:innerHeight, dpr:devicePixelRatio, scrollX, scrollY, href:location.href, epoch, dirty, pageIdentity:pageIdentity() }; }
   function beginSelection() {
     invalidate('Choose the work region, then the rubric.'); selecting = true; draft = []; start = null;
@@ -170,7 +170,7 @@
   globalThis.navigation?.addEventListener('navigate',()=>{clearOutput();});
 
   chrome.runtime.onMessage.addListener((message, sender, reply) => {
-    if (message?.app !== 'rubric-lens' || sender.id !== chrome.runtime.id) return;
+    if (message?.app !== 'g-rater' || sender.id !== chrome.runtime.id) return;
     if (message.type === 'frame') { reply(frame()); return; }
     if (message.type === 'hide-for-capture') {
       host.style.visibility = 'hidden';
@@ -214,7 +214,7 @@
         const note = document.createElement('small'); note.textContent = 'AI suggestion. Confirm the work and apply the grade yourself.'; $('result').append(note);
         const choices = Array.isArray(r.choices) ? r.choices : [];
         const resultEpoch=epoch,resultHref=location.href,prepared=message.preparedInfo,order=prepared?.ordered;
-        const matches=choices.map(choice=>globalThis.__rubricLensFindRubric?.(profile?.rubric,choice.description,choice.points));
+        const matches=choices.map(choice=>globalThis.__gRaterFindRubric?.(profile?.rubric,choice.description,choice.points));
         const acceptanceButtons=[];
         const isCurrent=()=>epoch===resultEpoch&&!dirty&&location.href===resultHref&&location.href===lastHref&&(!prepared?.identity||pageIdentity()?.token===prepared.identity.token);
         const accept=indices=>safeAction(async()=>{
@@ -223,7 +223,7 @@
           let committed=false;
           try {
             if(!isCurrent())throw new Error('The submission or layout changed. Show its suggestion again.');
-            const actions=globalThis.__rubricLensActions;
+            const actions=globalThis.__gRaterActions;
             if(!actions||!order?.active)throw new Error('Confirm ordered review in Load / link batch first.');
             const next=order.last?null:actions.findNext(resultHref);
             const ticket=await send({type:'prepare-advance',batchId:prepared.batchId,entryId:prepared.entryId,href:resultHref,choiceIndices:indices,nextHref:next?.href??null});
@@ -266,7 +266,7 @@
               if(epoch!==resultEpoch || dirty || location.href!==lastHref) { invalidate('The submission changed. Show its suggestion again.');return; }
             }
             if(!isCurrent()){invalidate('The student or question changed. Show the current suggestion again.');return;}
-            const fresh=globalThis.__rubricLensFindRubric?.(profile?.rubric,choice.description,choice.points);
+            const fresh=globalThis.__gRaterFindRubric?.(profile?.rubric,choice.description,choice.points);
             if(!fresh?.element || fresh.element!==match.element || fresh.descriptionElement!==match.descriptionElement || !fresh.element.isConnected) { invalidate('The rubric changed. Capture again.');return; }
             if(fresh.selected) { clearOutput();status('The suggested rubric choice is already selected.');return; }
             fresh.element.click();
@@ -288,7 +288,7 @@
             try{
               if(!isCurrent())throw Error('The student or question changed. Show its current suggestion.');
               for(const choice of choices)await send({type:'validate-prepared',batchId:prepared.batchId,entryId:prepared.entryId,description:choice.description,points:choice.points});
-              await globalThis.__rubricLensActions.applyChoices({region:profile?.rubric,choices,expected:matches,isCurrent});
+              await globalThis.__gRaterActions.applyChoices({region:profile?.rubric,choices,expected:matches,isCurrent});
               clearOutput();status('Selected the suggested items. Confirm their score in Gradescope.');
             }finally{accepting=false;}
           });

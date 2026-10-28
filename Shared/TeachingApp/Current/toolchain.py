@@ -20,6 +20,10 @@ def question_bank_path(root,repo=None):
 
 def executable(root,name):
  root=Path(root).resolve();filename=name+('.exe' if os.name=='nt' else '')
+ from private_module_ui import shared_tex
+ if name in shared_tex.TOOLS:
+  shared=shared_tex.executable(root,name)
+  if shared:return shared
  settings=root/'Data/settings.json'
  config=json.loads(settings.read_text(encoding='utf-8-sig')) if settings.is_file() else {}
  selected=config.get('tex_bin') or config.get('texlive_bin')

@@ -27,7 +27,7 @@ async function buildImage(crops) {
   } finally { work.close(); rubric.close(); }
 }
 try {
-  const bundle = await chrome.runtime.sendMessage({ app:'rubric-lens', type:'take-handoff', id:location.hash.slice(1) });
+  const bundle = await chrome.runtime.sendMessage({ app:'g-rater', type:'take-handoff', id:location.hash.slice(1) });
   history.replaceState(null,'',location.pathname);
   if (!bundle?.ok) throw new Error(bundle?.error || 'Handoff unavailable. Capture again.');
   $('work').src = bundle.crops.work; $('rubric').src = bundle.crops.rubric;

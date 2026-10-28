@@ -17,14 +17,11 @@ def semester_info(tag):
     season={'fa':'Fall','sp':'Spring','su':'Summer','wi':'Winter'}[tag[:2]]
     return season+' 20'+tag[2:],tag[:2].title()+tag[2:]
 
-from pathlib import Path
-import re
-
 def discover(tag):
     grouped={}
-    for kind,folder in [('Exam','exams'),('Quiz','quizzes'),('Worksheet','worksheets'),('Groupwork','worksheets')]:
+    for kind,folder in [('Exam','exams'),('Quiz','quizzes'),('Worksheet','worksheets')]:
         for source in (COURSE/folder).glob('*.tex'):
-            pattern=(r'groupwork-'+tag+r'-(\d+)(?:-([A-Z]))?\.tex'if kind=='Groupwork'else kind.lower()+r'(\d+)-'+tag+r'(?:-([A-Z]))?\.tex')
+            pattern=kind.lower()+r'(\d+)-'+tag+r'(?:-([A-Z]))?\.tex'
             match=re.fullmatch(pattern,source.name)
             if not match:continue
             body=source.read_text(encoding='utf-8')
@@ -39,7 +36,7 @@ def discover(tag):
                 if not macro:raise ValueError('Multiple versions need separate source files or a selectable macro: '+source.name)
                 item['macro']=macro
                 item['sources']={chr(65+i):source for i in range(int(count[1]))}
-    items=sorted(grouped.values(),key=lambda x:({'Exam':0,'Quiz':1,'Worksheet':2,'Groupwork':3}[x['kind']],x['number']))
+    items=sorted(grouped.values(),key=lambda x:({'Exam':0,'Quiz':1,'Worksheet':2}[x['kind']],x['number']))
     for item in items:
         item['versions']=len(item['sources'])
         if 'A'not in item['sources']:raise ValueError('Version A is missing: '+item['key'])
@@ -86,7 +83,7 @@ def choose(items,text):
     text=text.strip().lower();groups={'a':None,'all':None,'e':'Exam','exams':'Exam','q':'Quiz','quizzes':'Quiz','w':'worksheets','worksheets':'worksheets','m':'Manual','manual':'Manual','s':'policies','policies':'policies','r':'Reference Sheet','reference':'Reference Sheet','b':'Blank Worksheet','blank':'Blank Worksheet'}
     if text in groups:
         group=groups[text]
-        return [x for x in items if group is None or x['kind']==group or(group=='worksheets'and x['kind']in['Worksheet','Groupwork','Blank Worksheet'])or(group=='policies'and x['kind']in['Syllabus','Schedule'])]
+        return [x for x in items if group is None or x['kind']==group or(group=='worksheets'and x['kind']in['Worksheet','Blank Worksheet'])or(group=='policies'and x['kind']in['Syllabus','Schedule'])]
     selected=[]
     for token in text.split(','):
         token=token.strip()
@@ -115,7 +112,7 @@ def build(jobs,rebuild=False):
         source=job['source'];assert source.resolve().is_relative_to(COURSE)
         wrapper=work/(job['name']+'.tex')
         body=source.read_text(encoding='utf-8')
-        if job['kind'] in ['Exam','Quiz','Worksheet','Groupwork'] and '\\CourseOutputMode' not in body:
+        if job['kind'] in ['Exam','Quiz','Worksheet'] and '\\CourseOutputMode' not in body:
             # Historical fixed-student sources are switched only in this private driver.
             body=re.sub(r'(\\documentclass\[)([^\]]*?)(\]\{mhdocument\})',lambda x:x[1]+re.sub(r'\bstudent\b',r'\\CourseOutputMode',x[2])+x[3],body,count=1)
             if job['mode']=='solutions':body=re.sub(r'\\SetMathCenterHeader\{([^{}\n]*)\}',lambda x:'\\SetMathCenterHeader{'+x[1]+' (Solutions)}',body,count=1)
@@ -157,7 +154,7 @@ def main():
             shortcuts=['A: All','M: Manuals']
             if any(x['kind']=='Exam'for x in items):shortcuts.append('E: Exams')
             if any(x['kind']=='Quiz'for x in items):shortcuts.append('Q: Quizzes')
-            if any(x['kind']in['Worksheet','Groupwork']for x in items):shortcuts.append('W: Worksheets / Groupwork')
+            if any(x['kind']=='Worksheet'for x in items):shortcuts.append('W: Worksheets')
             if any(x['kind']=='Reference Sheet'for x in items):shortcuts.append('R: Reference sheet')
             print('\n'+'   '.join(shortcuts)+'\nChoose item numbers, comma lists, or ranges. T: Change semester. O: Open semester folder. X: Exit.')
         if args.list:listing();return 0

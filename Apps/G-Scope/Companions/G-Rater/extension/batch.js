@@ -1,6 +1,6 @@
 const $=id=>document.getElementById(id);const contextId=location.hash.slice(1);let state,context;
 const status=(text,error=false)=>{$('status').textContent=text;$('status').classList.toggle('error',error);};
-async function send(type,data={}){const r=await chrome.runtime.sendMessage({app:'rubric-lens',type,contextId,...data});if(!r?.ok)throw new Error(r?.error||'This action could not finish.');return r;}
+async function send(type,data={}){const r=await chrome.runtime.sendMessage({app:'g-rater',type,contextId,...data});if(!r?.ok)throw new Error(r?.error||'This action could not finish.');return r;}
 function options(el,items,label){el.replaceChildren();for(const item of items){const opt=document.createElement('option');opt.value=item.id||item.key;opt.textContent=label(item);el.append(opt);}}
 async function refresh(){
   const r=await send('batch-state');state=r.state;context=r.context;

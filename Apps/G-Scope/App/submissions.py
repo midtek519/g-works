@@ -555,7 +555,7 @@ class Submissions:
             nonlocal model
             if self.complete is local_ai.complete:
                 installed={m['name'] for m in local_ai.models()}
-                model=next((m for m in ('rubric-lens-qwen35:9b-20261022','qwen3.5:9b-q4_K_M') if m in installed),model)
+                model=next((m for m in ('G-Scope:9b','qwen3.5:9b-q4_K_M') if m in installed),model)
                 local_ai.validate_model(model,True)
             counts={'matched':0,'unmatched':0}
             for index,(p,s,b,context) in enumerate(packets,1):

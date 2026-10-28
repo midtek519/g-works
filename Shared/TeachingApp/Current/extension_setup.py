@@ -7,9 +7,9 @@ import argparse,json,os,re,shutil,subprocess,sys
 
 ROOT=Path(os.environ.get('GWORKS_APP_ROOT',str(Path(__file__).resolve().parents[1]))).resolve()
 EXTENSIONS={
-    'course-organizer':('G-View','G-Whiz','Tools/Course Organizer/extension'),
-    'rubric-lens':('G-Rater','G-Scope','Data/PrivateModules/Grader/tools/Rubric Lens/extension'),
-    'integrity-helper':('G-Report','Integrity','Data/PrivateModules/Integrity/tools/Form Autofill/Chrome Extension'),
+    'g-view':('G-View','G-Whiz','Companions/G-View/extension'),
+    'g-rater':('G-Rater','G-Scope','Companions/G-Rater/extension'),
+    'g-report':('G-Report','G-Vault','Companions/G-Report/extension'),
 }
 MAINTENANCE_FILES=('g-extension-setup.html','g-extension-setup.js','g-extension-setup.css')
 
@@ -68,18 +68,17 @@ def installed_extension(info,installations=None):
 def maintenance_companions():
     """Registered professional companions; no browser registration is changed."""
     suite=Path(__file__).resolve().parents[3]
-    return [suite/'Apps/G-Whiz/Tools/Course Organizer/extension',
-            suite/'Apps/G-Scope/Tools/Rubric Lens/extension',
-            suite/'Apps/G-Vault/Data/PrivateModules/Integrity/tools/Form Autofill/Chrome Extension']
+    return [suite/'Apps/G-Whiz/Companions/G-View/extension',
+            suite/'Apps/G-Scope/Companions/G-Rater/extension',
+            suite/'Apps/G-Vault/Companions/G-Report/extension']
 
 def extension_info(root,ident):
     name,module,relative=EXTENSIONS[ident]
-    if ident=='rubric-lens' and Path(root).name=='G-Scope':relative='Tools/Rubric Lens/extension'
     path=Path(root)/relative
     if not path.resolve().is_relative_to(Path(root).resolve()):raise ValueError('The extension must stay inside its G-Works app.')
     manifest=json.loads((path/'manifest.json').read_text('utf-8-sig'))
     if manifest.get('manifest_version')!=3:raise ValueError('This extension needs an update.')
-    return {'id':ident,'name':name,'module':module,'folder':str(path.resolve()),'version':manifest['version']}
+    return {'id':ident,'name':name,'module':module,'folder':str(path.resolve()),'version':manifest.get('version_name',manifest['version'])}
 def chrome_path():
     import winreg
     for hive in (winreg.HKEY_CURRENT_USER,winreg.HKEY_LOCAL_MACHINE):
@@ -98,7 +97,7 @@ def chrome_path():
 
 def stage_local_defaults(root,ident):
     """Stage this installation's optional profile without bundling it in releases."""
-    if ident!='course-organizer':return
+    if ident!='g-view':return
     root=Path(root).resolve();source=root/'Data/G-View/local-defaults.json'
     if not source.is_file():return
     if source.is_symlink() or not source.resolve().is_relative_to(root/'Data'):raise ValueError('The local course profile must remain inside app Data.')
@@ -144,7 +143,7 @@ def create_form(info):
     from System.Drawing import Size,Point,Font,Icon,Bitmap
     from System.Windows.Forms import Application,Form,Label,Button,TextBox,FormStartPosition,FormBorderStyle,Clipboard
     Application.EnableVisualStyles()
-    form=Form();form.Text=info['name']+' · Extension setup';form.ClientSize=Size(640,350);form.StartPosition=FormStartPosition.CenterScreen;form.FormBorderStyle=FormBorderStyle.FixedDialog;form.MaximizeBox=False
+    form=Form();form.Text=info['name']+' · Extension setup';form.ClientSize=Size(640,292);form.StartPosition=FormStartPosition.CenterScreen;form.FormBorderStyle=FormBorderStyle.FixedDialog;form.MaximizeBox=False
     form.Font=Font('Segoe UI',10)
     icon=Path(info['folder'])/'icons/icon-32.png'
     if icon.exists():
@@ -155,37 +154,50 @@ def create_form(info):
     def label(text,x,y,w,h):
         c=Label();c.Text=text;c.Location=Point(x,y);c.Size=Size(w,h);form.Controls.Add(c);return c
     label(info['name']+'  ·  '+info['module']+'  ·  '+info['version'],22,20,596,30).Font=Font('Segoe UI',14)
-    installed=installed_extension(info)
-    label('Reload uses the latest G-Works extension files and keeps your extension settings.\n\nFirst installation: Chrome extensions → Developer mode → Load unpacked. Select the folder below, then pin the extension.',22,65,596,108)
-    path=TextBox();path.Text=info['folder'];path.ReadOnly=True;path.Location=Point(22,176);path.Size=Size(596,30);form.Controls.Add(path)
-    status=label('Installed in Chrome. Ready to reload.' if installed and installed['enabled'] else 'Chrome approval is required to install or enable the extension.',22,267,596,61)
+    label('1. In Chrome, enter chrome://extensions/ in the address bar.\n2. Turn on Developer mode, then choose Load unpacked.\n3. Copy the folder path below and paste it into the folder dialog.\nAlready installed? Use Reload on the extension’s card.',22,62,596,96)
+    path=TextBox();path.Text=info['folder'];path.ReadOnly=True;path.Location=Point(22,160);path.Size=Size(596,30);form.Controls.Add(path)
+    status=label('',22,248,596,30)
     def button(text,x,w,action):
-        b=Button();b.Text=text;b.Location=Point(x,220);b.Size=Size(w,34)
+        b=Button();b.Text=text;b.AccessibleName=text;b.Location=Point(x,204);b.Size=Size(w,34)
         def clicked(sender,args):
             try:action()
-            except Exception:status.Text='Could not open that option. Use the folder path above in Chrome’s Load unpacked dialog.'
+            except Exception:status.Text='Select the folder path above and copy it manually.'
         b.Click+=clicked;form.Controls.Add(b);return b
-    def reload():status.Text=open_chrome(info,'reload')
-    def chrome():status.Text=open_chrome(info)
-    button('Reload extension' if installed and installed['enabled'] else 'Install / enable',22,152,reload)
-    button('Chrome extensions',182,152,chrome)
-    button('Copy folder path',342,144,lambda:Clipboard.SetText(info['folder']))
-    button('Open folder',494,124,lambda:os.startfile(info['folder']))
+    def copy_folder():
+        Clipboard.SetText(info['folder']);status.Text='Folder path copied.'
+    button('Copy folder path',22,172,copy_folder)
     return form
 
-def show(info):
+def show(info,preview=None):
     form=create_form(info)
-    from System.Windows.Forms import Application
-    Application.Run(form)
+    try:
+        if preview:
+            from System.Drawing import Bitmap,Rectangle
+            from System.Drawing.Imaging import ImageFormat
+            form.CreateControl();form.PerformLayout()
+            handle=form.Handle
+            for control in form.Controls:handle=control.Handle
+            bitmap=Bitmap(form.Width,form.Height)
+            try:form.DrawToBitmap(bitmap,Rectangle(0,0,form.Width,form.Height));bitmap.Save(str(preview),ImageFormat.Png)
+            finally:bitmap.Dispose()
+            print(json.dumps({'nativeUIOpened':False,'buttons':[c.Text for c in form.Controls if c.GetType().Name=='Button']}))
+        else:
+            from System.Windows.Forms import Application
+            Application.Run(form)
+    finally:form.Dispose()
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--extension',choices=EXTENSIONS,required=True);parser.add_argument('--describe',action='store_true');parser.add_argument('--root',type=Path,default=ROOT);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--extension',choices=EXTENSIONS,required=True);parser.add_argument('--describe',action='store_true');parser.add_argument('--render-preview',type=Path);parser.add_argument('--root',type=Path,default=ROOT);args=parser.parse_args()
     info=extension_info(args.root,args.extension)
     if args.describe:print(json.dumps(info));return
-    stage_local_defaults(args.root,args.extension)
-    stage_maintenance_files(info)
+    if not args.render_preview:stage_local_defaults(args.root,args.extension)
     sys.path.insert(0,str(ROOT/'Dependencies/DesktopRuntime'))
     import clr
     clr.AddReference('System.Windows.Forms')
     from System.Threading import Thread,ThreadStart,ApartmentState
-    ui=Thread(ThreadStart(lambda:show(info)));ui.SetApartmentState(ApartmentState.STA);ui.Start();ui.Join()
+    errors=[]
+    def render():
+        try:show(info,args.render_preview)
+        except Exception as error:errors.append(error)
+    ui=Thread(ThreadStart(render));ui.SetApartmentState(ApartmentState.STA);ui.Start();ui.Join()
+    if errors:raise errors[0]
 if __name__=='__main__':main()

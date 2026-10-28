@@ -11,7 +11,7 @@ const running = new Map();
 chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
 
 async function tell(tabId, message) {
-  try { return await chrome.tabs.sendMessage(tabId, { app: 'rubric-lens', ...message }); }
+  try { return await chrome.tabs.sendMessage(tabId, { app: 'g-rater', ...message }); }
   catch { throw new Error('The grading page changed. Invoke G-Rater again.'); }
 }
 async function activeTab() {
@@ -163,7 +163,7 @@ chrome.tabs.onUpdated.addListener((tabId,info,tab)=>{
   }).catch(()=>{});
 });
 chrome.runtime.onMessage.addListener((message, sender, reply) => {
-  if (message?.app !== 'rubric-lens') return;
+  if (message?.app !== 'g-rater') return;
   (async () => {
     if(message.type?.startsWith('batch-')&&sender.url?.split(/[?#]/)[0]===chrome.runtime.getURL('batch.html'))return batchSerial(()=>batchAction(message));
     if (!sender.tab?.id || sender.frameId !== 0) throw new Error('Use the grading page controls.');

@@ -19,7 +19,7 @@ def validate_outline(outline):
     return graded
 
 def validate_export(value):
-    def fail():raise ValueError('Choose a complete Rubric Lens rubric export with valid questions, groups and outline.')
+    def fail():raise ValueError('Choose a complete G-Rater rubric export with valid questions, groups and outline.')
     def exact(v,keys):return isinstance(v,dict) and set(v)==set(keys.split())
     def text(v,n,empty=False):return isinstance(v,str) and len(v)<=n and (empty or bool(v.strip()))
     def num(v):return type(v) in (int,float) and math.isfinite(v) and abs(v)<=1000000
@@ -27,7 +27,7 @@ def validate_export(value):
     def path(v):return text(v,40) and re.fullmatch(r'\d+(?:\.\d+)*',v)
     if not isinstance(value,dict):fail()
     version=value.get('version')
-    if type(version) is not int or version not in (1,2) or not exact(value,'format version title text'+(' outline questions' if version==2 else '')) or value['format']!='rubric-lens-rubric-export':fail()
+    if type(version) is not int or version not in (1,2) or not exact(value,'format version title text'+(' outline questions' if version==2 else '')) or value['format']!='g-rater-rubric-export':fail()
     if not text(value['title'],160,True) or not text(value['text'],200000):fail()
     if version==1:return {**value,'title':value['title'].strip() or 'Untitled rubric','text':value['text'].strip()}
     outline=value['outline'];questions=value['questions']
@@ -76,7 +76,7 @@ def reviewed_export(version,title):
         children=[n for n in outline if n['parentNumber']==row['number']]
         if not row['graded'] and children:row['maxPoints']=sum(n['maxPoints'] for n in children)
     data={'outline':outline,'questions':questions}
-    return validate_export({'format':'rubric-lens-rubric-export','version':2,'title':title,'text':json.dumps(data,ensure_ascii=False,indent=2),**data})
+    return validate_export({'format':'g-rater-rubric-export','version':2,'title':title,'text':json.dumps(data,ensure_ascii=False,indent=2),**data})
 
 def reconcile_outline(previous,questions):
     """Keep template groups through rubric/title/label edits at either entry point."""

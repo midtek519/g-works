@@ -56,7 +56,7 @@
       const brief=await api('/brief',{brief:options.brief,target:options.target});if(closed)return;
       $('brief').value=brief.text;$('brief').readOnly=!online;
       if(general){connection=await api('/connection');if(connection.provider==='chatgpt'&&(!connection.connected||!connection.model))throw new Error('Connect ChatGPT and choose a General AI model in Settings → AI.');}
-      else if(!online){const result=await api('/models');if(closed)return;for(const model of result.models){const option=document.createElement('option');option.value=model.name;option.textContent=model.name;$('model').append(option);}const preferred='rubric-lens-qwen35:27b-20261022';if([...$('model').options].some(o=>o.value===preferred))$('model').value=preferred;if(!$('model').value)throw new Error('No installed local model is available. Open AI settings and check the private connection.');}
+      else if(!online){const result=await api('/models');if(closed)return;for(const model of result.models){const option=document.createElement('option');option.value=model.name;option.textContent=model.name;$('model').append(option);}const preferred='G-Scope:27b';if([...$('model').options].some(o=>o.value===preferred))$('model').value=preferred;if(!$('model').value)throw new Error('No installed local model is available. Open AI settings and check the private connection.');}
       status(online?'Review identities and indirect identifying details before copying. The current redacted export remains available.':general?connection.label+' · '+connection.model+'. Approved brief verified.':'Approved input verified. Choose Draft with Private AI to begin.');
     }catch(error){if(!closed){status(error.message);$('generate').disabled=true;$('copy').disabled=true;}}
   }

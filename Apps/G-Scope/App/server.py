@@ -92,7 +92,7 @@ def make_server(store,port=0):
                 if len(parts)==5 and parts[:2]==['api','files'] and parts[3]=='page':return self.respond(200,store.page(parts[2],int(parts[4]),rotation=int(query['rotation'][0]) if 'rotation'in query else None),'image/png')
                 if len(parts)==5 and parts[:2]==['api','booklets'] and parts[3]=='crop':return self.respond(200,store.crop(parts[2],parts[4]),'image/png')
                 if len(parts)==3 and parts[:2]==['api','runs']:return self.respond(200,store.run(parts[2]))
-                if len(parts)==4 and parts[:2]==['api','runs'] and parts[3]=='export':return self.respond(200,store.export(parts[2]),download='Rubric-Lens-suggestions.json')
+                if len(parts)==4 and parts[:2]==['api','runs'] and parts[3]=='export':return self.respond(200,store.export(parts[2]),download='G-Rater-suggestions.json')
                 if len(parts)==6 and parts[:2]==['api','runs'] and parts[3]=='proposals' and parts[5]=='crop':return self.respond(200,store.run_crop(parts[2],parts[4]),'image/png')
                 if len(parts)==3 and parts[:2]==['api','jobs']:return self.respond(200,store.jobs.get(parts[2]))
                 if url.path.startswith('/vendor/katex/'):

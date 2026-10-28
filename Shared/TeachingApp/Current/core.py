@@ -4,6 +4,7 @@ import sys,csv,hashlib,importlib.util,io,json,os,re,secrets,shutil,subprocess,th
 from datetime import datetime,timezone
 from toolchain import executable,repository_path,question_bank_path
 import temporary_files
+from material_folders import folder_kind,folder_patterns,ordered
 
 CODES=['103','111','130','135','136','151','152','250','251']
 def stamp():return datetime.now(timezone.utc).isoformat()
@@ -48,7 +49,8 @@ class Desk:
    course_workspaces.load(self)
  def tool(self,name):return executable(self.root,name)
  def system_check(self):
-  engine='pdflatex' if self.edition.get('edition') in ('materials',) and self.settings().get('tex_distribution')=='miktex' else 'latexmk'
+  from private_module_ui import shared_tex
+  engine='pdflatex' if self.edition.get('edition') in ('materials',) and shared_tex.selection(self.root)['tex_distribution']=='miktex' else 'latexmk'
   return {'app':self.branding['name'],'repository':str(self.repo),'tools':{name:self.tool(name) for name in [engine,'pdfinfo','pdftoppm']},'courses':len(self.modules)}
  def temp_files(self):
   return {**temporary_files.summary(self.root),'active':bool(self.active)}
@@ -91,20 +93,24 @@ class Desk:
   if not hasattr(self,'_publish_defaults'):self._publish_defaults={}
   if code in self._publish_defaults:return self._publish_defaults[code]
   m=self.module(code);tag=m.CONFIG['default_semester']
-  kinds=list(dict.fromkeys(['Exam','Final Exam','Quiz','Worksheet','Manual','Syllabus & Schedule']+[item['kind'] for item in m.discover(tag) if item['kind'] not in ('Syllabus','Schedule')]))
+  kinds=list(dict.fromkeys(['Exam','Final Exam','Quiz','Worksheet','Manual','Syllabus & Schedule','Support','Coordination']+[item['kind'] for item in m.discover(tag) if item['kind'] not in ('Syllabus','Schedule')]))
   if str(code)!='135' and (m.COURSE/'assessment-manual/assessment-manual.tex').is_file():kinds.append('Assessment manual')
   if str(code)=='135':kinds=[kind for kind in kinds if kind.lower()!='assessment manual']
+  kinds=list(dict.fromkeys(folder_kind(code,kind) for kind in kinds if folder_kind(code,kind) is not None))
   rules={}
   for kind in kinds:
    category=self.material_category(kind)
    pattern='[root]' if category=='Manual' else '[root]/[semester]' if category=='Handout' or kind in ('Schedule','Syllabus','Syllabus & Schedule') else '[root]/Coordination' if category=='Coordination' else '[root]/Support'
    rules[kind]={'kind':kind,'category':category,'pattern':pattern.replace('/',os.sep)}
-  self._publish_defaults[code]=rules
+  rules=ordered(rules);self._publish_defaults[code]=rules
   return rules
  def publish_folder(self,code,tag,kind,number='',mode='student',version='A',patterns=None,root=None):
   term(tag);kind='Final Exam' if str(kind).lower()=='final' else kind;kind='Syllabus & Schedule' if str(kind).lower() in ('syllabus','schedule') else kind
+  kind=folder_kind(code,kind)
+  if kind is None:raise ValueError('This material type is not available for Math '+str(code)+'.')
   defaults=self.material_defaults(code);kind=next((k for k in defaults if k.lower()==str(kind).lower()),kind)
   values=self.settings();patterns=patterns if patterns is not None else values.get('publish_patterns',{}).get(code,{})
+  patterns=folder_patterns(code,patterns)
   pattern=patterns.get(kind,patterns.get('Syllabus',patterns.get('Schedule',defaults.get(kind,{'pattern':'[root]/[semester]'})['pattern'])) if kind=='Syllabus & Schedule' else defaults.get(kind,{'pattern':'[root]/[semester]'})['pattern'])
   substitutions={'root':str(self.resolve_base(code,root) if root else self.output_root(code)),'course':self.module(code).OUTPUT.name,'course-code':str(code),'semester':self.module(code).semester_info(tag)[0],'semester-code':tag,'season':term(tag).split()[0],'year':term(tag).split()[-1],'type':str(kind),'number':str(number or ''),'mode':{'student':'Student','solutions':'Solutions','developer':'Developer'}.get(mode,mode),'version':str(version)}
   tokens=re.findall(r'\[([^\]]+)\]',pattern)
@@ -122,7 +128,7 @@ class Desk:
   for code in self.modules:
    if code=='136':continue
    defaults=self.material_defaults(code);custom=settings.get('publish_patterns',{}).get(code,{})
-   custom=dict(custom)
+   custom=folder_patterns(code,custom)
    if 'Syllabus & Schedule' not in custom and ('Syllabus' in custom or 'Schedule' in custom):custom['Syllabus & Schedule']=custom.get('Syllabus',custom.get('Schedule'))
    rules=[{'kind':kind,'category':row['category'],'pattern':custom.get(kind,row['pattern']),'default_pattern':row['pattern'],'example':str(self.publish_folder(code,self.module(code).CONFIG['default_semester'],kind,1))} for kind,row in defaults.items()]
    courses.append({'code':code,'course_folder':self.module(code).OUTPUT.name,'folder':settings.get('publish_folders',{}).get(code) or self.default_root_pattern(code),'resolved_folder':str(self.output_root(code)),'default_folder':self.default_root_pattern(code),'rules':rules,'example_semester':self.module(code).CONFIG['default_semester'],'example_semester_label':self.module(code).semester_info(self.module(code).CONFIG['default_semester'])[0]})
@@ -141,7 +147,7 @@ class Desk:
    for code,rules in patterns.items():
     defaults=self.material_defaults(code)
     if not isinstance(rules,dict):raise ValueError('Check the material folder patterns.')
-    rules=dict(rules)
+    rules=folder_patterns(code,rules)
     if 'Syllabus & Schedule' not in rules and ('Syllabus' in rules or 'Schedule' in rules):rules['Syllabus & Schedule']=rules.get('Syllabus',rules.get('Schedule'))
     rules.pop('Syllabus',None);rules.pop('Schedule',None)
     validated[code]={}
@@ -281,7 +287,8 @@ class Desk:
    b['status']='running';b['phase']='fingerprint';b['message']='Checking selected build inputs…';save(self._batch_path(identity),b)
    began=time.monotonic();b['source_fingerprint']=self._job_fingerprint(b['course'],b['jobs'],version=b.get('fingerprintVersion'));b.setdefault('timings',{})['input_check_seconds']=round(time.monotonic()-began,3)
    b['phase']='compile';b['message']='Compiling selected PDFs…';save(self._batch_path(identity),b)
-   miktex=self.edition.get('edition') in ('materials',) and self.settings().get('tex_distribution')=='miktex'
+   from private_module_ui import shared_tex
+   miktex=self.edition.get('edition') in ('materials',) and shared_tex.selection(self.root)['tex_distribution']=='miktex'
    latexmk=executable(self.root,'pdflatex' if miktex else 'latexmk')
    if not Path(latexmk).is_file():raise ValueError('The TeX compiler is unavailable.')
    env=os.environ.copy();env['PATH']=str(Path(latexmk).parent)+os.pathsep+env.get('PATH','');env['TEXINPUTS']=(self.repo/'lib').as_posix()+'//'+os.pathsep+env.get('TEXINPUTS','')+os.pathsep;cache=self.temp/'Builds/tex-cache';cache.mkdir(exist_ok=True);env['TEXMFVAR']=str(cache);env['TEXMFCACHE']=str(cache)
@@ -367,7 +374,7 @@ class Desk:
   return p
  def banks(self,code):
   m=self.module(code);result=[]
-  for collection,folder in [('manual',m.COURSE/'manual/exercises'),('assessment',m.COURSE/'assessment-manual/exercises')]:
+  for collection,folder in [('manual',m.COURSE/'manual/exercises'),('assessment',m.COURSE/('assessment-bank' if str(code)=='135' else 'assessment-manual')/'exercises')]:
    for p in sorted(folder.glob('*.tex')):
     text=p.read_text(encoding='utf8');questions=self._questions(text);relative=p.relative_to(self.repo).as_posix();result.append({'path':relative,'name':p.stem.replace('-',' ').title(),'collection':collection,'count':len(questions),'sha256':hash_file(p),'next_id':self._next_id(code,p,questions),'questions':[{**q,'bank':relative,'collection':collection}for q in questions]})
   return result
@@ -379,9 +386,10 @@ class Desk:
    topic=re.search(r'topics\s*=\s*\{([^}]*)\}',meta);body=m[2].strip();result.append({'id':ident[1],'question':body,'solution':(m[3]or'').strip(),'topics':topic[1]if topic else'','excerpt':re.sub(r'\s+',' ',body)[:180]})
   return result
  def _next_id(self,code,path,questions):
-  allids={q['id']for folder in ['manual/exercises','assessment-manual/exercises']for p in (self.module(code).COURSE/folder).glob('*.tex')for q in self._questions(p.read_text(encoding='utf8'))}
-  if 'assessment-manual'in path.parts:
-   p=self.repo/'_local/metadata'/('mh-'+code+'-course-documents')/'assessment-manual/assessment-index.json';index=json.loads(p.read_text())if p.is_file()else{};n=max([int(q.split('-')[-1])for q in allids if re.fullmatch('A'+code+r'-\d+',q)]+[0])+1;n=max(n,int(index.get('next_ID','A'+code+'-0001').split('-')[-1]));return 'A'+code+'-'+str(n).zfill(4)
+  assessment='assessment-bank' if str(code)=='135' else 'assessment-manual'
+  allids={q['id']for folder in ['manual/exercises',assessment+'/exercises']for p in (self.module(code).COURSE/folder).glob('*.tex')for q in self._questions(p.read_text(encoding='utf8'))}
+  if assessment in path.parts:
+   p=self.repo/'_local/metadata'/('mh-'+code+'-course-documents')/assessment/'assessment-index.json';index=json.loads(p.read_text())if p.is_file()else{};n=max([int(q.split('-')[-1])for q in allids if re.fullmatch('A'+code+r'-\d+',q)]+[0])+1;n=max(n,int(index.get('next_ID','A'+code+'-0001').split('-')[-1]));return 'A'+code+'-'+str(n).zfill(4)
   width=2
   if questions:
    ident=questions[0]['id'];standard=re.fullmatch(r'(M'+code+r'-\d{2})(\d{2})',ident);m=standard or re.match(r'(.+?)(\d+)$',ident)
@@ -407,8 +415,9 @@ class Desk:
    block='\n\n% Added through G-Whiz; permanent ID '+ident+'\n\\begin{exercise}[ID={'+ident+'},status=draft'+(',topics={'+topics+'}'if topics else'')+']\n'+question+'\n\\end{exercise}\n'+('\\begin{solution}\n'+solution+'\n\\end{solution}\n'if solution else'')
    changes={p:p.read_bytes()+block.encode()}
    if bank['collection']=='assessment':
-    wrapper=self.module(code).COURSE/'assessment-manual/assessment-manual.tex';body=wrapper.read_text(encoding='utf8');addition='\n\\par\\medskip\\noindent\\textbf{Permanent ID: \\texttt{'+ident+'}}\\par\n\\UseAssessmentExercise{'+ident+'}\n';changes[wrapper]=body.replace('\\end{document}',addition+'\\end{document}').encode()
-    idx=self.repo/'_local/metadata'/('mh-'+code+'-course-documents')/'assessment-manual/assessment-index.json'
+    if str(code)!='135':
+     wrapper=self.module(code).COURSE/'assessment-manual/assessment-manual.tex';body=wrapper.read_text(encoding='utf8');addition='\n\\par\\medskip\\noindent\\textbf{Permanent ID: \\texttt{'+ident+'}}\\par\n\\UseAssessmentExercise{'+ident+'}\n';changes[wrapper]=body.replace('\\end{document}',addition+'\\end{document}').encode()
+    idx=self.repo/'_local/metadata'/('mh-'+code+'-course-documents')/('assessment-bank' if str(code)=='135' else 'assessment-manual')/'assessment-index.json'
     if idx.is_file():
      data=json.loads(idx.read_text());data['exercises'].append({'permanent_ID':ident,'original_assessment':'G-Whiz addition','question_number':None,'previous_local_ID':'','question_and_solution_sha256':hashlib.sha256(block.encode()).hexdigest(),'has_solution':bool(solution),'has_variants':False});data['next_ID']='A'+code+'-'+str(int(ident.split('-')[-1])+1).zfill(4);changes[idx]=json.dumps(data,indent=2).encode()
      csvpath=idx.with_suffix('.csv')

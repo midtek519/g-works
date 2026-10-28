@@ -433,7 +433,7 @@ class Store(OnlineGrading,AnswerGroups,GradingControl,ProjectTrash,Submissions,R
             entries.append({'id':p['id'],'examId':p['booklet_id'],'questionKey':q['key'],'reviewed':bool(review),'result':{
                 'rubricItem':' / '.join(i['label'] for i in selected) or 'Review needed','explanation':'Instructor-reviewed choice. Original model analysis is available in G-Scope.' if review else result['reason'],'uncertainty':'' if review else result['uncertainty'],
                 'needsReview':False if review else result['needsReview'],'choices':[{'label':i['label'],'description':i['description'],'points':i['points']} for i in selected]}})
-        return {'format':'rubric-lens-batch','version':2,'identityMatching':identity_matching,'batchId':rid,'created':now(),'snapshotHash':run['snapshot_hash'],
+        return {'format':'g-rater-batch','version':2,'identityMatching':identity_matching,'batchId':rid,'created':now(),'snapshotHash':run['snapshot_hash'],
                 'exam':{k:snapshot[k] for k in ('course','term','exam','version')},'model':run['model'],'modelDigest':run['model_digest'],'rubricHash':snapshot['rubricHash'],
                 'questions':[{'key':q['key'],'title':q['title'],'number':str(q.get('number') or q['key']),'versionLabel':snapshot['version'],'selectionMode':q['selectionMode']} for q in snapshot['questions']],
                 'booklets':booklets,'entries':entries,'complete':run['status']=='complete','mappingRequired':True}

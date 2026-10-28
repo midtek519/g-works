@@ -16,6 +16,8 @@ from support_documents import SupportDocuments
 from folder_picker import browse_folder
 from toolchain import open_folder
 import course_workspaces,instructor_profile
+import backend_runtime
+RUNTIME_REVISION=backend_runtime.revision()
 
 def make_server(desk,port=0):
  previous_token=os.environ.get('GWORKS_SESSION_TOKEN','')
@@ -56,7 +58,7 @@ def make_server(desk,port=0):
      if private is None:raise PermissionError('Course databases belong to G-Vault.')
      return self.reply(200,private.workspaces.inventory())
     if path.path=='/api/private-modules':return self.reply(200,{'modules':private.inventory() if private else []})
-    if path.path=='/api/health':return self.reply(200,{'app':'GWhiz','root':str(desk.root),'selectedHandoutVersions':True,'active':desk.active,'busy':bool(desk.active or imports and imports.jobs),'materialsEnabled':desk.materials_enabled})
+    if path.path=='/api/health':return self.reply(200,{'app':'GWhiz','root':str(desk.root),'runtimeRevision':RUNTIME_REVISION,'staticReady':all((static/name).is_file() for name in ('index.html','app.js','preview.html')),'selectedHandoutVersions':True,'active':desk.active,'busy':bool(desk.active or imports and imports.jobs),'materialsEnabled':desk.materials_enabled})
     if path.path=='/api/bootstrap':return self.reply(200,{'version':'1.0.0-beta.3','materialsEnabled':desk.materials_enabled,'edition':desk.edition,'branding':desk.branding,'token':token,'courses':desk.courses(),'history':desk.history(),'active':desk.active,'universal_available':bool(universal and universal.available()),'private_modules':private.inventory() if private else []})
     if path.path=='/edition.css':return self.file(static/('instructor.css' if desk.branding['theme']=='rutgers' else 'edition-default.css'))
     if path.path=='/g-whiz.svg':return self.file(static/('g-whiz-instructor.svg' if desk.branding['theme']=='rutgers' else 'g-whiz.svg'))

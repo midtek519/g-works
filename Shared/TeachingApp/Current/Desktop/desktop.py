@@ -10,7 +10,9 @@ ROOT=Path(os.environ.get('GWORKS_APP_ROOT',str(DEFAULT_ROOT))).resolve()
 LIB=ROOT/'Dependencies/DesktopRuntime'
 sys.path.insert(0,str(LIB))
 sys.path.insert(0,str(HERE))
+sys.path.insert(0,str(HERE.parent))
 import appearance,script_dialogs,window_chrome,native_chrome
+import backend_runtime
 DATA=ROOT/'Data/Desktop'
 TEMP=ROOT/'Temp/Desktop'
 log=logging.getLogger('local.desktop')
@@ -52,16 +54,30 @@ def get_json(url,timeout=3):
 
 def backend():
     status=ROOT/'Temp/server-status.json'
+    stale={}
     def alive():
         value=read_json(status,{})
         origin=local_origin(value.get('url'))
         if not origin:return None
         try:
             health=get_json(origin+'/api/health')
-            if health.get('app')==APP_ID and Path(health.get('root','')).resolve()==ROOT:return origin
+            if health.get('app')==APP_ID and Path(health.get('root','')).resolve()==ROOT:
+                if KIND!='dnd' and not backend_runtime.current(health,ROOT,APP_ID):stale.update(origin=origin,health=health);return None
+                return origin
         except (OSError,ValueError):pass
     origin=alive()
     if origin:return origin
+    if stale:
+        if stale['health'].get('busy') or stale['health'].get('active'):raise RuntimeError('The previous app service is finishing work. Let it finish, then reopen the app.')
+        bootstrap=get_json(stale['origin']+'/api/bootstrap')
+        request=urllib.request.Request(stale['origin']+'/api/installer-stop',data=b'{}',headers={'Content-Type':'application/json','X-App-Token':bootstrap['token']})
+        with urllib.request.urlopen(request,timeout=5) as response:
+            if not json.load(response).get('stopped'):raise RuntimeError('The previous app service could not close safely.')
+        deadline=time.monotonic()+6
+        while time.monotonic()<deadline:
+            try:get_json(stale['origin']+'/api/health',timeout=.5)
+            except (OSError,ValueError):break
+            time.sleep(.1)
     TEMP.mkdir(parents=True,exist_ok=True)
     # Keep the familiar origin if available, preserving browser recovery storage.
     previous=read_json(status,{})

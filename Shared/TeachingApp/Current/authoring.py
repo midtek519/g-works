@@ -208,7 +208,7 @@ class CourseLibrary:
             if path.is_file():
                 yield path, path.parent, 'Published'
         # Some legacy course documents were already PDFs rather than TeX.
-        for name in ('exams', 'quizzes', 'worksheets', 'groupwork', 'manual', 'assessment-manual', 'support', 'syllabuses', 'coordination'):
+        for name in ('exams', 'quizzes', 'worksheets', 'groupwork', 'manual', 'assessment-bank' if str(code)=='135' else 'assessment-manual', 'support', 'syllabuses', 'coordination'):
             for path in self._walk(course / name):
                 yield path, course, 'Source PDF'
         if course.is_dir():

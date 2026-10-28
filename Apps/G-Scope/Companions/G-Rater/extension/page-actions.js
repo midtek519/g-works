@@ -1,5 +1,5 @@
 // Local page guards and explicit rubric application. Identity reads use only the grading payload.
-globalThis.__rubricLensActions = (() => {
+globalThis.__gRaterActions = (() => {
   const context = href => {
     const url=new URL(href),m=url.pathname.match(/^\/courses\/(\d+)\/questions\/(\d+)\/submissions\/(\d+)\/grade\/?$/);
     if(url.protocol!=='https:'||!['gradescope.com','www.gradescope.com'].includes(url.hostname)||url.username||url.password||url.hash||!m)throw Error('Unsupported grading route.');
@@ -21,7 +21,7 @@ globalThis.__rubricLensActions = (() => {
     return candidates[0];
   }
   function matching(region,choice,expected) {
-    const match=globalThis.__rubricLensFindRubric?.(region,choice.description,choice.points);
+    const match=globalThis.__gRaterFindRubric?.(region,choice.description,choice.points);
     if(!expected?.element||!match?.element||!match.element.isConnected||match.element!==expected.element||match.descriptionElement!==expected.descriptionElement)throw Error('The rubric changed. Selection and navigation stopped.');
     return match;
   }

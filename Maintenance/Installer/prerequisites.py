@@ -58,6 +58,11 @@ def configured_settings(root):
             tex = value.get('tex_bin') or value.get('texlive_bin')
             if tex and 'tex_bin' not in result:
                 result['tex_bin'] = str((app / tex).resolve())
+    tex = owner / 'Shared/Settings/tex.json'
+    if tex.is_file():
+        value = json.loads(tex.read_text('utf-8-sig'))
+        if value.get('tex_bin'):
+            result['tex_bin'] = value['tex_bin']
     return result
 
 def local_origin(value):
@@ -408,6 +413,11 @@ def seed_configuration(root, apps, options, transaction):
         temp = transaction.folder / 'shared-local-ai.json'
         json_write(temp, selected)
         transaction.put(temp, 'Shared/Settings/local-ai.json')
+    tex = root / 'Shared/Settings/tex.json'
+    if not external and (not tex.exists() or options.get('change_dependencies')):
+        temp = transaction.folder / 'shared-tex.json'
+        json_write(temp, {'tex_bin': options['_tex_bin'], 'tex_distribution': options.get('_tex_distribution', 'texlive')})
+        transaction.put(temp, 'Shared/Settings/tex.json')
     for app in apps:
         if app in ('mods', 'spot'):
             continue
@@ -433,7 +443,7 @@ def seed_configuration(root, apps, options, transaction):
         if app == 'vault':
             source = root / prefix / 'Data/PrivateSource'
             compiler = str(Path(options['_tex_bin']) / 'pdflatex.exe')
-            module_defaults = {'Recommendations': {'grade_database': '', 'mh_git': str(source), 'pdflatex': compiler, 'academic_year_start_month': 7}, 'Integrity': {'sender': {'name': '', 'title': '', 'department': 'Department of Mathematics, Rutgers University', 'contact_lines': []}, 'signature_file': str(source / 'img/signature.png'), 'renderer': str(source / 'professional-correspondence/recommendations/render_letter.py'), 'pdflatex': compiler, 'integrity_catalog': str(source / 'professional-correspondence/integrity/catalog.json')}}
+            module_defaults = {'Recommendations': {'grade_database': '', 'mh_git': str(source), 'pdflatex': compiler, 'academic_year_start_month': 9}, 'Integrity': {'sender': {'name': '', 'title': '', 'department': 'Department of Mathematics, Rutgers University', 'contact_lines': []}, 'signature_file': str(source / 'img/signature.png'), 'renderer': str(source / 'professional-correspondence/recommendations/render_letter.py'), 'pdflatex': compiler, 'integrity_catalog': str(source / 'professional-correspondence/integrity/catalog.json')}}
             for module, settings_value in module_defaults.items():
                 relative = prefix + '/Data/PrivateModules/' + module + '/tools/settings.json'
                 existing = root / relative

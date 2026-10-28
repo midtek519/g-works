@@ -18,9 +18,9 @@ namespace GWorks {
   public virtual string Name {get{return "G-Works";}}
   public virtual string Icon {get{return "g-works";}}
   public virtual AppChoice[] Apps {get{return new[]{
-   new AppChoice{Id="whiz",Name="G-Whiz",Folder="G-Whiz",Description="Courses, questions & teaching materials",Color="#B72D49",Icon="g-whiz",SecondaryId="course-organizer",SecondaryLabel="G-View"},
-   new AppChoice{Id="scope",Name="G-Scope",Folder="G-Scope",Description="Scans, rubrics & grading",Color="#A96A13",Icon="g-scope",SecondaryId="rubric-lens",SecondaryLabel="G-Rater"},
-   new AppChoice{Id="vault",Name="G-Vault",Folder="G-Vault",Description="Grades, letters & integrity records",Color="#245FB6",Icon="g-vault",SecondaryId="integrity-helper",SecondaryLabel="G-Report"}
+   new AppChoice{Id="whiz",Name="G-Whiz",Folder="G-Whiz",Description="Courses, questions & teaching materials",Color="#B72D49",Icon="g-whiz",SecondaryId="g-view",SecondaryLabel="G-View"},
+   new AppChoice{Id="scope",Name="G-Scope",Folder="G-Scope",Description="Scans, rubrics & grading",Color="#A96A13",Icon="g-scope",SecondaryId="g-rater",SecondaryLabel="G-Rater"},
+   new AppChoice{Id="vault",Name="G-Vault",Folder="G-Vault",Description="Grades, letters & integrity records",Color="#245FB6",Icon="g-vault",SecondaryId="g-report",SecondaryLabel="G-Report"}
   };}}
   public virtual string AppFolder(AppChoice app){return Path.Combine(Program.Root,"Apps",app.Folder);}
   public virtual CompanionChoice[] ExtraCompanions {get{return new CompanionChoice[0];}}
@@ -29,7 +29,7 @@ namespace GWorks {
   public virtual Target ResolveExtra(string id){return null;}
  }
  static partial class Program {
-  public const string Version="1.0.0-beta.3";
+  public const string Version="1.0.0-beta.3.3";
   public static string Root,Suite="professional";
   public static LauncherProfile Profile=new LauncherProfile();
   static partial void SelectProfile(ref LauncherProfile profile);
@@ -37,7 +37,7 @@ namespace GWorks {
   public static string SuiteName {get{return Profile.Name;}}
   public static string LauncherName {get{return SuiteName+".exe";}}
   public static AppChoice[] Apps {get{return Profile.Apps;}}
-  public static CompanionChoice[] Companions {get{return Apps.Where(a=>a.SecondaryId!=null).Select(a=>new CompanionChoice{id=a.SecondaryId,label=a.SecondaryLabel,parent=a.Id,description=a.Id=="whiz"?"Organize your Rutgers Canvas courses.":a.Id=="scope"?"Capture Gradescope rubrics for your grading workspace.":"Prepare Rutgers integrity forms from an approved case.",icon=a.Id=="whiz"?"g-view":a.Id=="scope"?"g-rater":"g-report"}).Concat(Profile.ExtraCompanions).ToArray();}}
+  public static CompanionChoice[] Companions {get{return Apps.Where(a=>a.SecondaryId!=null).Select(a=>new CompanionChoice{id=a.SecondaryId,label=a.SecondaryLabel,parent=a.Id,description=a.Id=="whiz"?"Organize your Rutgers Canvas courses.":a.Id=="scope"?"Import and export Gradescope rubrics. Grade import is planned.":"Prepare Rutgers integrity forms from an approved case.",icon=a.Id=="whiz"?"g-view":a.Id=="scope"?"g-rater":"g-report"}).Concat(Profile.ExtraCompanions).ToArray();}}
   public static LauncherAction[] Actions {get{return new[]{new LauncherAction{Id="extensions",Label="Chrome Extensions",Icon="chrome-extensions"}}.Concat(Profile.ExtraActions).ToArray();}}
   static readonly JavaScriptSerializer Json=new JavaScriptSerializer();
   public static void LoadSuite(){
@@ -69,7 +69,7 @@ namespace GWorks {
    var choice=Apps.FirstOrDefault(a=>a.Id==id||a.SecondaryId==id);
    if(choice==null)throw new Exception("Unknown workspace for "+SuiteName+".");
    string folder=AppFolder(choice),app=choice.Name;
-   if(id=="rubric-lens"||id=="integrity-helper"||id=="course-organizer"){
+   if(id=="g-rater"||id=="g-report"||id=="g-view"){
     string python=Path.Combine(folder,"Dependencies","python","pythonw.exe"),script=Path.Combine(folder,"App","extension_setup.py");
     if(!File.Exists(script)||!File.Exists(python))throw new Exception("Install the parent app to add its Chrome extension.");
     return new Target{File=python,Arguments="-I -B "+Quote(script)+" --extension "+id,Directory=folder};
@@ -201,7 +201,7 @@ namespace GWorks {
     var mark=new PictureBox{Image=HubArt.ImageFor(entry.icon),Bounds=new Rectangle(18,y+10,42,42),SizeMode=PictureBoxSizeMode.Zoom};Controls.Add(mark);
     Controls.Add(new Label{Text=entry.label,Bounds=new Rectangle(76,y+2,310,24),Font=new Font("Segoe UI",11,FontStyle.Bold)});
     Controls.Add(new Label{Text=entry.description,Bounds=new Rectangle(76,y+29,310,48)});
-    var install=new Button{Text="Install / open",Bounds=new Rectangle(414,y+15,132,34),Enabled=Program.Available(entry.id)};install.Click+=(s,e)=>{try{Program.Open(entry.id);}catch(Exception error){MessageBox.Show(this,error.Message,entry.label);}};Controls.Add(install);y+=100;
+    var install=new Button{Text="Install instructions",Bounds=new Rectangle(414,y+15,132,34),Enabled=Program.Available(entry.id)};install.Click+=(s,e)=>{try{Program.Open(entry.id);}catch(Exception error){MessageBox.Show(this,error.Message,entry.label);}};Controls.Add(install);y+=100;
    }
   }
  }

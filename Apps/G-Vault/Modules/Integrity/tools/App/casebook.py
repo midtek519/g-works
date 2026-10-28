@@ -12,6 +12,7 @@ _shared_ui=(Path(__file__).resolve().parents[5]/'Dependencies/TeachingApp').reso
 if (_shared_ui/'shared_signature.py').is_file():
     sys.path.insert(0,str(_shared_ui))
     import shared_signature
+    import shared_tex
 else:shared_signature=None
 
 from case_workflow import STAGES,normalize,active_appeal,missing_details,set_step
@@ -564,7 +565,7 @@ class Store:
    if not l['body'].strip():raise ValueError('Write the communication body first.')
    if final and (payload.get('approved')is not True or not l['reviewed']):raise ValueError('Review the wording and explicitly approve the signed final.')
    if final and re.search(r'\[[^\]\n]{1,500}\]',l['body']+'\n'+l['recipient']+'\n'+l['salutation']+'\n'+l['subject']):raise ValueError('Replace the remaining bracketed placeholders before signing.')
-   settings=self.settings();renderer=Path(settings['renderer']);exe=Path(settings['pdflatex'])
+   settings=self.settings();renderer=Path(settings['renderer']);exe=Path(shared_tex.executable(Path(__file__).resolve().parents[5],'pdflatex',settings['pdflatex']))
    if not renderer.is_file()or not exe.is_file():raise ValueError('The local mh-git renderer or TeX compiler is unavailable. Check Settings.')
    spec=importlib.util.spec_from_file_location('integrity_letter_renderer',renderer);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
    data={'schema_version':1,'date':l['date'],'recipient_lines':l['recipient'].splitlines(),'subject':l['subject'],'salutation':l['salutation'],'running_label':'Academic Integrity — '+identity,'closing':'Sincerely,','paragraphs':[p.strip()for p in re.split(r'\n\s*\n',l['body'])if p.strip()]}
@@ -752,7 +753,7 @@ class Store:
   save(self.settings_path,s)
   if shared_signature and 'signature_file'in payload and payload.get('signature_changed',True):shared_signature.save(s['signature_file'])
   return {'settings':s}
- def report_schema(self):return load(Path(self.settings().get('report_form_schema',str(self.tools/'Form Autofill/Form Structure.json'))),{'fields':[]})
+ def report_schema(self):return load(Path(self.settings().get('report_form_schema',str(Path(__file__).resolve().parents[5]/'Companions/G-Report/extension/form-schema.json'))),{'fields':[]})
  def integrity_catalog(self):return load(Path(self.settings().get('integrity_catalog',str(Path(__file__).resolve().parents[5]/'Data/PrivateSource/professional-correspondence/integrity/catalog.json'))),{})
  def active_templates(self):
   templates=self.personal_templates()

@@ -75,11 +75,11 @@ def _order(semester):
     return year, month, str(semester)
 
 
-def _academic_year(semester):
+def _academic_year(semester,start_month=9):
     year, month, _ = _order(semester)
-    if not year or month == 6:
+    if not year:
         return None
-    start = year if month >= 7 else year - 1
+    start = year if month >= int(start_month) else year - 1
     return f"{start}–{start + 1}"
 
 
@@ -156,7 +156,7 @@ def search_students(database_path, query, limit=20):
     return {"students": students}
 
 
-def student_records(database_path, ruid):
+def student_records(database_path, ruid,academic_year_start_month=9):
     """Return one student's local history and reproducible average ranks."""
     identity = str(ruid or "").strip()
     if not identity or len(identity) > 80:
@@ -185,7 +185,7 @@ def student_records(database_path, ruid):
             if average is None:
                 continue
             semesters[member["semester"]].append(average)
-            year = _academic_year(member["semester"])
+            year = _academic_year(member["semester"],academic_year_start_month)
             if year:
                 years[year].append(average)
             overall.append(average)
@@ -207,7 +207,7 @@ def student_records(database_path, ruid):
             if grade == "W":
                 average = None
             eligible = active and grade != "W" and average is not None
-            year = _academic_year(row["semester"])
+            year = _academic_year(row["semester"],academic_year_start_month)
             records.append({
                 "semester": row["semester"], "grade": grade, "average": average,
                 "unit": row["unit"], "class": row["class"], "curric": row["curric"],

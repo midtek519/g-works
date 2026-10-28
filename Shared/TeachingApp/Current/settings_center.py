@@ -8,17 +8,20 @@ from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlsplit,parse_qs
 import argparse,copy,hashlib,json,mimetypes,os,re,secrets,subprocess,sys,threading,time,urllib.request,webbrowser
 HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(HERE))
 sys.path.insert(0,str(HERE/'private_module_ui'));sys.path.insert(0,str(HERE/'Desktop'))
 import appearance,general_ai,local_ai_config,chatgpt_account,shared_signature
+import shared_tex,local_ai_discovery
+from material_folders import folder_patterns
 from runtime_paths import registered_suite as suite_root,canonical_settings_root as settings_root
-# Keep the existing settings IDs while folders and public names evolve.
+# Resolve the installed app catalog before selecting the settings context.
 from app_catalog import catalog
 APP_SPECS,SUITE_TITLES=catalog()
 APPS={key:value['name'] for key,value in APP_SPECS.items()}
 SUITE_APPS={suite:tuple(key for key,value in APP_SPECS.items() if value['suite']==suite) for suite in ('professional','personal')}
 
-PAGES=('app','appearance','ai','storage')
-SETTINGS_UI_VERSION=4
+PAGES=('app','appearance','ai','tex','storage')
+SETTINGS_UI_VERSION=8
 SECRET=re.compile(r'password|secret|credential|access_token|refresh_token|api_key',re.I)
 
 
@@ -45,7 +48,7 @@ def path_fields(value,prefix=None):
 
 def pick_setting(settings,webview,app,document,path,current=None):
  if not isinstance(path,list) or not 1<=len(path)<=12 or any(not isinstance(k,str) or len(k)>100 or SECRET.search(k) for k in path):raise ValueError('Choose a displayed path setting.')
- config=settings.configuration(app);doc=next((d for d in config['documents'] if d['id']==document),None)
+ config={'documents':[shared_tex.document(settings.root)]} if app=='shared' and document=='shared-tex' else settings.configuration(app);doc=next((d for d in config['documents'] if d['id']==document),None)
  if not doc:raise ValueError('Choose a displayed settings section.')
  value=doc['value']
  for key in path:
@@ -55,11 +58,11 @@ def pick_setting(settings,webview,app,document,path,current=None):
  if not kind:raise ValueError('That setting is not a folder or file.')
  if current is not None and (not isinstance(current,str) or len(current)>2000 or '\x00' in current):raise ValueError('Use a valid path.')
  value=current if current is not None else value if isinstance(value,str) else ''
- initial=Path(value) if value else settings.app(app);suffix=()
+ initial=Path(value) if value else settings.root if app=='shared' else settings.app(app);suffix=()
  if kind=='folder':
   for i,part in enumerate(initial.parts):
    if re.search(r'\[(?:course|semester|term|year)\]|\{(?:course|semester|term|year)\}',part,re.I):suffix=initial.parts[i:];initial=Path(*initial.parts[:i]);break
- if not initial.is_absolute():initial=settings.app(app)/initial
+ if not initial.is_absolute():initial=(settings.root if app=='shared' else settings.app(app))/initial
  if kind=='file':initial=initial.parent
  for _ in range(30):
   if initial.is_dir() or initial==initial.parent:break
@@ -83,8 +86,11 @@ def editable_settings(ident,key,value):
  """Expose new default folder rules without changing the stored settings on read."""
  value=copy.deepcopy(value)
  if ident=='whiz' and key=='app' and isinstance(value.get('publish_patterns'),dict):
-  for patterns in value['publish_patterns'].values():
-   if isinstance(patterns,dict):patterns.setdefault('Final Exam',str(Path('[root]')/'[semester]'))
+  for course in set(value['publish_patterns'])|set(value.get('publish_folders',{})):
+   patterns=value['publish_patterns'].setdefault(course,{})
+   if isinstance(patterns,dict):
+    for kind,folder in [('Final Exam','[semester]'),('Support','Support'),('Coordination','Coordination')]:patterns.setdefault(kind,str(Path('[root]')/folder))
+    value['publish_patterns'][course]=folder_patterns(course,patterns)
  return value
 
 
@@ -140,7 +146,7 @@ class Settings:
   self.account=chatgpt_account.Account(app_directory(self.root,selected if not APP_SPECS[selected].get('entry') else 'whiz'))
  def context(self):
   suite='personal' if SUITE_APPS['personal'] else 'professional'
-  return {'suite':suite,'title':SUITE_TITLES.get(suite,'G-Works')+' Settings','aiShared':True,'apps':[{'id':key,'name':APPS[key],'installed':installed_app(app_directory(self.root,key),key),'externalSettings':bool(APP_SPECS[key].get('external_settings'))} for key in APPS]}
+  return {'suite':suite,'title':SUITE_TITLES.get(suite,'G-Works')+' Settings','aiShared':True,'sharedPalette':appearance.palette('signature',SUITE_TITLES.get(suite,'G-Works')),'apps':[{'id':key,'name':APPS[key],'installed':installed_app(app_directory(self.root,key),key),'externalSettings':bool(APP_SPECS[key].get('external_settings'))} for key in APPS]}
  def app(self,ident):
   path=app_directory(self.root,ident)
   if not installed_app(path,ident):raise ValueError('That app is not installed.')
@@ -159,14 +165,14 @@ class Settings:
   if isinstance(value,list):return [self.safe(v) for v in value]
   return value
  def configuration(self,ident):
-  if APP_SPECS[ident].get('external_settings'):self.app(ident);return {'app':ident,'name':APPS[ident],'externalSettings':True,'appearance':None,'documents':[]}
+  if APP_SPECS[ident].get('external_settings'):root=self.app(ident);return {'app':ident,'name':APPS[ident],'externalSettings':True,'appearance':appearance.info(appearance.load(root),APPS[ident]),'documents':[]}
   root=self.app(ident);docs=[]
   for key,(name,path) in self.documents(ident).items():
    raw=path.read_bytes() if path.is_file() else b'{}'
    if len(raw)>250000:continue
    value=editable_settings(ident,key,json.loads(raw.decode('utf-8-sig')))
    if ident=='vault' and key in ('recommendations','integrity'):value=shared_signature.apply(value,root)
-   docs.append({'id':key,'name':name,'value':self.safe(value),'paths':path_fields(self.safe(value)),'hash':hashlib.sha256(raw).hexdigest()})
+   docs.append({'id':key,'app':ident,'name':name,'value':self.safe(value),'paths':path_fields(self.safe(value)),'hash':hashlib.sha256(raw).hexdigest()})
   return {'app':ident,'name':APPS[ident],'appearance':appearance.info(appearance.load(root),APPS[ident]),'documents':docs}
  def external_settings(self,ident):
   spec=APP_SPECS.get(ident,{})
@@ -193,6 +199,7 @@ class Settings:
     result[k]=merge(prior[k],v)
    return result
   merged=merge(old,new)
+  if ident=='vault' and key=='recommendations' and (type(merged.get('academic_year_start_month',9)) is not int or not 1<=merged.get('academic_year_start_month',9)<=12):raise ValueError('Choose an academic-year start month from 1 to 12.')
   if APP_SPECS[ident].get('folder_settings') and key=='app' and (not isinstance(merged.get('media_root'),str) or not Path(merged['media_root']).is_absolute()):raise ValueError('Choose an absolute media folder.')
   if ident=='vault' and key in ('recommendations','integrity') and merged.get('signature_file')!=shared_signature.current(self.app('vault')):shared_signature.save(merged['signature_file'],self.app('vault'))
   path.parent.mkdir(parents=True,exist_ok=True);temp=path.with_name(path.name+'.'+secrets.token_hex(6)+'.tmp')
@@ -222,16 +229,16 @@ class Settings:
   import local_ai
   local=local_ai_config.settings(self.root/'Shared/Settings/local-ai.json')
   return {'local':local,'localModelName':local_ai.model_display_name(local['model'],local['provider']),'general':general_ai.settings(self.root/'Apps/G-Whiz'),'account':self.account.status()}
- def local_models(self):
+ def local_models(self,connection=None):
   import local_ai
-  config=local_ai_config.settings(self.root/'Shared/Settings/local-ai.json');items=local_ai_config.request('/api/tags',timeout=3,config=config).get('models',[]);choices={}
+  config=local_ai_discovery.connection(connection.get('provider'),connection.get('url')) if connection is not None else local_ai_config.settings(self.root/'Shared/Settings/local-ai.json');items=local_ai_config.request('/api/tags',timeout=3,config=config).get('models',[]);choices={}
   items.sort(key=lambda m:m.get('name')!=config['model'])
   for m in items:
    name=m.get('name','')
    if not re.fullmatch(r'[A-Za-z0-9_.:/-]{1,160}',name) or 'cloud' in name.lower():continue
    key=m.get('digest') or name
    if key not in choices:choices[key]={'id':name,'label':local_ai.model_display_name(name,config['provider'])}
-  if not any(m['id']==config['model'] for m in choices.values()):choices['configured']={'id':config['model'],'label':local_ai.model_display_name(config['model'],config['provider'])}
+  if connection is None and not any(m['id']==config['model'] for m in choices.values()):choices['configured']={'id':config['model'],'label':local_ai.model_display_name(config['model'],config['provider'])}
   return {'models':list(choices.values())}
 
  def idle(self):
@@ -262,9 +269,12 @@ def make_server(settings,port=0):
     if url.path=='/api/bootstrap':return self.send(200,{'service':'GWorksSettings','uiVersion':SETTINGS_UI_VERSION,'root':str(settings.root),'token':token,'selected':settings.pending_app or settings.selected,'selectedPage':settings.pending_page or settings.selected_page,'requested':settings.pending_app,'requestedPage':settings.pending_page,'requestRevision':settings.show_revision,**settings.context()})
     if url.path=='/api/app':return self.send(200,settings.configuration(query.get('app',[settings.selected])[0]))
     if url.path=='/api/ai':return self.send(200,settings.ai())
+    if url.path=='/api/tex':return self.send(200,shared_tex.document(settings.root))
+    if url.path=='/api/tex/detect':return self.send(200,{'installations':shared_tex.discover(settings.root)})
     if url.path=='/api/local-models':return self.send(200,settings.local_models())
+    if url.path=='/api/local-detect':return self.send(200,{'servers':local_ai_discovery.discover(local_ai_config.settings(settings.root/'Shared/Settings/local-ai.json'))})
     if url.path=='/api/scan-storage':return self.send(200,settings.scope_storage('options'))
-    assets={'/':'settings-center.html','/settings-center.js':'settings-center.js','/settings-center.css':'settings-center.css'}
+    assets={'/':'settings-center.html','/settings-center.js':'settings-center.js','/settings-center.css':'settings-center.css','/dialogs.js':'dialogs.js'}
     if url.path in assets:
      file=HERE/'Desktop'/assets[url.path];return self.send(200,file.read_bytes(),mimetypes.guess_type(file.name)[0]+'; charset=utf-8')
     self.send(404,{'error':'That settings page is unavailable.'})
@@ -290,8 +300,9 @@ def make_server(settings,port=0):
       return self.send(200,{'updated':current})
      if path=='/api/external-settings':return self.send(200,settings.external_settings(data.get('app')))
      if path=='/api/app':return self.send(200,settings.save_document(data))
+     if path=='/api/tex':settings.idle();return self.send(200,shared_tex.save(settings.root,data))
+     if path=='/api/local-models':return self.send(200,settings.local_models(data))
      if path=='/api/appearance':
-      if APP_SPECS.get(data.get('app'),{}).get('external_settings'):raise ValueError('Open this app’s settings to change its appearance.')
       appearance.save(settings.app(data.get('app')),data.get('theme'));return self.send(200,settings.configuration(data['app']))
      if path=='/api/local-ai':
       settings.idle();value=local_ai_config.save(data,settings.root/'Shared/Settings/local-ai.json');return self.send(200,{'saved':True,'configuration':value})

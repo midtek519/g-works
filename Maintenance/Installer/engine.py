@@ -597,14 +597,15 @@ def install_app(transaction, unpacked, app):
     if (unpacked / 'App').is_dir():
         trees.append((unpacked / 'App', prefix + 'App', False))
     if (unpacked / 'LocalTools').is_dir():
-        for name in ('App', 'site', 'companions/Application/extension'):
+        for name in ('App', 'site'):
             child = unpacked / 'LocalTools' / name
             if child.is_dir():
                 trees.append((child, 'Application/' + name, False))
-    if (unpacked / 'Tools').exists() and app == 'scope':
-        trees.append((unpacked / 'Tools/Rubric Lens/extension', prefix + 'Tools/Rubric Lens/extension', False))
-    if (unpacked / 'Tools').exists() and app == 'whiz':
-        trees.append((unpacked / 'Tools/Course Organizer/extension', prefix + 'Tools/Course Organizer/extension', False))
+    companion = {'whiz': 'G-View', 'scope': 'G-Rater', 'vault': 'G-Report', 'willikers': 'Application'}.get(app)
+    if companion:
+        relative = 'Companions/' + companion + '/extension'
+        if (unpacked / relative).is_dir():
+            trees.append((unpacked / relative, prefix + relative, False))
     content = unpacked / 'Content'
     if content.exists():
         for child in content.iterdir():
@@ -629,11 +630,7 @@ def install_app(transaction, unpacked, app):
                                 shutil.copytree(old, fresh)
                             else:
                                 shutil.copy2(old, fresh)
-                extension = {'Grader/Rubric Lens': 'extension', 'Integrity/Form Autofill': 'Chrome Extension'}.get(module.name + '/' + child.name)
-                if extension:
-                    trees.append((child / extension, relative + '/' + extension, False))
-                else:
-                    trees.append((child, relative, False))
+                trees.append((child, relative, False))
     covered = [relative + '/' for _, relative, _ in trees]
     for source, relative, seed in files:
         if not any((relative.startswith(part) for part in covered)):
@@ -666,18 +663,18 @@ def app_files(unpacked, app):
             yield (file, 'Apps/Application/app.json', False)
         elif first == 'App':
             yield (file, 'Apps/' + APPS[app] + '/App/' + name, False)
-        elif first == 'LocalTools' and app == 'willikers' and (rel.parts[1] in ('App', 'site') or name == 'THIRD-PARTY-NOTICES.txt' or name in ('scripts/open_party_test.ps1', 'scripts/stop_party_test.ps1') or (name in {'party/' + n for n in ('api.mjs', 'backup.mjs', 'd1-store.mjs', 'domain.mjs', 'local-server.mjs', 'sqlite-store.mjs', 'roll20-exporter.js')}) or (name in {'companions/Application/' + n for n in ('setup.py', 'setup.html', 'setup.mjs', 'Application.ico', 'icon.svg')}) or (name.startswith('companions/Application/extension/') and file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.ico', '.txt'))):
+        elif first == 'LocalTools' and app == 'willikers' and (rel.parts[1] in ('App', 'site') or name == 'THIRD-PARTY-NOTICES.txt' or name in ('scripts/open_party_test.ps1', 'scripts/stop_party_test.ps1') or (name in {'party/' + n for n in ('api.mjs', 'backup.mjs', 'd1-store.mjs', 'domain.mjs', 'local-server.mjs', 'sqlite-store.mjs', 'roll20-exporter.js')})):
             yield (file, 'Application/' + name, False)
-        elif first == 'Tools' and app == 'whiz' and (len(rel.parts) > 3) and (tuple(rel.parts[1:3]) == ('Course Organizer', 'extension')) and (file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.txt', '.ico')):
-            yield (file, 'Apps/G-Whiz/Tools/' + name, False)
-        elif first == 'Tools' and app == 'scope' and (len(rel.parts) > 3) and (tuple(rel.parts[1:3]) == ('Rubric Lens', 'extension')) and (file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.txt')):
-            yield (file, 'Apps/G-Scope/Tools/' + name, False)
+        elif first == 'Companions' and len(rel.parts) > 3 and (rel.parts[1] == {'whiz': 'G-View', 'scope': 'G-Rater', 'vault': 'G-Report', 'willikers': 'Application'}.get(app)) and (rel.parts[2] == 'extension') and (file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.txt', '.ico')):
+            yield (file, 'Apps/' + APPS[app] + '/Companions/' + name, False)
+        elif first == 'Companions' and app == 'willikers' and (name in {'Application/' + n for n in ('setup.py', 'setup.html', 'setup.mjs', 'Application.ico', 'icon.svg')}):
+            yield (file, 'Apps/Application/Companions/' + name, False)
         elif first == 'Seed':
             yield (file, 'Apps/' + APPS[app] + '/Data/' + name, True)
         elif first == 'Content' and rel.parts[1] in ('mh-git', 'dnd-git', 'Question Bank'):
             prefix = 'Data/' if rel.parts[1] == 'Question Bank' else ''
             yield (file, 'Apps/' + APPS[app] + '/' + prefix + name, True)
-        elif first == 'Modules' and app == 'vault' and (len(rel.parts) > 4 and rel.parts[1] in ('Grader', 'Recommendations', 'Integrity') and (rel.parts[2] == 'tools') and (rel.parts[3] in ('App', 'vendor')) or (len(rel.parts) > 3 and rel.parts[1] == 'Math135' and (rel.parts[2] == 'App')) or (len(rel.parts) > 5 and tuple(rel.parts[1:5]) in {('Grader', 'tools', 'Rubric Lens', 'extension'), ('Integrity', 'tools', 'Form Autofill', 'Chrome Extension')} and (file.suffix.lower() in ('.js', '.json', '.html', '.css', '.png', '.svg', '.txt')))):
+        elif first == 'Modules' and app == 'vault' and (len(rel.parts) > 4 and rel.parts[1] in ('Recommendations', 'Integrity') and (rel.parts[2] == 'tools') and (rel.parts[3] in ('App', 'vendor')) or (len(rel.parts) > 3 and rel.parts[1] == 'Math135' and (rel.parts[2] == 'App'))):
             yield (file, 'Apps/G-Vault/Data/PrivateModules/' + name, False)
         elif first == 'Framework' and app == 'vault' and (file.suffix.lower() in ('.py', '.cls', '.sty')):
             yield (file, 'Apps/G-Vault/Data/PrivateSource/' + name, False)

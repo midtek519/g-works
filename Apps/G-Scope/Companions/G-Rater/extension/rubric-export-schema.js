@@ -12,7 +12,7 @@ const same=(a,b)=>{
 };
 export function validateRubric(value){
  const base=['format','version','title','text'];
- if(!exact(value,value?.version===2?[...base,'outline','questions']:base)||value.format!=='rubric-lens-rubric-export'||![1,2].includes(value.version))fail();
+ if(!exact(value,value?.version===2?[...base,'outline','questions']:base)||value.format!=='g-rater-rubric-export'||![1,2].includes(value.version))fail();
  if(!string(value.title,160,true)||!string(value.text,200000))fail();
  if(value.version===1)return {...value,title:value.title.trim()||'Untitled rubric',text:value.text.trim()};
  const {outline,questions}=value;

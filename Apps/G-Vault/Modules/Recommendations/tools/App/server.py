@@ -61,7 +61,7 @@ def make_server(store,port=0):
                 if path=='/api/grades/records':
                     ruid=query.get('ruid',[''])[0]
                     if not __import__('re').fullmatch(r'\d{9}',ruid):raise ValueError('Use a nine-digit RUID to load local course records.')
-                    return self.respond(200,grades.student_records(store.grade_database(query.get('course',[''])[0]),ruid))
+                    return self.respond(200,grades.student_records(store.grade_database(query.get('course',[''])[0]),ruid,store.settings.get('academic_year_start_month',9)))
                 if __import__('re').fullmatch(r'/api/students/REC-\d{4,8}/course-suggestions',path):return self.respond(200,store.course_suggestions(path.split('/')[3]))
                 if path.startswith('/api/students/'):return self.respond(200,store.student(path.rsplit('/',1)[1]))
                 if path.startswith('/api/letters/'):return self.respond(200,store.letter(path.rsplit('/',1)[1]))

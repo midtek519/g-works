@@ -11,7 +11,7 @@ export function gradingContext(address){
 }
 export function validateBatch(raw){
   if(JSON.stringify(raw).length>3_000_000)throw new Error('Use a suggestions JSON file smaller than 3 MB.');
-  if(!keys(raw,['format','version','batchId','created','snapshotHash','exam','model','modelDigest','rubricHash','questions','booklets','entries','complete','mappingRequired','identityMatching'])||raw.format!=='rubric-lens-batch'||![1,2].includes(raw.version)||!hex.test(raw.batchId)||!sha.test(raw.snapshotHash)||!sha.test(raw.rubricHash))throw new Error('Choose a Grader suggestions JSON file (format version 1 or 2).');
+  if(!keys(raw,['format','version','batchId','created','snapshotHash','exam','model','modelDigest','rubricHash','questions','booklets','entries','complete','mappingRequired','identityMatching'])||raw.format!=='g-rater-batch'||![1,2].includes(raw.version)||!hex.test(raw.batchId)||!sha.test(raw.snapshotHash)||!sha.test(raw.rubricHash))throw new Error('Choose a Grader suggestions JSON file (format version 1 or 2).');
   if(!keys(raw.exam,['course','term','exam','version'])||!['course','term','exam','version'].every(k=>text(raw.exam[k],160)))throw new Error('The exam metadata is invalid.');
   if(!Array.isArray(raw.questions)||!raw.questions.length||raw.questions.length>100||raw.questions.some(q=>!keys(q,['key','title','selectionMode','number','versionLabel'])||!text(q.key,raw.version===2?80:40)||!/^[A-Za-z0-9_.()-]+$/.test(q.key)||!text(q.title,240)||!['one','all'].includes(q.selectionMode)))throw new Error('The question list is invalid.');
   if(new Set(raw.questions.map(q=>q.key)).size!==raw.questions.length)throw new Error('Question labels must be distinct.');

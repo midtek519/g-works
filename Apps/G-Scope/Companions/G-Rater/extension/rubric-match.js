@@ -1,6 +1,6 @@
 // Runs only after a requested analysis. Inspect rendered rubric text locally,
 // only for elements whose bounds fit inside the approved rubric rectangle.
-globalThis.__rubricLensFindRubric = function(region, description, points) {
+globalThis.__gRaterFindRubric = function(region, description, points) {
   if (!region || !description || !Number.isFinite(points)) return null;
   const normalize = s => String(s).normalize('NFKC').replace(/\u2212/g,'-').replace(/\s+/g,' ').trim().toLowerCase();
   const withoutLabel = s => normalize(s).replace(/^[+-]?\s*\d+(?:\.\d+)?\s*(?:points?|pts?)\s*/,'').replace(/^[a-z]\s*[:.)-]\s*/,'');

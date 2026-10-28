@@ -38,7 +38,7 @@
   if (params.get("action") === "reload") {
     reload.hidden = false;
     if (location.hash === "#requested") {
-      status.textContent = name + " is running · version " + manifest.version + ".";
+      status.textContent = name + " is running · version " + (manifest.version_name || manifest.version) + ".";
     } else requestReload();
   } else manager();
 })();

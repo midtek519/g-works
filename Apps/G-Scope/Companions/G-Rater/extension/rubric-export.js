@@ -1,5 +1,5 @@
 (() => {
-  const id='rubric-lens-export-host';if(document.getElementById(id))return;
+  const id='g-rater-export-host';if(document.getElementById(id))return;
   const host=document.createElement('div');host.id=id;
   host.style.cssText='all:initial;position:fixed;z-index:2147483647;top:16px;right:16px;width:min(560px,calc(100vw - 32px));';
   const root=host.attachShadow({mode:'closed'});
@@ -26,7 +26,7 @@
     if(![...document.querySelectorAll('h1,h2,h3')].some(el=>/^Create\s+Rubric$/i.test(el.textContent.trim())))throw Error('Open the assignment’s Create Rubric page first.');
   }
   function review(){
-    const errors=draft?RubricLensExport.issues(draft):[];
+    const errors=draft?GRaterExport.issues(draft):[];
     $('warnings').hidden=!errors.length;$('warnings').innerHTML=errors.map(e=>'<li>'+esc(e)+'</li>').join('');
     $('rule-controls').hidden=!draft?.questions.some(q=>q.groups.some(g=>g.selectionMode==='unknown'));
     $('preview').hidden=!draft;$('preview').open=!!draft;
@@ -35,7 +35,7 @@
     $('summary').textContent=draft.questions.length+' graded parts · '+count+' rubric items · '+draft.questions.reduce((n,q)=>n+(q.maxPoints||0),0)+' points';
     $('review').innerHTML=draft.questions.map((q,qi)=>'<div class="question"><h3>'+esc(q.key)+' · '+esc(q.title)+' · '+esc(q.maxPoints??'?')+' points</h3>'+q.groups.map((g,gi)=>'<label>Group '+(gi+1)+' selection rule<select data-question="'+qi+'" data-group="'+gi+'">'+[['unknown','Confirm rule…'],['one','Select one'],['all','Select many']].map(([v,t])=>'<option value="'+v+'" '+(v===g.selectionMode?'selected':'')+'>'+t+'</option>').join('')+'</select></label><p class="note">'+esc(g.description)+'</p><ul class="criteria">'+g.items.map(i=>'<li>'+esc(i.points??'?')+' points · '+esc(i.description)+'</li>').join('')+'</ul>').join('')+'</div>').join('');
   }
-  function suggest(){const value=RubricLensExport.suggestedTitle(document);$('title').placeholder=value||'Course - Assignment - Semester';return value;}
+  function suggest(){const value=GRaterExport.suggestedTitle(document);$('title').placeholder=value||'Course - Assignment - Semester';return value;}
   function clear(){generation++;draft=null;previewSignature=null;manualRules.clear();$('title').value='';$('default-rule').value='';review();suggest();update();message('Cleared. Extract rubric will read the current page again.');}
   $('clear').onclick=clear;$('close').onclick=()=>{generation++;host.remove();};
   $('review').onchange=event=>{const el=event.target,q=draft?.questions[Number(el.dataset.question)],g=q?.groups[Number(el.dataset.group)];if(!g||!['one','all'].includes(el.value))return;manualRules.set(fingerprint(q,g),el.value);g.selectionMode=el.value;previewSignature=JSON.stringify([location.pathname,draft]);review();update();};
@@ -46,10 +46,10 @@
       checkPage();const editors=[...document.querySelectorAll('.rubricEditor')];if(editors.length!==1)throw Error('Could not isolate the rubric editor. Use Grid View on Create Rubric.');
       const section=editors[0],guard=()=>{checkPage();if(currentGeneration!==generation||path!==location.pathname||document.querySelectorAll('.rubricEditor').length!==1||document.querySelectorAll('.rubricEditor')[0]!==section)throw Error('The page changed. Extract the rubric again.');};
       message('Reading the current rubric…');
-      const value=await RubricLensExport.readWithSettings(section,guard,(i,n)=>message('Reading selection settings: '+i+' of '+n+'…'));
+      const value=await GRaterExport.readWithSettings(section,guard,(i,n)=>message('Reading selection settings: '+i+' of '+n+'…'));
       guard();draft=value;
       for(const q of draft.questions)for(const g of q.groups)if(g.selectionMode==='unknown'&&manualRules.has(fingerprint(q,g)))g.selectionMode=manualRules.get(fingerprint(q,g));
-      review();const issues=RubricLensExport.issues(draft);if(issues.length){previewSignature=null;throw Error('Not saved. '+issues[0]);}
+      review();const issues=GRaterExport.issues(draft);if(issues.length){previewSignature=null;throw Error('Not saved. '+issues[0]);}
       const title=$('title').value.trim()||suggest();if(!title)throw Error('Enter a rubric title; the page does not expose a complete course, assignment and semester.');
       const signature=JSON.stringify([path,draft]);
       if(!reviewed||reviewed!==signature){
@@ -57,8 +57,8 @@
         message(reviewed?'The rubric changed. Review the updated preview below, then Confirm and save. Nothing has been saved yet.':'Review the rubric preview below, then click Confirm and save. Nothing has been saved yet.');
         $('preview').scrollIntoView?.({block:'nearest'});return;
       }
-      const rubric=RubricLensExport.exportData(draft,title);guard();$('save-library').textContent='Saving…';message('Saving locally for G-Scope…');
-      const result=await chrome.runtime.sendMessage({app:'rubric-lens',type:'rubric-save',rubric});
+      const rubric=GRaterExport.exportData(draft,title);guard();$('save-library').textContent='Saving…';message('Saving locally for G-Scope…');
+      const result=await chrome.runtime.sendMessage({app:'g-rater',type:'rubric-save',rubric});
       if(!result?.ok||result.saved!==true)throw Error(result?.error||'Chrome did not confirm the rubric save.');
       if(currentGeneration===generation){previewSignature=null;message('Saved “'+result.rubric.title+'”. In G-Scope → Rubrics → Saved G-Rater export, click Refresh.');}
     }catch(e){if(currentGeneration===generation)message(e.message,true);}finally{busy=false;update();}

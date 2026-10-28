@@ -5,7 +5,7 @@ import hashlib,http.client,json,os,re,secrets,socket,threading,urllib.request,ur
 from contextlib import contextmanager
 from runtime_paths import settings_directory
 CONFIG_PATH=settings_directory()/'local-ai.json'
-BUILTIN_MODEL='rubric-lens-qwen35:27b-20261022'
+BUILTIN_MODEL='G-Scope:27b'
 DEFAULT={'provider':'ollama','url':'http://127.0.0.1:11434','model':BUILTIN_MODEL,'revision':'','vision':True}
 def validate(data):
     if not isinstance(data,dict) or set(data)!=set(DEFAULT):raise ValueError('Use the local AI connection fields.')

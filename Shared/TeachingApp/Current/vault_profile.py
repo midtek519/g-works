@@ -19,6 +19,7 @@ def initialize_library(root, module, app_root):
     settings = json.loads(settings_path.read_text('utf-8-sig')) if settings_path.exists() else {}
     if module == 'recommendations':
         settings.setdefault('grade_database', '')
+        settings.setdefault('academic_year_start_month', 9)
         settings.setdefault('mh_git', str(framework))
         settings.setdefault('pdflatex', str(runtime))
         settings.setdefault('source_layout', 'consolidated')

@@ -1,6 +1,6 @@
 /* Rubric-definition DOM only. Reads selection-radio state on demand; only settings gears may be clicked. */
 (() => {
-  if(globalThis.RubricLensExport)return;
+  if(globalThis.GRaterExport)return;
   const all=(root,selector)=>[...root.querySelectorAll(selector)];
   const one=(root,selector)=>root.querySelector(selector);
   const has=(node,name)=>node?.classList?.contains(name);
@@ -171,7 +171,7 @@
   function exportData(draft,title){
     const errors=issues(draft);if(errors.length)throw Error(errors[0]);
     const data={outline:draft.outline,questions:draft.questions};
-    return {format:'rubric-lens-rubric-export',version:2,title:title.trim(),text:JSON.stringify(data,null,2),...data};
+    return {format:'g-rater-rubric-export',version:2,title:title.trim(),text:JSON.stringify(data,null,2),...data};
   }
-  globalThis.RubricLensExport=Object.freeze({read,readWithSettings,suggestedTitle,issues,exportData});
+  globalThis.GRaterExport=Object.freeze({read,readWithSettings,suggestedTitle,issues,exportData});
 })();

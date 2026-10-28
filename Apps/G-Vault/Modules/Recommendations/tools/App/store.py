@@ -11,6 +11,7 @@ _shared_ui=(Path(__file__).resolve().parents[5]/'Dependencies/TeachingApp').reso
 if (_shared_ui/'shared_signature.py').is_file():
     sys.path.insert(0,str(_shared_ui))
     import shared_signature
+    import shared_tex
 else:shared_signature=None
 
 NOTE_EXTENSIONS={'.pdf','.docx','.png','.jpg','.jpeg','.webp','.note','.ntb','.txt'}
@@ -64,7 +65,7 @@ class Store:
     def __init__(self,root):
         self.root=Path(root).resolve();self.tools=self.root/'tools'
         self.config_path=self.tools/'settings.json';self.profile_path=self.tools/'author-profile.json'
-        self.settings=read_json(self.config_path,{'grade_database':'','mh_git':str(Path(__file__).resolve().parents[5]/'Data/PrivateSource'),'pdflatex':str(Path(__file__).resolve().parents[5]/'Dependencies/texlive/bin/windows/pdflatex.exe'),'academic_year_start_month':7})
+        self.settings=read_json(self.config_path,{'grade_database':'','mh_git':str(Path(__file__).resolve().parents[5]/'Data/PrivateSource'),'pdflatex':str(Path(__file__).resolve().parents[5]/'Dependencies/texlive/bin/windows/pdflatex.exe'),'academic_year_start_month':9})
         records_name=self.settings.get('records_root')or('Records'if(self.root/'Records').is_dir()else'Students')
         if records_name not in ('Records','Students'):raise ValueError('Choose the standard local records folder.')
         self.students_root=self.root/records_name;self.lock=threading.RLock()
@@ -217,7 +218,7 @@ class Store:
         result['archive_files']=[r for r in self.archive_data()['files']if r.get('student_id')==identity]
         result['grades']={'records':[],'attempts':0,'notes':[]}
         if result.get('ruid')and result['person_type']=='student':
-            try:result['grades']=grades.student_records(self.grade_database(result.get('grade_course_id','')),result['ruid'])
+            try:result['grades']=grades.student_records(self.grade_database(result.get('grade_course_id','')),result['ruid'],self.settings.get('academic_year_start_month',9))
             except (grades.GradesUnavailableError,ValueError) as exc:result['grades']['notes']=[str(exc)]
         result['grade_course_name']=next((r['name'] for r in self.grade_databases() if r['id']==result.get('grade_course_id')),'Linked course')
         return result
@@ -661,7 +662,7 @@ class Store:
             if final and any(re.search(r'\[[A-Z][A-Z0-9 _-]{1,60}\]',v)for v in [*data['recipient_lines'],data['date'],data['salutation']]):raise ValueError('Complete recipient and date placeholders before signing.')
             repo=Path(self.settings.get('mh_git',''));renderer=repo/'professional-correspondence/recommendations/render_letter.py'
             if not renderer.is_file():raise ValueError('The mh-git recommendation renderer is unavailable. Check Writing Preferences.')
-            executable=Path(self.settings.get('pdflatex',''))
+            executable=Path(shared_tex.executable(Path(__file__).resolve().parents[5],'pdflatex',self.settings.get('pdflatex','')))
             if not executable.is_file():raise ValueError('The local PDF compiler is unavailable. Check Writing Preferences.')
             spec=importlib.util.spec_from_file_location('mh_recommendation_renderer',renderer);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
             source=module.render(data,profile,self.profile_path.parent,final=final)
