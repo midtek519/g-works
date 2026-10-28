@@ -1,1 +1,1 @@
-[assembly:System.Reflection.AssemblyVersion("1.0.0.3")][assembly:System.Reflection.AssemblyFileVersion("1.0.0.3")][assembly:System.Reflection.AssemblyInformationalVersion("1.0.0-beta.3")]
+[assembly:System.Reflection.AssemblyVersion("1.0.0.3")][assembly:System.Reflection.AssemblyFileVersion("1.0.0.3")][assembly:System.Reflection.AssemblyInformationalVersion("1.0.0-beta.3.1")]

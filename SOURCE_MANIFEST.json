@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "release": "1.0.0-beta.3",
+  "release": "1.0.0-beta.3.1",
   "policy": "public-program-source-only",
   "included": [
     "professional program code",
@@ -19,31 +19,31 @@
   "source_archives": [
     {
       "name": "bootstrap-public.zip",
-      "sha256": "0a4ce64c2edac6aa5790bd40f090ca80c46fe7baa8371f14b256ebc49a45ccab"
+      "sha256": "516c20fcaf460077e51966c9cd0bc79e5b52a8e77c7613c79562e5ad1b56a96f"
     },
     {
-      "name": "scope-1.0.0-beta.3.zip",
-      "sha256": "ac02026559a36392c3b4ac1f716a240cb6238ec44d6eb77a041261da333ae359"
+      "name": "scope-1.0.0-beta.3.1.zip",
+      "sha256": "e1877bbd7a9520847e474131591b29fd9bddb152252086c045e2be557e3090d1"
     },
     {
       "name": "shared-commands.zip",
-      "sha256": "694b2b045ccca56f0176988343e0bca6c83df3322833820ac66c92d362260b41"
+      "sha256": "2f58f2c3b9b9e4f1aa9fbe0cae7dc43038ab9c39d6ed9706b2484888f16ad693"
     },
     {
       "name": "shared-teaching-app.zip",
-      "sha256": "301de9d11a42aa917b445e63586bce88e7335420ee35abe3117f116e7405123b"
+      "sha256": "09589b83c628bd61da27c128c3e429c85c90ad35eed5139f6f7a14ea48538b64"
     },
     {
       "name": "teaching-support.zip",
-      "sha256": "2f1d428bb19bf7dc27612bb65f4e8be22cf4bf004d5cab4d48dc66aa8d27b060"
+      "sha256": "9f4ba8a70d5c4951359ef09bd14c2e89fdf44a3e7a9f6daae8b18b1379f6f760"
     },
     {
-      "name": "vault-1.0.0-beta.3.zip",
-      "sha256": "f6bd30a085aebf8fd01d819ba87052b3318b3eef52c4f089169bdaf24b9340b3"
+      "name": "vault-1.0.0-beta.3.1.zip",
+      "sha256": "382356f7c50a8b107c4536f15d2ddfbc1169e8b101da940f385709bc934ef528"
     },
     {
-      "name": "whiz-1.0.0-beta.3.zip",
-      "sha256": "63cbef5f54b0aec3cce756de39cc8c8ba5619d1f63f2c5e00de7e71a21591e8f"
+      "name": "whiz-1.0.0-beta.3.1.zip",
+      "sha256": "5f450ae1fd1f46d0c36ca4791612cc3972d1e0c6dbe31044719adb21a930c3a3"
     }
   ],
   "files": [
@@ -57,1393 +57,1393 @@
       "path": "Apps/G-Scope/App/Desktop/desktop.py",
       "sha256": "7fdee3d8ecfdbf25f198b100c5970f35ff236a3608e0e695faa53221087960d1",
       "bytes": 14489,
-      "source": "scope-1.0.0-beta.3.zip!App/Desktop/desktop.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/Desktop/desktop.py"
     },
     {
       "path": "Apps/G-Scope/App/Launch.ps1",
       "sha256": "059860d8a590bea0802a3b0a958e755e848f65285e2e2982ea1a8189e3ed90eb",
       "bytes": 871,
-      "source": "scope-1.0.0-beta.3.zip!App/Launch.ps1"
+      "source": "scope-1.0.0-beta.3.1.zip!App/Launch.ps1"
     },
     {
       "path": "Apps/G-Scope/App/answer_context.py",
       "sha256": "88454ee107c958cba3469c354ff423c7468837aad5fe62797d1896de912ee9f1",
       "bytes": 5426,
-      "source": "scope-1.0.0-beta.3.zip!App/answer_context.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/answer_context.py"
     },
     {
       "path": "Apps/G-Scope/App/answer_groups.py",
       "sha256": "b4953e4f0832b848a09c3111ca77efcce487672bdfcdd68bf2dc5a398ee82ec5",
       "bytes": 19852,
-      "source": "scope-1.0.0-beta.3.zip!App/answer_groups.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/answer_groups.py"
     },
     {
       "path": "Apps/G-Scope/App/answer_keys.py",
       "sha256": "bda1f4539bb9ee6c63b3982d569e5f39a7c8a51308ff08ca0b8516192ebf7f80",
       "bytes": 36392,
-      "source": "scope-1.0.0-beta.3.zip!App/answer_keys.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/answer_keys.py"
     },
     {
       "path": "Apps/G-Scope/App/choice_key_sources.py",
       "sha256": "c01ca8f7c9411230811edde6f73e8b83126d2fa6d8f98925ba80be4295a4a0e7",
       "bytes": 6494,
-      "source": "scope-1.0.0-beta.3.zip!App/choice_key_sources.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/choice_key_sources.py"
     },
     {
       "path": "Apps/G-Scope/App/choice_marks.py",
       "sha256": "45c33aa58b595e88b3f0d40ee4fd79bcc23065e007d8e487295255931ab3457d",
       "bytes": 12154,
-      "source": "scope-1.0.0-beta.3.zip!App/choice_marks.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/choice_marks.py"
     },
     {
       "path": "Apps/G-Scope/App/consistency.py",
       "sha256": "3393cd4a1312b0cfb8b238f0a6a1edc91e8f688170cce12cd557cc2c1dee6462",
       "bytes": 27520,
-      "source": "scope-1.0.0-beta.3.zip!App/consistency.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/consistency.py"
     },
     {
       "path": "Apps/G-Scope/App/extension_setup.py",
       "sha256": "b1d4f8763d1c75cd182ab9be230441bad96b1b9396d0e4c97720cd93321abe17",
       "bytes": 278,
-      "source": "scope-1.0.0-beta.3.zip!App/extension_setup.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/extension_setup.py"
     },
     {
       "path": "Apps/G-Scope/App/grader.py",
       "sha256": "7bc6be650f820df8646939e4c6639b7c213f1f578fa32b866a8fd8420f37c75e",
       "bytes": 41987,
-      "source": "scope-1.0.0-beta.3.zip!App/grader.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/grader.py"
     },
     {
       "path": "Apps/G-Scope/App/grading_control.py",
       "sha256": "34a171c18c2d0789bd15fd144a76cfaa47823c7fae190e2947a2055731e1f679",
       "bytes": 35903,
-      "source": "scope-1.0.0-beta.3.zip!App/grading_control.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/grading_control.py"
     },
     {
       "path": "Apps/G-Scope/App/handout_builds.py",
       "sha256": "74bc9c0fe1633c4d6701e267b54cb15b14b6544b4fd5b9d7885d2d24dbbc0f9b",
       "bytes": 10644,
-      "source": "scope-1.0.0-beta.3.zip!App/handout_builds.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/handout_builds.py"
     },
     {
       "path": "Apps/G-Scope/App/integration_paths.py",
       "sha256": "7eedd717a007ac9081a784a57926e0c88b9a88395638d36e4a833c89804b28f4",
       "bytes": 2331,
-      "source": "scope-1.0.0-beta.3.zip!App/integration_paths.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/integration_paths.py"
     },
     {
       "path": "Apps/G-Scope/App/local_ai_startup.py",
       "sha256": "f316674e8a67d8a7437a9f29d6af42c21035c7b526af2b871c00305b678ffb77",
       "bytes": 279,
-      "source": "scope-1.0.0-beta.3.zip!App/local_ai_startup.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/local_ai_startup.py"
     },
     {
       "path": "Apps/G-Scope/App/materials_links.py",
       "sha256": "32a7f3e388d7400846fdae444d27f9fee77ebee2347a3cf2f7c2aef5a80d082e",
       "bytes": 41252,
-      "source": "scope-1.0.0-beta.3.zip!App/materials_links.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/materials_links.py"
     },
     {
       "path": "Apps/G-Scope/App/math_answers.py",
       "sha256": "20a565cc5e1aae3cf6f110310be00d5d8974737aa579875048ba9d3bdecd5949",
       "bytes": 5172,
-      "source": "scope-1.0.0-beta.3.zip!App/math_answers.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/math_answers.py"
     },
     {
       "path": "Apps/G-Scope/App/online_grading.py",
       "sha256": "c5d5a259538caba75a656e9693c8b1771da288e8908e5165473b9e4edb310147",
       "bytes": 12885,
-      "source": "scope-1.0.0-beta.3.zip!App/online_grading.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/online_grading.py"
     },
     {
       "path": "Apps/G-Scope/App/outline.py",
       "sha256": "479b49defe422ea11882447807f4c13f23ae9475e1f46c0c579c92007bfbede3",
       "bytes": 19525,
-      "source": "scope-1.0.0-beta.3.zip!App/outline.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/outline.py"
     },
     {
       "path": "Apps/G-Scope/App/project_trash.py",
       "sha256": "8a16ecadcd8f2f396d965629a95903351c57e1a13710cfca56b9546e00744a5d",
       "bytes": 12489,
-      "source": "scope-1.0.0-beta.3.zip!App/project_trash.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/project_trash.py"
     },
     {
       "path": "Apps/G-Scope/App/response_grading.py",
       "sha256": "73d35de0db561a66a01fbbb459a842a00846bb4e10bf6323e1c725a348eeca67",
       "bytes": 22032,
-      "source": "scope-1.0.0-beta.3.zip!App/response_grading.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/response_grading.py"
     },
     {
       "path": "Apps/G-Scope/App/rosters.py",
       "sha256": "8e31cc25282b1742ab6ec4b03100ad650d210854886a7b16a58fbf9cd2ae1fd7",
       "bytes": 32907,
-      "source": "scope-1.0.0-beta.3.zip!App/rosters.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/rosters.py"
     },
     {
       "path": "Apps/G-Scope/App/rubric_export.py",
       "sha256": "1a78b37aa02bafdb02b9c6b920457018a75b088a5aee4d107465199550112195",
       "bytes": 9636,
-      "source": "scope-1.0.0-beta.3.zip!App/rubric_export.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/rubric_export.py"
     },
     {
       "path": "Apps/G-Scope/App/rubric_library.py",
       "sha256": "555fe909084ad7c6d727cfb87abafa1cb8d90751962f76bf0f4b531ce30316bb",
       "bytes": 16215,
-      "source": "scope-1.0.0-beta.3.zip!App/rubric_library.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/rubric_library.py"
     },
     {
       "path": "Apps/G-Scope/App/scan_archive.py",
       "sha256": "d50b6bd43ffe403a757b6199872df0f76f60afd9d04e89b152ea64c1597691e4",
       "bytes": 58313,
-      "source": "scope-1.0.0-beta.3.zip!App/scan_archive.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/scan_archive.py"
     },
     {
       "path": "Apps/G-Scope/App/server.py",
       "sha256": "0f45eadd522d3a265e5c2dc48ac1e85ab4eeaf1d5264e75d38594ded702bd6b9",
       "bytes": 31391,
-      "source": "scope-1.0.0-beta.3.zip!App/server.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/server.py"
     },
     {
       "path": "Apps/G-Scope/App/solution_sources.py",
       "sha256": "f2763cb0aaf1413535dd636da4c831ffc7da4cdaee722ed4ebe77dc8f5358919",
       "bytes": 2511,
-      "source": "scope-1.0.0-beta.3.zip!App/solution_sources.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/solution_sources.py"
     },
     {
       "path": "Apps/G-Scope/App/static/CODEMIRROR-LICENSES.txt",
       "sha256": "fea28bd921089cdb4922bc692120a1def7afe951a4c7a0f94012a15769900f65",
       "bytes": 20793,
-      "source": "scope-1.0.0-beta.3.zip!App/static/CODEMIRROR-LICENSES.txt"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/CODEMIRROR-LICENSES.txt"
     },
     {
       "path": "Apps/G-Scope/App/static/answer-keys.js",
       "sha256": "4fe58f177f4af82719505c4740267c16de207cc55cf64245f78dadcd3084815b",
       "bytes": 18184,
-      "source": "scope-1.0.0-beta.3.zip!App/static/answer-keys.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/answer-keys.js"
     },
     {
       "path": "Apps/G-Scope/App/static/app.js",
       "sha256": "29bc65731a44b9eb5b351c66cab381a6039d42b16d3df6a2e42bee4f36a29140",
       "bytes": 65463,
-      "source": "scope-1.0.0-beta.3.zip!App/static/app.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/app.js"
     },
     {
       "path": "Apps/G-Scope/App/static/consistency.js",
       "sha256": "5c6141a9bc786aee06ed3904f97cabf73c0f7ea810c367df33ce39d4efed6493",
       "bytes": 16629,
-      "source": "scope-1.0.0-beta.3.zip!App/static/consistency.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/consistency.js"
     },
     {
       "path": "Apps/G-Scope/App/static/g-scope.ico",
       "sha256": "9dc333e835e36d1d6c6e33c72c863f0596bfcbfcde0ea825638f34af5f4ad818",
       "bytes": 22321,
-      "source": "scope-1.0.0-beta.3.zip!App/static/g-scope.ico"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/g-scope.ico"
     },
     {
       "path": "Apps/G-Scope/App/static/g-scope.png",
       "sha256": "4d0fdf484c5a0fe1f737b9166f1cd3499320bfa3c610dc7ab8543dfa966c0d8a",
       "bytes": 4756,
-      "source": "scope-1.0.0-beta.3.zip!App/static/g-scope.png"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/g-scope.png"
     },
     {
       "path": "Apps/G-Scope/App/static/g-scope.svg",
       "sha256": "b9a4e483fc8e7cb53d256aecaf6a6d338d5fbc3ac593b785f23c9918db8b6d5e",
       "bytes": 878,
-      "source": "scope-1.0.0-beta.3.zip!App/static/g-scope.svg"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/g-scope.svg"
     },
     {
       "path": "Apps/G-Scope/App/static/grading-workspace.css",
       "sha256": "959561046a636796086261d659b81f25f39cf1d61d5ab968eccf5c0ae84a3a30",
       "bytes": 18452,
-      "source": "scope-1.0.0-beta.3.zip!App/static/grading-workspace.css"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/grading-workspace.css"
     },
     {
       "path": "Apps/G-Scope/App/static/grading-workspace.js",
       "sha256": "87371e85d3f7f031e1a0fc20c9314241ca501d3918f3bfc1c1669747cf7c2b73",
       "bytes": 44197,
-      "source": "scope-1.0.0-beta.3.zip!App/static/grading-workspace.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/grading-workspace.js"
     },
     {
       "path": "Apps/G-Scope/App/static/grading.js",
       "sha256": "5a7e701dba114aaa5ab1a3a380a27eb17851f2f121507549f6c123fc067a6155",
       "bytes": 12919,
-      "source": "scope-1.0.0-beta.3.zip!App/static/grading.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/grading.js"
     },
     {
       "path": "Apps/G-Scope/App/static/index.html",
       "sha256": "a66e168cf29be463134f4091ef23d2467487f1536a724a46ebc5a3545eba2691",
       "bytes": 1494,
-      "source": "scope-1.0.0-beta.3.zip!App/static/index.html"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/index.html"
     },
     {
       "path": "Apps/G-Scope/App/static/latex-editor.js",
       "sha256": "4894df113ff719deba790dbcc7e4437bc6a231e27b329a4e4e096b16b8787b5d",
       "bytes": 416065,
-      "source": "scope-1.0.0-beta.3.zip!App/static/latex-editor.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/latex-editor.js"
     },
     {
       "path": "Apps/G-Scope/App/static/local-ai-settings.js",
       "sha256": "a27615509ed4b79d5cadd777da505583a70ed44d2cb8305df93d5ef4a3afae2b",
       "bytes": 16108,
-      "source": "scope-1.0.0-beta.3.zip!App/static/local-ai-settings.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/local-ai-settings.js"
     },
     {
       "path": "Apps/G-Scope/App/static/matching.js",
       "sha256": "5d69401840308ab33444e4f23eafc5dc25a56df96debe1e29735aff8e90e89ba",
       "bytes": 16269,
-      "source": "scope-1.0.0-beta.3.zip!App/static/matching.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/matching.js"
     },
     {
       "path": "Apps/G-Scope/App/static/materials.js",
       "sha256": "52efb39976f865c965d9f314db7dc42306676285b48f049ffcf66c8dc802da1c",
       "bytes": 36441,
-      "source": "scope-1.0.0-beta.3.zip!App/static/materials.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/materials.js"
     },
     {
       "path": "Apps/G-Scope/App/static/online-grading.js",
       "sha256": "63dd459fd66bdb0f164b0b664fe908a96332c685550833950d8576a67acbe7df",
       "bytes": 7709,
-      "source": "scope-1.0.0-beta.3.zip!App/static/online-grading.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/online-grading.js"
     },
     {
       "path": "Apps/G-Scope/App/static/outline-tree.js",
       "sha256": "a7bfe3b5b0933c128df4e272239b8243a8aa6361f1e3ac7d455fabbd72f378f6",
       "bytes": 5135,
-      "source": "scope-1.0.0-beta.3.zip!App/static/outline-tree.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/outline-tree.js"
     },
     {
       "path": "Apps/G-Scope/App/static/outline.js",
       "sha256": "8eb582666d8ee2202b8875aac6f3b414e96e6acc39928a554dd46bcfd9ad0f17",
       "bytes": 21170,
-      "source": "scope-1.0.0-beta.3.zip!App/static/outline.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/outline.js"
     },
     {
       "path": "Apps/G-Scope/App/static/progress.js",
       "sha256": "27bf045fd188690872b6e6bebeb351e11c450e8f0af71e9f661c6f6ebaafb1e0",
       "bytes": 1099,
-      "source": "scope-1.0.0-beta.3.zip!App/static/progress.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/progress.js"
     },
     {
       "path": "Apps/G-Scope/App/static/response-editor.js",
       "sha256": "751ac1745ab8798cf9093ed305972e6c33c515a4a128a3e85282a5e7974d230e",
       "bytes": 9683,
-      "source": "scope-1.0.0-beta.3.zip!App/static/response-editor.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/response-editor.js"
     },
     {
       "path": "Apps/G-Scope/App/static/rosters.js",
       "sha256": "31b56aaba90458fa83ce335200b88eb8ae3cfd5793670f1af386b3187bdef134",
       "bytes": 13031,
-      "source": "scope-1.0.0-beta.3.zip!App/static/rosters.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/rosters.js"
     },
     {
       "path": "Apps/G-Scope/App/static/solution-preview.js",
       "sha256": "0625edd7ee628ae9765311dc3d0a26444cadf13bc6a141e80a9f0ed0080acdce",
       "bytes": 3969,
-      "source": "scope-1.0.0-beta.3.zip!App/static/solution-preview.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/solution-preview.js"
     },
     {
       "path": "Apps/G-Scope/App/static/style.css",
       "sha256": "bf99fb11ef22b4d1c0490351551572597e247778b3042f430e3f26e98dfaf90b",
       "bytes": 53671,
-      "source": "scope-1.0.0-beta.3.zip!App/static/style.css"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/style.css"
     },
     {
       "path": "Apps/G-Scope/App/static/tex-editors.js",
       "sha256": "7018f799e38de8c8248954c765b4c77643ee944c3e4087f81a860c5a73489c7e",
       "bytes": 1426,
-      "source": "scope-1.0.0-beta.3.zip!App/static/tex-editors.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/tex-editors.js"
     },
     {
       "path": "Apps/G-Scope/App/static/workflow.js",
       "sha256": "4a9d057cbf7ba860d85342315ea2ddfa0e035e798c8afa74f6ad53d2aef3e488",
       "bytes": 74180,
-      "source": "scope-1.0.0-beta.3.zip!App/static/workflow.js"
+      "source": "scope-1.0.0-beta.3.1.zip!App/static/workflow.js"
     },
     {
       "path": "Apps/G-Scope/App/submissions.py",
       "sha256": "645b9282e8ad2846323c2c819fa49a8f178eebf9cc05a5ed9689a65aa0f12566",
       "bytes": 52364,
-      "source": "scope-1.0.0-beta.3.zip!App/submissions.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/submissions.py"
     },
     {
       "path": "Apps/G-Scope/App/version_reader.ps1",
       "sha256": "758f01353699e3db39f7d67ca4f2918c12f4ac0361c43ac79116e6ac06be3dc4",
       "bytes": 3021,
-      "source": "scope-1.0.0-beta.3.zip!App/version_reader.ps1"
+      "source": "scope-1.0.0-beta.3.1.zip!App/version_reader.ps1"
     },
     {
       "path": "Apps/G-Scope/App/version_reader.py",
       "sha256": "4ff4e7be06e3ae5d26af32f9b2ffdc2854c2d7e218a5513ec63a802b8ecda0d8",
       "bytes": 11758,
-      "source": "scope-1.0.0-beta.3.zip!App/version_reader.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/version_reader.py"
     },
     {
       "path": "Apps/G-Scope/App/workflow.py",
       "sha256": "54cc021cb7c8cc07e71eb1a1caabb2c080beef2f74291d13bdc5887880a67e1e",
       "bytes": 21757,
-      "source": "scope-1.0.0-beta.3.zip!App/workflow.py"
+      "source": "scope-1.0.0-beta.3.1.zip!App/workflow.py"
     },
     {
       "path": "Apps/G-Scope/Seed/edition.json",
       "sha256": "5259ee6adcf0da1b891feead9cac927ad3faf164176b7ccfa80fef07fffbdb51",
       "bytes": 146,
-      "source": "scope-1.0.0-beta.3.zip!Seed/edition.json"
+      "source": "scope-1.0.0-beta.3.1.zip!Seed/edition.json"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/background.js",
       "sha256": "06e87780fe73e127db47d2a02766c95891d333c301e30bea2de26e5377faf739",
       "bytes": 14506,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/background.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/background.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/batch-core.js",
       "sha256": "68827f802de83021f179e2e944dbb51c646117b6e8c8abade36588a4d8cc1627",
       "bytes": 11245,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/batch-core.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/batch-core.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/batch.css",
       "sha256": "5fec23f4c602b31a1d0763c1487125631aa62e0e27567a32e745342967b8b2f9",
       "bytes": 1226,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/batch.css"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/batch.css"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/batch.html",
       "sha256": "0c8e4ed5d339257108e4d9e02d927e4261c74d27d901f290c099cabc471202f5",
       "bytes": 3315,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/batch.html"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/batch.html"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/batch.js",
       "sha256": "88c25c298fa125224c4e161fa9e2ac1ef4a5ecbfb57a7930a2b89171c2f3167c",
       "bytes": 4716,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/batch.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/batch.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/content.js",
       "sha256": "becd199e80eabaa1847bc5807eeb3e77553ee7c085735ab3045ae5ddbff1bc97",
       "bytes": 25619,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/content.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/content.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/core.js",
       "sha256": "cb473e1a538b2f87ff8c1189f226fefed1b2214d09c1703c1e4d74e0e8445f3a",
       "bytes": 2986,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/core.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/core.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/g-extension-setup.css",
       "sha256": "925f0be4cf5dd1e6ad9442137d922ea657edfeb3477155ea65008c7c377078d2",
       "bytes": 313,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/g-extension-setup.css"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/g-extension-setup.css"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/g-extension-setup.html",
       "sha256": "02684ec5805fd1ac442e32f1772a24f384d295b78d7c30ec646e6c50a3503f65",
       "bytes": 652,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/g-extension-setup.html"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/g-extension-setup.html"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/g-extension-setup.js",
       "sha256": "75c1a039ad669df1417c6bddb95b3ebf820194caf7a9e62359da00dd492e162e",
       "bytes": 1943,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/g-extension-setup.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/g-extension-setup.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/handoff.css",
       "sha256": "bb87983b7be704dad3486e61764e24273143c0f0107693e2a10888096083b6cf",
       "bytes": 627,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/handoff.css"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/handoff.css"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/handoff.html",
       "sha256": "a04b431cba90a4ebf1985c3e4b08d12787ae92f66b8bfac85d66af3a8e277f62",
       "bytes": 1967,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/handoff.html"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/handoff.html"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/handoff.js",
       "sha256": "08060f13136d9e46a2d20f7e2adaaf289e14ad079df55534f33ba8410d415349",
       "bytes": 3277,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/handoff.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/handoff.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/icon-128.png",
       "sha256": "98a80596bbf486db818206920164b9e4e56f8941d50164173bd9ec36f1481a49",
       "bytes": 5560,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/icon-128.png"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/icon-128.png"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/icon-16.png",
       "sha256": "f349c4e4e570f8dd51bed44f99c578881f45258d8f4c08eaaeba0b41c4a33043",
       "bytes": 697,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/icon-16.png"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/icon-16.png"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/icon-20.png",
       "sha256": "d01451dac4e8a10402ffa6d6c9f3542c868b9c31daf311dd1fd443092af66c86",
       "bytes": 864,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/icon-20.png"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/icon-20.png"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/icon-24.png",
       "sha256": "e8dc10c6f665f285b4f9c5938ab6faa0edaed7cef9a5cb87a0128c92564c6493",
       "bytes": 1085,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/icon-24.png"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/icon-24.png"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/icon-32.png",
       "sha256": "acfb2c145037ab322e7bf33846aabd66ecec875448aebc8aad8bcbee4f756b02",
       "bytes": 1428,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/icon-32.png"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/icon-32.png"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/icon-48.png",
       "sha256": "bc190a86337b01c5ac8190692fc422f3c9b35fe8ad4c011069ae2e4ca83cfc0b",
       "bytes": 2134,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/icon-48.png"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/icon-48.png"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/icon-64.png",
       "sha256": "a5d3ba04b018c6fd0575b14960ce1ba2cfb4db01e0be7384469edc34f21a0fbe",
       "bytes": 2780,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/icon-64.png"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/icon-64.png"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/icons/source.svg",
       "sha256": "1c0d20d350f961a59d461fc569c3a163ee49369f3d8eb472492f2db4d9cfbb54",
       "bytes": 936,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/icons/source.svg"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/icons/source.svg"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/manifest.json",
       "sha256": "706c8c2b7358aaa8a10c6c846e853764bfb340db163bec52c8ba958fce60e046",
       "bytes": 1349,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/manifest.json"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/manifest.json"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/options.css",
       "sha256": "3e4e085b1357e3380a2d70d1f640c8ffdf336ec9cad00acc4301b8bb09515d5b",
       "bytes": 1333,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/options.css"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/options.css"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/options.html",
       "sha256": "ff170bb904fed6755839057a761149ff03ab55da8e4d789aa0b4df47f76f6aa9",
       "bytes": 1920,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/options.html"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/options.html"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/options.js",
       "sha256": "f7d9cf1f72b5d72e18a1027b70fe31a8b5416812d2193aa58d2c4b6a279ef0b7",
       "bytes": 92,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/options.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/options.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/ordered-core.js",
       "sha256": "bcd2ab8ba19921787854964264262457e9f5e462f2e7dc912447d5eaf4a4fe79",
       "bytes": 6740,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/ordered-core.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/ordered-core.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/page-actions.js",
       "sha256": "dc3f032b7fc40999d4b01ae689c52f43f77f8d0b81d715c7f9f63e264609b9e8",
       "bytes": 7476,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/page-actions.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/page-actions.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/prompt.js",
       "sha256": "4c6c51ac15b4619152ff36aee7775536efc4361cc460a4162dd49350038c2ff2",
       "bytes": 1542,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/prompt.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/prompt.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/rubric-downloads.js",
       "sha256": "437fb726495b8aa08708d0a8b1b62a6671da799089cdb58fe833448bb1e22a7f",
       "bytes": 2511,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/rubric-downloads.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/rubric-downloads.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/rubric-export-schema.js",
       "sha256": "7c9cc6a736b0ef3624a8d9fa5374b851757e12c503d8ce08c7cad84a4a9f4261",
       "bytes": 3194,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/rubric-export-schema.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/rubric-export-schema.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/rubric-export.js",
       "sha256": "b5b53350039079d312c5ffaf47c686f6d635b7bb3c119d639d33fec6a7cfe3cb",
       "bytes": 9706,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/rubric-export.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/rubric-export.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/rubric-match.js",
       "sha256": "0be3ee329a928b8e66d535f731ed25dd26abc1c905aa5b08ca9483b2bdc63864",
       "bytes": 5681,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/rubric-match.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/rubric-match.js"
     },
     {
       "path": "Apps/G-Scope/Tools/Rubric Lens/extension/rubric-reader.js",
       "sha256": "da219bb2ae865b18ca1c54c7e500e4f8c1f7fedac1f785f0162fee5382216643",
       "bytes": 13084,
-      "source": "scope-1.0.0-beta.3.zip!Tools/Rubric Lens/extension/rubric-reader.js"
+      "source": "scope-1.0.0-beta.3.1.zip!Tools/Rubric Lens/extension/rubric-reader.js"
     },
     {
       "path": "Apps/G-Vault/App/Desktop/desktop.py",
       "sha256": "e2687e15b61759dde90de5d702b83a504c08dba46f0e3ea402dcbde5ae327098",
       "bytes": 278,
-      "source": "vault-1.0.0-beta.3.zip!App/Desktop/desktop.py"
+      "source": "vault-1.0.0-beta.3.1.zip!App/Desktop/desktop.py"
     },
     {
       "path": "Apps/G-Vault/App/Launch.ps1",
       "sha256": "08e8e659ec6119d0d4c8cbd66560e6ca6ff5ef85c70a8e93102ab2116b72d37d",
       "bytes": 876,
-      "source": "vault-1.0.0-beta.3.zip!App/Launch.ps1"
+      "source": "vault-1.0.0-beta.3.1.zip!App/Launch.ps1"
     },
     {
       "path": "Apps/G-Vault/App/extension_setup.py",
       "sha256": "b1d4f8763d1c75cd182ab9be230441bad96b1b9396d0e4c97720cd93321abe17",
       "bytes": 278,
-      "source": "vault-1.0.0-beta.3.zip!App/extension_setup.py"
+      "source": "vault-1.0.0-beta.3.1.zip!App/extension_setup.py"
     },
     {
       "path": "Apps/G-Vault/App/local_ai_startup.py",
       "sha256": "f316674e8a67d8a7437a9f29d6af42c21035c7b526af2b871c00305b678ffb77",
       "bytes": 279,
-      "source": "vault-1.0.0-beta.3.zip!App/local_ai_startup.py"
+      "source": "vault-1.0.0-beta.3.1.zip!App/local_ai_startup.py"
     },
     {
       "path": "Apps/G-Vault/App/server.py",
       "sha256": "51cd94ddb17babbe99c15f79c19f04273033772fd01d7310a98aecf78d3151c7",
       "bytes": 269,
-      "source": "vault-1.0.0-beta.3.zip!App/server.py"
+      "source": "vault-1.0.0-beta.3.1.zip!App/server.py"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-103/mh-103-objectives.sty",
       "sha256": "e719aa726939f05ea798ea8e8e7752ef50f42db74f2438591b5a1b530d68b0a3",
       "bytes": 1241,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-103/mh-103-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-103/mh-103-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-103/mh-103-topics.sty",
       "sha256": "3b5b7246f4dd023b0710ed1d9519034bc0452e3d411363c370d59314e361c022",
       "bytes": 813,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-103/mh-103-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-103/mh-103-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-111/mh-111-coursework.sty",
       "sha256": "b99d1881917d84f79afe8f09a3a9c62830c0a4cca3c790405bff247ead34cd7c",
       "bytes": 281,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-111/mh-111-coursework.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-111/mh-111-coursework.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-111/mh-111-objectives.sty",
       "sha256": "13a515fcdd23052974745cd55933d5bd73b452fc5bb17ae3767386e851048a42",
       "bytes": 2867,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-111/mh-111-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-111/mh-111-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-111/mh-111-topics.sty",
       "sha256": "5ecdacaf7b90b893b278b08ca5651f1e9d1f532650a2f97c0b8b150775b4f50a",
       "bytes": 1753,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-111/mh-111-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-111/mh-111-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-130/mh-130-bank.sty",
       "sha256": "42510ecc9d95703b81a7a1252fef97fd7d84525b9b041302618da17bfdf25336",
       "bytes": 3348,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-130/mh-130-bank.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-130/mh-130-bank.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-130/mh-130-coursework.sty",
       "sha256": "84ce1f33ade8e36f086a41d6fa725b8478f6eaf89dd93df9e9af43975bb3ae53",
       "bytes": 269,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-130/mh-130-coursework.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-130/mh-130-coursework.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-130/mh-130-objectives.sty",
       "sha256": "edbe2ace8e02fa2decf5906d68617056fab092115165c7593ce1bcc886a5c089",
       "bytes": 3160,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-130/mh-130-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-130/mh-130-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-130/mh-130-topics.sty",
       "sha256": "248c69f2c6844383607e115b3cbd3ce14c2db5466954121e81dbc70e08e1c319",
       "bytes": 2037,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-130/mh-130-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-130/mh-130-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-135/mh-135-assessment-bank.sty",
       "sha256": "80ff59cbd462a143daf3e2fb755dfc4f8fb91b87309848c39c7e2f31930ceceb",
       "bytes": 2271,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-135/mh-135-assessment-bank.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-135/mh-135-assessment-bank.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-135/mh-135-coursework.sty",
       "sha256": "2480e2c5e530deb20dfe5be8968752b8506f0c12057f7fa3b6ecc6e9003aee6c",
       "bytes": 5141,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-135/mh-135-coursework.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-135/mh-135-coursework.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-135/mh-135-objectives.sty",
       "sha256": "a372a71218778eeba372ea309e9dd635cf7604aca7b101be247becf5f4404c6a",
       "bytes": 17166,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-135/mh-135-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-135/mh-135-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-135/mh-135-reference.sty",
       "sha256": "a14a3c3198db2a44e89285cb48a466cc17e57bf1e99fc3a70f1dedc45e07060b",
       "bytes": 306,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-135/mh-135-reference.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-135/mh-135-reference.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-135/mh-135-syllabus.sty",
       "sha256": "8a484d4cf2d901f87d1b68911a1e7d33beb53502db487ce3478ca25ddd7d7c0e",
       "bytes": 12907,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-135/mh-135-syllabus.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-135/mh-135-syllabus.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-135/mh-135-topics.sty",
       "sha256": "24895d534da8be47c54e6e351adf8942cf95dce5bd313111f201a1e056c6e950",
       "bytes": 4817,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-135/mh-135-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-135/mh-135-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-136/mh-136-objectives.sty",
       "sha256": "92eae05148b8ba508decf85e2915d7d5073e9946e21bf4a2758172575756d693",
       "bytes": 3999,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-136/mh-136-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-136/mh-136-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-136/mh-136-topics.sty",
       "sha256": "d98da8c9a23f4ef3a9e8169316245ceca564b95b49161bca274504e4a6b6430e",
       "bytes": 3003,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-136/mh-136-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-136/mh-136-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-151/mh-151-objectives.sty",
       "sha256": "486c23293322fffcdf699e595eb1b1da715878883fc626c895a030a3fdce3aff",
       "bytes": 6632,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-151/mh-151-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-151/mh-151-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-151/mh-151-topics.sty",
       "sha256": "e7620de7e2f971cf2000e5374083d31d34e27915ad09f5fc32dd0cfc640597da",
       "bytes": 5036,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-151/mh-151-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-151/mh-151-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-152/mh-152-bank.sty",
       "sha256": "18f2255fc9de4512f8bd2859815562890e96bbecbd92c559761375cae7f9c466",
       "bytes": 4707,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-152/mh-152-bank.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-152/mh-152-bank.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-152/mh-152-coursework.sty",
       "sha256": "3b8cb9aba14a1a0208481af68970676e48c790af5a8857c6b39add25a765cc77",
       "bytes": 4858,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-152/mh-152-coursework.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-152/mh-152-coursework.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-152/mh-152-exam-data.sty",
       "sha256": "2a8ac604b8ec110b2fd5f6dc2d9513f37f08b905248bef9dbc9e6b922863e61e",
       "bytes": 11016,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-152/mh-152-exam-data.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-152/mh-152-exam-data.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-152/mh-152-objectives.sty",
       "sha256": "1a9b4955ce575916b14b0fdb796a84eece46d90f7416a1404eee78a99258b3cc",
       "bytes": 11902,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-152/mh-152-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-152/mh-152-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-152/mh-152-syllabus.sty",
       "sha256": "5b5d1b493ad6b65c6d03d2040cb328f70340895916e19deed9fc36b66661682c",
       "bytes": 13157,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-152/mh-152-syllabus.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-152/mh-152-syllabus.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-152/mh-152-topics.sty",
       "sha256": "a10bdd96f95ff9b8fee4bfac129cc279ce39ac9e592d05ca5fb60261112267b4",
       "bytes": 6097,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-152/mh-152-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-152/mh-152-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-250/mh-250-coursework.sty",
       "sha256": "c933e09b23ef5ce002c36fe2a252628734813f11cb1a9f3d3bb50a7a7fbd45f8",
       "bytes": 281,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-250/mh-250-coursework.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-250/mh-250-coursework.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-250/mh-250-objectives.sty",
       "sha256": "a82a33beb96f952628fe3e263b1a630ec0977aacfe3ffbe14c1af12c5a7127f2",
       "bytes": 4735,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-250/mh-250-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-250/mh-250-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-250/mh-250-topics.sty",
       "sha256": "a3a71adf04f271da0d4cdd91b5d9b34e253327931fe1439cd913d62cb3fbbad7",
       "bytes": 3197,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-250/mh-250-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-250/mh-250-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-251/mh-251-coursework.sty",
       "sha256": "d7eb608ad4a7ac8e650d4f15f75093f3b2e8c27a2251f5d791191d3f89dd6bce",
       "bytes": 227,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-251/mh-251-coursework.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-251/mh-251-coursework.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-251/mh-251-objectives.sty",
       "sha256": "99c4d0695b21625722831497333fc75c4ef5ccbb19e5a950c762bfadc76f8444",
       "bytes": 5540,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-251/mh-251-objectives.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-251/mh-251-objectives.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-251/mh-251-topics.sty",
       "sha256": "cd780e70217f578526c8a017e3fc136e966617c039bac2007a1095e84b4a14ca",
       "bytes": 4285,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-251/mh-251-topics.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-251/mh-251-topics.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-accessibility.sty",
       "sha256": "1b84366e88310bafee39879521315d5011f6852c0c1b4b4e0db01938d078b85a",
       "bytes": 1851,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-accessibility.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-accessibility.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-assessment.sty",
       "sha256": "e79908c4ea7108e547d6abad65dcf4d2149ebe9f5bd16082fcd86afb8555c180",
       "bytes": 20951,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-assessment.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-assessment.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-bank-index.sty",
       "sha256": "15f61d7c5af2747df441c8a5577fcddd09475fc294ebeddfe1f38aa1f0b30acd",
       "bytes": 12250,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-bank-index.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-bank-index.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-colors.sty",
       "sha256": "894216568b283f3d0cfd33ed52f6c69fc37b80fbcea387baf942f0ad7df7b3a8",
       "bytes": 1080,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-colors.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-colors.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-integrity.sty",
       "sha256": "3afd718d40a6d124c13ef494d614f362fb0d9bc64d486282ae9f98554b017ce0",
       "bytes": 812,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-integrity.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-integrity.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-layout.sty",
       "sha256": "08c19d1bc8233a701577e7891f2acb2433a81addf4e5f0f4b41a5084f1344fd4",
       "bytes": 7364,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-layout.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-layout.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-letter.sty",
       "sha256": "501960b404e1bf1aa71675df43edc1d60bffad67f5f0e7a6bbc5e78735cd8ded",
       "bytes": 3290,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-letter.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-letter.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-metadata.sty",
       "sha256": "a772096b380db1da59f4458825508ff8d10d214022ce5e5eae63240b3524d7c0",
       "bytes": 1802,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-metadata.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-metadata.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-recommendation.sty",
       "sha256": "54a7194a3408e5860df127bf030bd2584a8dd2dc561ee6b56b66a14c44fb9f22",
       "bytes": 2125,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-recommendation.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-recommendation.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-semester.sty",
       "sha256": "3b64b816aebdbf611a852608d64c5797f8513e9b6294863a8022250b0b38b7ca",
       "bytes": 11954,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-semester.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-semester.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-syllabus.sty",
       "sha256": "3176eded8c9fb79a4a7763c35d9848456a6de2320877c7a17e7bdae059c50f75",
       "bytes": 35623,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-syllabus.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-syllabus.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-templates.sty",
       "sha256": "b69b4615c19c32f448e3847bf197d89c40447e44f62f659d49d9409805ef682d",
       "bytes": 28445,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-templates.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-templates.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh-utilities.sty",
       "sha256": "eaf82631861e8c10a9dac9fd95e97af675fcf43b98710e09593a8d2cf18c07b1",
       "bytes": 8028,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh-utilities.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh-utilities.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mh.sty",
       "sha256": "22db8356bbea2e4db740e239668682ff6d5fdb30dbd34c2974b1aabddb7682c9",
       "bytes": 29580,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mh.sty"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mh.sty"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mhdocument.cls",
       "sha256": "39a81a912430ce8dde3b47162fe72d3406b18695725106ee3f059f5b766f52d8",
       "bytes": 5402,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mhdocument.cls"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mhdocument.cls"
     },
     {
       "path": "Apps/G-Vault/Framework/lib/mhletter.cls",
       "sha256": "682a7826ef71c0cc20fe1fa4b10b7d4b5dbf510aff55c9d0915d2476d7080b81",
       "bytes": 2797,
-      "source": "vault-1.0.0-beta.3.zip!Framework/lib/mhletter.cls"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/lib/mhletter.cls"
     },
     {
       "path": "Apps/G-Vault/Framework/professional-correspondence/recommendations/import_docx.py",
       "sha256": "72dedce12f6bb548711a404ff674522035c213d8005aa1f9a8f45e4efe033966",
       "bytes": 3089,
-      "source": "vault-1.0.0-beta.3.zip!Framework/professional-correspondence/recommendations/import_docx.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/professional-correspondence/recommendations/import_docx.py"
     },
     {
       "path": "Apps/G-Vault/Framework/professional-correspondence/recommendations/render_letter.py",
       "sha256": "576f82c8bfbac06714c6f0bb4699aae76c535bde1440fdac76962e31c645fb05",
       "bytes": 7775,
-      "source": "vault-1.0.0-beta.3.zip!Framework/professional-correspondence/recommendations/render_letter.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Framework/professional-correspondence/recommendations/render_letter.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/apply_draft.py",
       "sha256": "ff6765611bf20b5901d725b2f26db04357810a796b12ce5f2181f25d81176cb7",
       "bytes": 883,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/apply_draft.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/apply_draft.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/case_workflow.py",
       "sha256": "5b1aac1e124cf393f7ba8479f3f0cdf702fc304285502c5f6116556a19359a26",
       "bytes": 6707,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/case_workflow.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/case_workflow.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/casebook.py",
       "sha256": "5f467e43194832d7431391c3813be64f8b99db80d373c7a64f21bbd8c1e56e83",
       "bytes": 65415,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/casebook.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/casebook.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/contact_review.py",
       "sha256": "d3b0009536d8a88c7c293980b241eeaab38fe4fdb54c7495c5e78fb41d27b0f5",
       "bytes": 3549,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/contact_review.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/contact_review.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/gwhiz_embed.py",
       "sha256": "037790469d9fa91b97da3adeda6e6e1138a19b63935f8c0ad14868b93cf1b5b3",
       "bytes": 4221,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/gwhiz_embed.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/gwhiz_embed.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/integrity_render.py",
       "sha256": "eddf5d2e406a089f5e35bc6a40c96a6ae96c2237917efb6b765adc165caf996a",
       "bytes": 3922,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/integrity_render.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/integrity_render.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/letter_email.py",
       "sha256": "63d7d928699eee4a4414a6e2a439daf1cae3a9e64671ee7b632984d9d19f5d21",
       "bytes": 3618,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/letter_email.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/letter_email.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/meeting_response.py",
       "sha256": "dfc17d881c1fa184584d7b8e93eb77f6a3cd0464e368f7b6f85501e55e410ba2",
       "bytes": 3641,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/meeting_response.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/meeting_response.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/outcome_compose.py",
       "sha256": "b26a64e230239d47fa54fb95844fb413b62602ca8eb11b3c4618b30bc379debc",
       "bytes": 6440,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/outcome_compose.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/outcome_compose.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/rationale_handoff.py",
       "sha256": "953c32fb155e9f8f91b2c22dd6fd1d7cf5aa5044a769ac2663d68d7d5d5d536f",
       "bytes": 12320,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/rationale_handoff.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/rationale_handoff.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/report_export.py",
       "sha256": "29758771688b39457222e796075f7c89e3c8506b3af9aac6d7a49b7b3deea0a8",
       "bytes": 7312,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/report_export.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/report_export.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/report_intake.py",
       "sha256": "d23ea7174903a2228a1a307e9fc2ad393152befec937ac66845930c8b4576f96",
       "bytes": 5203,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/report_intake.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/report_intake.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/server.py",
       "sha256": "5cc3226e33f8c09910c8a4adb47760ce5df8280b200d43234d5dcae382fc5250",
       "bytes": 13730,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/server.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/server.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/static/app.js",
       "sha256": "b8d2d04f5fedb390c243d4cefb1509338ddaf24f5231b7c5f64b30e079049938",
       "bytes": 109574,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/static/app.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/static/app.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/static/index.html",
       "sha256": "78526ac979306cae9aac8f16e39bf6f305dbcc7b5318a95b7c150222eb9a1b06",
       "bytes": 711,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/static/index.html"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/static/index.html"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/static/style.css",
       "sha256": "8ece48d41b079bad9c3135a15c7448d771e6368ca8a514c29371b8fb91089fdd",
       "bytes": 13438,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/static/style.css"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/static/style.css"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/student_names.py",
       "sha256": "5f413e11e538e79c70ba54400706306778e4d5e7a2c34222a1186f49d81526dd",
       "bytes": 1141,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/student_names.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/student_names.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/App/student_report.py",
       "sha256": "ee23d9d1b3349b05c6978771e51d64908e215f37c88d3183f11e46283aaddd90",
       "bytes": 2491,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/App/student_report.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/App/student_report.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/Readme.txt",
       "sha256": "a0f33ddf62ca202aaac6166efa62f52214006cc1c6a1bf963da72900625aad34",
       "bytes": 1873,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/Readme.txt"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/Readme.txt"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/form-schema.json",
       "sha256": "370ccec850fb47baa29425aa4ed60c1cc46cf6558718df66414167db13b24282",
       "bytes": 23519,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/form-schema.json"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/form-schema.json"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.css",
       "sha256": "925f0be4cf5dd1e6ad9442137d922ea657edfeb3477155ea65008c7c377078d2",
       "bytes": 313,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.css"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.css"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.html",
       "sha256": "02684ec5805fd1ac442e32f1772a24f384d295b78d7c30ec646e6c50a3503f65",
       "bytes": 652,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.html"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.html"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.js",
       "sha256": "75c1a039ad669df1417c6bddb95b3ebf820194caf7a9e62359da00dd492e162e",
       "bytes": 1943,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/g-extension-setup.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-128.png",
       "sha256": "98ccae9ebbf4af3fb5d74cc816309f0fb8fed5e1dd73e77ac7b1872f34673d1e",
       "bytes": 2708,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-128.png"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-128.png"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-16.png",
       "sha256": "4fb3c6b90e8f68e3f835c1f4b49b4726eb27ef74d1519bfbbee009546b94c91e",
       "bytes": 541,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-16.png"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-16.png"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-20.png",
       "sha256": "ce4a86d898f0b66625059d1213d949c720d2630b107c8ef3425485e7441e1270",
       "bytes": 615,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-20.png"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-20.png"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-24.png",
       "sha256": "8c7f04d2067383e9c5c18b7c383cba09e53b6385a14477a2249631a4a435bf01",
       "bytes": 724,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-24.png"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-24.png"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-32.png",
       "sha256": "29098c74fb90ca1b3729d48fa970119fefad6afa0ca38aa8b0e21704755812a6",
       "bytes": 895,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-32.png"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-32.png"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-48.png",
       "sha256": "a856a98f763ba4f20e12e4890638fd6b7d64b8223d5fd93227a33ed114630a04",
       "bytes": 1268,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-48.png"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-48.png"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-64.png",
       "sha256": "d6a47546056b183dfa6b0b7737a87c0ede2dbb2a0c36dc1c4aad5fe3feef35a7",
       "bytes": 1500,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-64.png"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/icon-64.png"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/source.svg",
       "sha256": "aacccf053e33e07aebc2b4adcd871326b5d7526ddbd89104fe286d8fa5bac526",
       "bytes": 780,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/source.svg"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/icons/source.svg"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/manifest.json",
       "sha256": "bfdb114d251951fb0979fddc55c4b82070a3e07ef743b3fcaf42159b06c8f968",
       "bytes": 1077,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/manifest.json"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/manifest.json"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/page-fill.js",
       "sha256": "d70d1068f5747c0ba64598ac194c2b09574533947a3716ccbf77026b0e1ea01d",
       "bytes": 6944,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/page-fill.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/page-fill.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.css",
       "sha256": "0fd035ba7f0e45fd5d05172a1ba1743f836cd630ad7fc6d65620746bc348873a",
       "bytes": 785,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.css"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.css"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.html",
       "sha256": "968a93302177a18e1c127e3167864fd67f76477d9acff7e6f8653fd762239e18",
       "bytes": 1274,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.html"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.html"
     },
     {
       "path": "Apps/G-Vault/Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.js",
       "sha256": "558acb3975c0fd2c288d40ea52afbe56f5a3244299de57d9ae7f34ec0a01b2e9",
       "bytes": 6106,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Integrity/tools/Form Autofill/Chrome Extension/popup.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/analytics.py",
       "sha256": "4c07ced5c925e956bb6e1da3a3d4a83c05afc6941ed44b1ebe4c603dfd3754cd",
       "bytes": 24807,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/analytics.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/analytics.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/backup_archive.py",
       "sha256": "0ba408735649f348951212feaa5679537adae5353a9b94065676fdc1d6ec2e32",
       "bytes": 3256,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/backup_archive.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/backup_archive.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/core.py",
       "sha256": "b18fbf6d50ddd613d7433261a794635a0afa8bcb629288d4b43403e1d11f3b46",
       "bytes": 62007,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/core.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/core.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/empty_database.sql",
       "sha256": "1d6720f8133f5f3afacf3a263e1db0f7020e5f5f083927269f545f88836fd572",
       "bytes": 10402,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/empty_database.sql"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/empty_database.sql"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/gwhiz_embed.py",
       "sha256": "037790469d9fa91b97da3adeda6e6e1138a19b63935f8c0ad14868b93cf1b5b3",
       "bytes": 4221,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/gwhiz_embed.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/gwhiz_embed.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/lookups.json",
       "sha256": "16ecb5eefa484c27f0a87aa72ec3d2d888d502aca4b113525e22825b0955f9ea",
       "bytes": 13443,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/lookups.json"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/lookups.json"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/record_filters.py",
       "sha256": "8905f46e6e7766899bc109abdcabcaa8d2022f919bc4b2fba0aee47e407003fe",
       "bytes": 4619,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/record_filters.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/record_filters.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/school_filter_options.py",
       "sha256": "96d2472df54758b768c1d87851721b538899ab86e33ddab9410957d8af6742db",
       "bytes": 1686,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/school_filter_options.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/school_filter_options.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/server.py",
       "sha256": "48fea4fe2606b0e5a7be170e90939d952b2d554409956597414a570bf8574725",
       "bytes": 9928,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/server.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/server.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/static/app.js",
       "sha256": "162eb8e1c5aa6414c89a8dad710e74b4130323ea622e2b1a33a59936d09eb3a5",
       "bytes": 59582,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/static/app.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/static/app.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/static/index.html",
       "sha256": "2c94177381732e0e9fbd674aa974e11bab4958954093017b0148e0ef50941851",
       "bytes": 2305,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/static/index.html"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/static/index.html"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/static/record-filters.js",
       "sha256": "fe6dd88ed35060e474b3ea20d3f2b5fb7b15dd96b438e78b2f0b0280e6972dd4",
       "bytes": 14990,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/static/record-filters.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/static/record-filters.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/static/style.css",
       "sha256": "0ad3012f970461961522bf1b12a0dc09cd960fd69077f8a8ae814ecb788a9ea4",
       "bytes": 24854,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/static/style.css"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/static/style.css"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/teacher_links.py",
       "sha256": "c90f0b1c09cf1540b8a18afc1f6eea79cdbae024a4cab54b2dc2a582f4e09c42",
       "bytes": 8928,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/teacher_links.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/teacher_links.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Math135/App/verify_integrity.py",
       "sha256": "990a387d680c45fec0c6c7046872c1de79b05084eba672de6ff9a112dc160cd5",
       "bytes": 1963,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Math135/App/verify_integrity.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Math135/App/verify_integrity.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/apply_draft.py",
       "sha256": "d63238b54cfc16dfe3eed9e8cfce1050e504c372ddb7093fa94dc4821a4d659b",
       "bytes": 993,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/apply_draft.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/apply_draft.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/archive.py",
       "sha256": "4efeabd9c784b7386646f5689ceaaf814f481e3ea8ba5727243ff6de25e90607",
       "bytes": 15854,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/archive.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/archive.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/course_history.py",
       "sha256": "60c807fe4926f7624614a91b7a1300367c3156af7fb1cc5e437850c10d38fa99",
       "bytes": 1213,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/course_history.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/course_history.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/grades.py",
       "sha256": "e83aae06f02abb04c06b0fa00450012ce20f3a4dc519773e27b82f8f0c74d87e",
       "bytes": 9618,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/grades.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/grades.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/gwhiz_embed.py",
       "sha256": "037790469d9fa91b97da3adeda6e6e1138a19b63935f8c0ad14868b93cf1b5b3",
       "bytes": 4221,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/gwhiz_embed.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/gwhiz_embed.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/server.py",
       "sha256": "bedc590be77cd00fbdd6c36d984fdb199fc4891343d117c0fb47e082efbf2834",
       "bytes": 12297,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/server.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/server.py"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/static/app.js",
       "sha256": "f4d373c0a0f3d74977fad66f4cae0f79964927fe53663690869ff249f4e2914f",
       "bytes": 71351,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/static/app.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/static/app.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/static/index.html",
       "sha256": "9a3ab305d5a7bd5ce67e68038f9d7f41463f747eae45ddc47df867c6dcf4ab67",
       "bytes": 2057,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/static/index.html"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/static/index.html"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/static/interview-form.html",
       "sha256": "7355b2541ff504685fd0419a0bc4613ee231f48d1df35266b518094ed05cc68b",
       "bytes": 4721,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/static/interview-form.html"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/static/interview-form.html"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/static/interview-form.js",
       "sha256": "10629755f484e8b9b8c7dbb85d262f150d0b86a6352427c9b8c2758c222a7f0a",
       "bytes": 319,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/static/interview-form.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/static/interview-form.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/static/style.css",
       "sha256": "6678f48797f239d7a9358fc02df085957fd17054b2a0d6b274e2498232f85963",
       "bytes": 18308,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/static/style.css"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/static/style.css"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/static/wizard.js",
       "sha256": "18917502a082553624272fcac4e9b0c50442fcec0c23ea1005e0a6671db30ca9",
       "bytes": 33037,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/static/wizard.js"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/static/wizard.js"
     },
     {
       "path": "Apps/G-Vault/Modules/Recommendations/tools/App/store.py",
       "sha256": "6c36d2920e5e91070020e9ef10418ade8ac153756b4eef804b079409ec961eb7",
       "bytes": 66374,
-      "source": "vault-1.0.0-beta.3.zip!Modules/Recommendations/tools/App/store.py"
+      "source": "vault-1.0.0-beta.3.1.zip!Modules/Recommendations/tools/App/store.py"
     },
     {
       "path": "Apps/G-Vault/Seed/edition.json",
       "sha256": "30e0f8f0f8250edfd0ba47f149b8b949b49af0c37ce69eca8e9dac136bb65211",
       "bytes": 168,
-      "source": "vault-1.0.0-beta.3.zip!Seed/edition.json"
+      "source": "vault-1.0.0-beta.3.1.zip!Seed/edition.json"
     },
     {
       "path": "Apps/G-Whiz/App/Desktop/desktop.py",
       "sha256": "e2687e15b61759dde90de5d702b83a504c08dba46f0e3ea402dcbde5ae327098",
       "bytes": 278,
-      "source": "whiz-1.0.0-beta.3.zip!App/Desktop/desktop.py"
+      "source": "whiz-1.0.0-beta.3.1.zip!App/Desktop/desktop.py"
     },
     {
       "path": "Apps/G-Whiz/App/Launch.ps1",
       "sha256": "08e8e659ec6119d0d4c8cbd66560e6ca6ff5ef85c70a8e93102ab2116b72d37d",
       "bytes": 876,
-      "source": "whiz-1.0.0-beta.3.zip!App/Launch.ps1"
+      "source": "whiz-1.0.0-beta.3.1.zip!App/Launch.ps1"
     },
     {
       "path": "Apps/G-Whiz/App/extension_setup.py",
       "sha256": "b1d4f8763d1c75cd182ab9be230441bad96b1b9396d0e4c97720cd93321abe17",
       "bytes": 278,
-      "source": "whiz-1.0.0-beta.3.zip!App/extension_setup.py"
+      "source": "whiz-1.0.0-beta.3.1.zip!App/extension_setup.py"
     },
     {
       "path": "Apps/G-Whiz/App/local_ai_startup.py",
       "sha256": "f316674e8a67d8a7437a9f29d6af42c21035c7b526af2b871c00305b678ffb77",
       "bytes": 279,
-      "source": "whiz-1.0.0-beta.3.zip!App/local_ai_startup.py"
+      "source": "whiz-1.0.0-beta.3.1.zip!App/local_ai_startup.py"
     },
     {
       "path": "Apps/G-Whiz/App/server.py",
       "sha256": "51cd94ddb17babbe99c15f79c19f04273033772fd01d7310a98aecf78d3151c7",
       "bytes": 269,
-      "source": "whiz-1.0.0-beta.3.zip!App/server.py"
+      "source": "whiz-1.0.0-beta.3.1.zip!App/server.py"
     },
     {
       "path": "Apps/G-Whiz/Seed/edition.json",
       "sha256": "9fb156177eaf36729af6b701d639b5668f6859ff277151cd093e1dc8965120d6",
       "bytes": 223,
-      "source": "whiz-1.0.0-beta.3.zip!Seed/edition.json"
+      "source": "whiz-1.0.0-beta.3.1.zip!Seed/edition.json"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/README.txt",
       "sha256": "5ea013e707a7a35903d3c46b916611ddba003a45a4ec3a7fb30a6a9dad299a19",
       "bytes": 3437,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/README.txt"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/README.txt"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/background.js",
       "sha256": "37d6f16b9c0b70ef5a32b2cdc3e7596d368c31331f4c6dffec5dc616b16caa05",
       "bytes": 2311,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/background.js"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/background.js"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/content.js",
       "sha256": "036c3158a50bb43f6d27485e56838d4cb46e92ea034750508bce1ab14d50689c",
       "bytes": 21665,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/content.js"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/content.js"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/core.js",
       "sha256": "6d1fb559e95f4276bda68aa5ef46dd87a0402f0408094b322cdca362b882330a",
       "bytes": 10828,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/core.js"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/core.js"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/g-extension-setup.css",
       "sha256": "925f0be4cf5dd1e6ad9442137d922ea657edfeb3477155ea65008c7c377078d2",
       "bytes": 313,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/g-extension-setup.css"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/g-extension-setup.css"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/g-extension-setup.html",
       "sha256": "02684ec5805fd1ac442e32f1772a24f384d295b78d7c30ec646e6c50a3503f65",
       "bytes": 652,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/g-extension-setup.html"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/g-extension-setup.html"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/g-extension-setup.js",
       "sha256": "75c1a039ad669df1417c6bddb95b3ebf820194caf7a9e62359da00dd492e162e",
       "bytes": 1943,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/g-extension-setup.js"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/g-extension-setup.js"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/g-view.ico",
       "sha256": "6a37f922d0506789dfb428001da9b6066cb059bd990bb8797289477d2cd3238a",
       "bytes": 18748,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/g-view.ico"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/g-view.ico"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/icon-128.png",
       "sha256": "12a068deec4e5e32f028ad75bccc81580e92a5056d15910154547e80399b4530",
       "bytes": 4071,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/icon-128.png"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/icon-128.png"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/icon-16.png",
       "sha256": "a7362f449d971caff2093f8f13edd308efb1a27c44dc1c362cef1f80eee16914",
       "bytes": 484,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/icon-16.png"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/icon-16.png"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/icon-20.png",
       "sha256": "e90280b074826e2db2635cb5b97ffcb15055813dbb436e88638a6950c0dd8b62",
       "bytes": 668,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/icon-20.png"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/icon-20.png"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/icon-24.png",
       "sha256": "6cfa51faf29f477d8688cd70ff4653ba936247461ac68c1092cbed0afa78a7e1",
       "bytes": 782,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/icon-24.png"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/icon-24.png"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/icon-32.png",
       "sha256": "65a53b073ad73256dd23c36c00db2df1740fe6dc38fb98a3c23d1dcabafabbfd",
       "bytes": 1056,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/icon-32.png"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/icon-32.png"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/icon-48.png",
       "sha256": "24f6d09d486512e1627bea15b956dbb83fa6b349a86639021bfd35a332ea9def",
       "bytes": 1515,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/icon-48.png"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/icon-48.png"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/icon-64.png",
       "sha256": "ecc46b1f93e72e1145b8c9df7d0a795a4366604c4eaab8a1edf78177900e4d6a",
       "bytes": 2020,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/icon-64.png"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/icon-64.png"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/icons/source.svg",
       "sha256": "6bbbb7e9d55a4d00fc7bb2369a680384f25c53476162b058e2638744c2d8bc9a",
       "bytes": 758,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/icons/source.svg"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/icons/source.svg"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/manifest.json",
       "sha256": "2576593c2a6af74d39dca45bc3f2fd4f8de43d72e859bb3b0599b08235f3e97a",
       "bytes": 886,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/manifest.json"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/manifest.json"
     },
     {
       "path": "Apps/G-Whiz/Tools/Course Organizer/extension/styles.css",
       "sha256": "c9e9f28ef34f351ca920e2012a440eded25189d73e28af14473b8c4d6fcf1b20",
       "bytes": 9256,
-      "source": "whiz-1.0.0-beta.3.zip!Tools/Course Organizer/extension/styles.css"
+      "source": "whiz-1.0.0-beta.3.1.zip!Tools/Course Organizer/extension/styles.css"
     },
     {
       "path": "Maintenance/Installer/Hub/Assets/brand-chrome-extensions.png",
@@ -1525,8 +1525,8 @@
     },
     {
       "path": "Maintenance/Installer/Hub/VersionInfo.cs",
-      "sha256": "faa943204ba73d9db9f8c8c238dce89a584cb542af9d4c954493899ca026b6b5",
-      "bytes": 187,
+      "sha256": "7231e04151e74c920d42cca4694f5f32e50b168a3389e76661fa2c0956811692",
+      "bytes": 189,
       "source": "generated/version"
     },
     {
@@ -1591,8 +1591,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "9f745849efdf0c3c5c253a1305a65454c27624493424c7e524d0da91b7dddc59",
-      "bytes": 1752,
+      "sha256": "68aaa49796408690c1e2e37cf603388cdb18fdf5b6046996c940f04c16711259",
+      "bytes": 1754,
       "source": "generated/readme"
     },
     {
