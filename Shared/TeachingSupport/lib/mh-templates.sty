@@ -1,0 +1,1046 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage
+  {mh-templates}
+  [2026/10/11 v0.6.1 Exercise and solution templates]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose
+%
+% Defines the visual appearance of Math exercise and solution records.
+%
+% This package contains presentation code only. Curriculum data,
+% metadata declarations, and validation belong elsewhere.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+\RequirePackage{zref-savepos,zref-abspage}
+\zref@addprop{savepos}{abspage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local equation numbering
+%
+% Equations display as (1), (2), ... rather than using chapter or
+% section prefixes. The counter is reset by each exercise/solution
+% template below; no new equation environment is required. A separate global
+% group number keeps PDF destinations unique across these local resets.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\theequation}{\arabic{equation}}
+
+\newcounter{mhEquationGroup}
+\let\mhOriginalEquationAnchor\theHequation
+\renewcommand{\theHequation}{%
+  mh.\arabic{mhEquationGroup}.\mhOriginalEquationAnchor%
+}
+
+\newcommand{\mhResetEquationNumbering}{%
+  \stepcounter{mhEquationGroup}%
+  \setcounter{equation}{0}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Shared document templates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{sidebar}
+  {%
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      boxrule=0.05mm,
+      colback=yellow!10,
+      colframe=black!40,
+      left=2mm,
+      right=2mm,
+      top=1mm,
+      bottom=1mm
+    ]
+    \smaller
+  }
+  {%
+    \larger
+    \end{tcolorbox}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Developer preheaders
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RenewDocumentCommand{\MathDeveloperExerciseHeader}{}
+  {
+    \begin{tcolorbox}[
+      enhanced,
+      colback=mhDeveloperBackground,
+      colframe=mhDeveloperBorder,
+      boxrule=0.5pt,
+      sharp corners,
+      boxsep=0pt,
+      left=2mm,
+      right=2mm,
+      top=1mm,
+      bottom=1mm,
+      before skip=0pt,
+      after skip=1mm
+    ]
+      \color{mhObjectiveText}
+      \texttt{\GetExerciseProperty{ID}}
+      \enspace|\enspace
+      \texttt{\GetExerciseProperty{status}}
+      \enspace|\enspace
+      \texttt{\GetExerciseProperty{topics}}
+      \enspace|\enspace
+      \texttt{\GetExerciseProperty{type}}
+      \enspace|\enspace
+      \texttt{\GetExerciseProperty{traits}}
+    \end{tcolorbox}
+    % Keep the metadata header separate from the question frame.
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% DOCUMENT TEMPLATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document exercise
+%
+% Boxed exercise with topic title and conditional skills strip.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-document}
+  {
+    \MathQuestionWorkspaceBegin
+    \MathRegisterCurrentExercise
+    \mhResetEquationNumbering
+    \MathPreExerciseHeader
+
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      colframe=mhExerciseBlue,
+      colback=white,
+      colbacktitle=mhExerciseBlue,
+      coltitle=white,
+      boxrule=0.7pt,
+      bottomrule=0pt,
+      arc=1.5mm,
+      outer arc=1.5mm,
+      rounded corners=north,
+      sharp corners=south,
+      boxsep=0mm,
+      left=0mm,
+      right=0mm,
+      top=0mm,
+      bottom=0mm,
+      pad at break*=5pt,
+      toptitle=1.5mm,
+      bottomtitle=1.5mm,
+      lefttitle=2mm,
+      righttitle=2mm,
+      titlerule=0.7pt,
+      before skip=10pt plus 2pt,
+      after skip=0pt,
+      fonttitle=\normalfont\normalsize\bfseries,
+      title={%
+        Ex.~\GetExerciseProperty{counter}%
+        \hfill
+        \MathTopicLabels{\GetExerciseProperty{topics}}%
+      },
+      before upper={%
+        \IfExercisePropertySetTF{objectives}
+          {%
+            \begin{tcolorbox}[
+              enhanced,
+              colback=mhObjectiveBlue,
+              colframe=mhExerciseBlue,
+              boxrule=0pt,
+              bottomrule=0.7pt,
+              sharp corners,
+              boxsep=0pt,
+              left=2mm,
+              right=2mm,
+              top=1mm,
+              bottom=1mm,
+              width=\linewidth,
+              before skip=0pt,
+              after skip=0pt,
+              nobeforeafter
+            ]
+              \color{mhObjectiveText}
+              \small
+              \textsc{Skills:}
+              \MathObjectiveLabels{\GetExerciseProperty{objectives}}
+            \end{tcolorbox}
+            \par\vspace{0mm}
+          }
+          {%
+            \par\vspace{2mm}
+          }%
+        \leftskip=2mm
+        \rightskip=2mm
+      },
+      after upper={%
+        \par
+        \vspace{2mm}
+      }
+    ]
+  }
+  {
+    \MathQuestionWorkspaceEnd
+    \end{tcolorbox}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document solution
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-document-solution}
+  {
+    \mhResetEquationNumbering
+    \MathPreSolutionHeader
+
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      colframe=mhSolutionBorder,
+      colback=mhSolutionBackground,
+      colbacktitle=mhSolutionGray,
+      coltitle=white,
+      boxrule=0.7pt,
+      toprule=0pt,
+      arc=1.5mm,
+      outer arc=1.5mm,
+      rounded corners=south,
+      sharp corners=north,
+      boxsep=0mm,
+      left=0mm,
+      right=2mm,
+      top=0mm,
+      bottom=0mm,
+      pad at break*=5pt,
+      toptitle=1.5mm,
+      bottomtitle=1.5mm,
+      lefttitle=2mm,
+      righttitle=2mm,
+      titlerule=0.7pt,
+      before skip=0pt,
+      after skip=10pt plus 2pt,
+      fonttitle=\normalfont\normalsize\bfseries,
+      title={%
+        Solution to Ex.~\GetExerciseProperty{counter}%
+      },
+      before upper={%
+        \par\vspace{1mm}
+        \leftskip=2mm
+        \rightskip=2mm
+      },
+      after upper={%
+        \par\vspace{1mm}
+      }
+    ]
+  }
+  {
+    \end{tcolorbox}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% MANUAL TEMPLATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Manual exercise flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhManualExerciseFlag}{%
+  \node[
+    anchor=north east,
+    fill=mhExerciseBlue,
+    text=white,
+    font=\normalfont\normalsize\bfseries,
+    inner xsep=2mm,
+    inner ysep=4.5pt
+  ]
+  at ([xshift=0.25pt,yshift=0.2pt]frame.north west)
+  {\GetExerciseProperty{counter}};
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Manual exercise
+%
+% Exercise number appears in a left-margin flag. A single metadata
+% strip displays skills on the left and topic on the right.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-manual}
+  {
+    \MathQuestionWorkspaceBegin
+    \MathRegisterCurrentExercise
+    \mhResetEquationNumbering
+    \MathPreExerciseHeader
+
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      colframe=mhExerciseBlue,
+      colback=white,
+      boxrule=0.7pt,
+      sharp corners,
+      boxsep=0mm,
+      left=0mm,
+      right=0mm,
+      top=0mm,
+      bottom=3mm,
+      pad at break*=5pt,
+      before skip=10pt plus 2pt,
+      after skip=0pt,
+      overlay unbroken={\mhManualExerciseFlag},
+      overlay first={\mhManualExerciseFlag},
+      before upper={%
+        \begin{tcolorbox}[
+          enhanced,
+          colback=mhObjectiveBlue,
+          colframe=mhExerciseBlue,
+          boxrule=0pt,
+          bottomrule=0.7pt,
+          sharp corners,
+          boxsep=0pt,
+          left=2mm,
+          right=2mm,
+          top=1mm,
+          bottom=1mm,
+          width=\linewidth,
+          before skip=0pt,
+          after skip=0pt,
+          nobeforeafter
+        ]
+          \color{mhObjectiveText}
+          \small
+          %\textsc{Topics:}~
+          \MathTopicLabels{\GetExerciseProperty{topics}}
+          \hfill
+          %\textsc{Skills:}~
+          \MathObjectiveLabels{\GetExerciseProperty{objectives}}
+        \end{tcolorbox}
+
+        \par\vspace{2mm}
+        \leftskip=2mm
+        \rightskip=2mm
+      }
+    ]
+  }
+  {
+    \MathQuestionWorkspaceEnd
+    \end{tcolorbox}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Manual solution flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhManualSolutionFlag}{%
+  \node[
+    anchor=north east,
+    fill=mhSolutionBorder,
+    text=white,
+    font=\normalfont\normalsize\bfseries,
+    inner xsep=2mm,
+    inner ysep=1mm
+  ]
+  at ([xshift=0.25pt,yshift=0.2pt]frame.north west)
+  {Sol.};
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Manual solution template
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-manual-solution}
+  {
+    \mhResetEquationNumbering
+    \MathPreSolutionHeader
+
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      colframe=mhSolutionBorder,
+      colback=mhSolutionBackground,
+      boxrule=0.7pt,
+      sharp corners,
+      boxsep=0mm,
+      left=2mm,
+      right=2mm,
+      top=2mm,
+      bottom=2mm,
+      pad at break*=5pt,
+      before skip=-0.7pt,
+      after skip=10pt plus 2pt,
+      overlay unbroken={\mhManualSolutionFlag},
+      overlay first={\mhManualSolutionFlag}
+    ]
+  }
+  {
+    \end{tcolorbox}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% EXAM TEMPLATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam exercise number flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamExerciseNumberFlag}{%
+  \node[
+    anchor=north east,
+    fill=white,
+    draw=black,
+    line width=0.5pt,
+    text=black,
+    font=\normalfont\normalsize\bfseries,
+    minimum width=11mm,
+    inner xsep=1mm,
+    inner ysep=1mm+1.3pt,
+    align=center
+  ]
+  at ([xshift=0.45pt]frame.north west)
+  {\strut Q\GetExerciseProperty{counter}.};
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam exercise point flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamExercisePointFlagYes}{%
+  \node[
+    anchor=north east,
+    inner sep=0pt
+  ]
+  at ([%
+    xshift=0.65pt,
+    yshift=\dimexpr
+      -\ht\strutbox
+      -\dp\strutbox
+      -2mm
+      -2.4pt
+    \relax
+  ]frame.north west)
+  {%
+    \AssessmentExercisePointBox{\GetExerciseProperty{points}}%
+  };
+}
+
+\newcommand{\mhExamExercisePointFlagNo}{}
+
+\newcommand{\mhExamExercisePointFlag}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam exercise flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamExerciseFlag}{%
+  \mhExamExerciseNumberFlag
+  \mhExamExercisePointFlag
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Workspace exam exercise markers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamWorkspaceStartName}{%
+  mh-exam-workspace-start-\GetExerciseProperty{counter}%
+}
+
+\newcommand{\mhExamWorkspaceEndName}{%
+  mh-exam-workspace-end-\GetExerciseProperty{counter}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Workspace exam exercise top adjustment
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamWorkspaceTopAdjust}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Workspace exam exercise start
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamWorkspaceStart}{%
+  \begingroup
+  \leftskip=\dimexpr 2mm+0.2pt\relax
+  \rightskip=2mm
+  \advance\linewidth by -4mm
+  \noindent
+  \rule{0pt}{%
+    \dimexpr
+      \ht\strutbox
+      +2mm
+      +\mhExamWorkspaceTopAdjust
+    \relax
+  }%
+  \makebox[0pt][l]{%
+    \tikz[remember picture,overlay]{%
+      \coordinate (mh-exam-workspace-baseline) at (-2mm,0);
+
+      \coordinate (\mhExamWorkspaceStartName)
+        at ([%
+          yshift=\dimexpr
+            \ht\strutbox
+            +2mm
+            +\mhExamWorkspaceTopAdjust
+          \relax
+        ]mh-exam-workspace-baseline);
+
+      \node[
+        anchor=north east,
+        fill=white,
+        draw=black,
+        line width=0.5pt,
+        text=black,
+        font=\normalfont\normalsize\bfseries,
+        text width=\dimexpr 11mm-2mm+0.2pt\relax,
+        inner xsep=1mm,
+        inner ysep=1mm+1.3pt,
+        align=center
+      ]
+      at ([xshift=0.5pt, yshift=0pt]\mhExamWorkspaceStartName)
+      {\strut Q\GetExerciseProperty{counter}.};
+
+      \ifx\mhExamExercisePointFlag\mhExamExercisePointFlagYes
+        \node[
+          anchor=north east,
+          inner sep=0pt
+        ]
+        at ([%
+          xshift=0.5pt,
+          yshift=\dimexpr
+            -\ht\strutbox
+            -\dp\strutbox
+            -2mm
+            -2.4pt
+          \relax
+        ]\mhExamWorkspaceStartName)
+        {%
+          \AssessmentExercisePointBox{\GetExerciseProperty{points}}%
+        };
+      \fi
+    }%
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Workspace exam exercise end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamWorkspaceEnd}{%
+  \par
+  \vspace{2mm}%
+  \endgroup
+
+  % Record the lower-left corner.
+  \tikz[remember picture,overlay]{%
+    \coordinate (\mhExamWorkspaceEndName) at (0,0);
+
+    % Draw only a visual frame. The exercise itself has never been boxed.
+    \draw[
+      gray!50,
+      line width=0.5pt
+    ]
+      ([xshift=0.25pt,yshift=-0.25pt]\mhExamWorkspaceStartName)
+      rectangle
+      ([xshift=\dimexpr\linewidth-0.25pt\relax,yshift=0.25pt]\mhExamWorkspaceEndName);
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam exercise spacing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newlength{\mhExamExerciseGap}
+\setlength{\mhExamExerciseGap}{4pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam exercise state
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifmhExamWorkspaceExercise
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam exercise
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-exam}
+  {
+    \MathQuestionWorkspaceBegin
+    \MathRegisterCurrentExercise
+    \mhResetEquationNumbering
+    \MathPreExerciseHeader
+
+    % Uniform gap before every exam exercise.
+    \par
+    \addvspace{\mhExamExerciseGap}%
+
+    \IfMathAssessmentTF
+      {
+        \GetExercisePropertyT{points}
+          {
+            \AssessmentAddPoints{\PropertyValue}
+          }
+      }
+      {}
+
+    % Decide whether this is a workspace exercise.
+    \mhExamWorkspaceExercisefalse
+    \IfMathStudentT{%
+      \IfExercisePropertySetTF{workspace}
+        {\mhExamWorkspaceExercisetrue}
+        {}%
+      \IfMathQuestionWorkspaceT{\mhExamWorkspaceExercisetrue}%
+    }
+
+    % Determine any additional top clearance for a workspace exercise.
+    \renewcommand{\mhExamWorkspaceTopAdjust}{0pt}
+    \IfMathStudentT{%
+      \IfExercisePropertySetTF{workspace-top}
+        {%
+          \edef\mhExamWorkspaceTopAdjust{%
+            \GetExerciseProperty{workspace-top}%
+          }%
+        }
+        {}%
+    }
+
+    % Decide whether an exercise-level point flag exists.
+    \let\mhExamExercisePointFlag\mhExamExercisePointFlagNo
+    \IfExercisePropertySetTF{points}
+      {\let\mhExamExercisePointFlag\mhExamExercisePointFlagYes}
+      {}
+
+    \ifmhExamWorkspaceExercise
+      % Workspace exercises remain visible to the page builder.
+      \mhExamWorkspaceStart
+    \else
+      % Ordinary exercises use the normal exam box.
+      \begin{tcolorbox}[
+        enhanced,
+        breakable,
+        colframe=gray!50,
+        colback=white,
+        boxrule=0.5pt,
+        sharp corners,
+        boxsep=0mm,
+        left=2mm,
+        right=2mm,
+        top=2mm,
+        bottom=2mm,
+        pad at break*=5pt,
+        before skip=0pt,
+        after skip=0pt,
+        overlay unbroken={\mhExamExerciseFlag},
+        overlay first={\mhExamExerciseFlag}
+      ]
+    \fi
+  }
+  {
+    \MathQuestionWorkspaceEnd
+    \ifmhExamWorkspaceExercise
+      \mhExamWorkspaceEnd
+    \else
+      \end{tcolorbox}
+    \fi
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam solution flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhExamSolutionFlag}{%
+  \node[
+    anchor=north east,
+    fill=white,
+    draw=gray!50,
+    line width=0.5pt,
+    text=mhSolutionBorder,
+    font=\normalfont\normalsize\bfseries,
+    minimum width=11mm,
+    inner xsep=1mm,
+    inner ysep=1mm+0.15pt,
+    align=center
+  ]
+  at ([xshift=0.5pt,yshift=0pt]frame.north west)
+  {\strut Sol.};
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam solution
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-exam-solution}
+  {
+    \mhResetEquationNumbering
+    \MathPreSolutionHeader
+
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      enlarge left by=0pt,
+      colframe=gray!50,
+      colback=mhSolutionBackground,
+      boxrule=0.5pt,
+      sharp corners,
+      boxsep=0mm,
+      left=2mm,
+      right=2mm,
+      top=2mm,
+      bottom=2mm,
+      pad at break*=5pt,
+      before skip=-0.5pt,
+      after skip=0pt,
+      overlay unbroken={\mhExamSolutionFlag},
+      overlay first={\mhExamSolutionFlag}
+    ]
+  }
+  {
+    \end{tcolorbox}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% WORKSHEET TEMPLATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Worksheet exercise flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhWorksheetExerciseFlag}{%
+  \node[
+    anchor=north east,
+    fill=mhExerciseBlue,
+    text=white,
+    font=\normalfont\normalsize\bfseries,
+    inner xsep=2mm,
+    inner ysep=1mm
+  ]
+  at ([xshift=0.25pt,yshift=0.2pt]frame.north west)
+  {\GetExerciseProperty{counter}};
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Worksheet exercise template
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhWorksheetWorkspaceStartName}{%
+  mh-worksheet-workspace-start-\GetExerciseProperty{counter}%
+}
+\newcommand{\mhWorksheetWorkspaceEndName}{%
+  mh-worksheet-workspace-end-\GetExerciseProperty{counter}%
+}
+% Workspace remains unboxed so stretch glue reaches the page builder. Draw
+% each frame at shipout, using absolute page/position labels from the prior
+% pass; a single remembered TikZ rectangle cannot cross page boundaries.
+\newcounter{mhWorksheetWorkspaceFrame}
+\newcommand{\mhWorksheetWorkspaceFrames}{}
+\newcommand{\mhDrawWorksheetWorkspaceFrame}[3]{%
+  \begingroup
+  \edef\mhFrameStartPage{\zref@extractdefault{mh-ws-start-#1}{abspage}{0}}%
+  \edef\mhFrameEndPage{\zref@extractdefault{mh-ws-end-#1}{abspage}{0}}%
+  \ifnum\mhFrameStartPage>0
+    \ifnum\ReadonlyShipoutCounter<\mhFrameStartPage\else
+      \ifnum\ReadonlyShipoutCounter>\mhFrameEndPage\else
+        \edef\mhFrameLeft{\the\dimexpr\zposx{mh-ws-start-#1}sp-2mm+0.35pt\relax}%
+        \edef\mhFrameRight{\the\dimexpr\mhFrameLeft+#2-0.7pt\relax}%
+        \edef\mhFrameTop{\the\dimexpr\paperheight-1in-\voffset-\topmargin-\headheight-\headsep\relax}%
+        \edef\mhFrameBottom{\the\dimexpr\mhFrameTop-\textheight\relax}%
+        \ifnum\ReadonlyShipoutCounter=\mhFrameStartPage
+          \edef\mhFrameTop{\the\dimexpr\zposy{mh-ws-start-#1}sp+#3-0.35pt\relax}%
+        \fi
+        \ifnum\ReadonlyShipoutCounter=\mhFrameEndPage
+          \edef\mhFrameBottom{\the\dimexpr\zposy{mh-ws-end-#1}sp+0.35pt\relax}%
+        \fi
+        \begin{tikzpicture}[remember picture,overlay]
+          \begin{scope}[shift={(current page.south west)}]
+            \draw[mhExerciseBlue,line width=0.7pt]
+              (\mhFrameLeft,\mhFrameTop)--(\mhFrameLeft,\mhFrameBottom)
+              (\mhFrameRight,\mhFrameTop)--(\mhFrameRight,\mhFrameBottom);
+            \ifnum\ReadonlyShipoutCounter=\mhFrameStartPage
+              \draw[mhExerciseBlue,line width=0.7pt]
+                (\mhFrameLeft,\mhFrameTop)--(\mhFrameRight,\mhFrameTop);
+            \fi
+            \ifnum\ReadonlyShipoutCounter=\mhFrameEndPage
+              \draw[mhExerciseBlue,line width=0.7pt]
+                (\mhFrameLeft,\mhFrameBottom)--(\mhFrameRight,\mhFrameBottom);
+            \fi
+          \end{scope}
+        \end{tikzpicture}%
+      \fi
+    \fi
+  \fi
+  \endgroup
+}
+\AddToHook{shipout/background}{\mhWorksheetWorkspaceFrames}
+\newcommand{\mhWorksheetWorkspaceStart}{%
+  \par\addvspace{10pt plus 2pt}%
+  \stepcounter{mhWorksheetWorkspaceFrame}%
+  \edef\mhWorksheetCurrentFrame{\themhWorksheetWorkspaceFrame}%
+  \xappto\mhWorksheetWorkspaceFrames{%
+    \noexpand\mhDrawWorksheetWorkspaceFrame{\mhWorksheetCurrentFrame}%
+      {\the\linewidth}{\the\dimexpr\ht\strutbox+2mm\relax}}%
+  \begingroup
+  % Balanced columns discard stretch glue. Give each student part its own
+  % vertical working area when worksheet workspace is explicitly enabled.
+  \RenewDocumentEnvironment{multicols}{m O{} O{\premulticols}}
+    {\par ##2}{\par}%
+  \RenewDocumentEnvironment{multicols*}{m O{} O{\premulticols}}
+    {\par ##2}{\par}%
+  \RenewDocumentCommand{\columnbreak}{O{4}}{\par}%
+  \@endparpenalty=10000\relax
+  \leftskip=\dimexpr 2mm+0.35pt\relax
+  \rightskip=2mm
+  \advance\linewidth by -4mm
+  \noindent\rule{0pt}{\dimexpr\ht\strutbox+2mm\relax}%
+  \makebox[0pt][l]{%
+    \zsavepos{mh-ws-start-\mhWorksheetCurrentFrame}%
+    \tikz[remember picture,overlay]{%
+      \coordinate (\mhWorksheetWorkspaceStartName)
+        at (-2mm,\dimexpr\ht\strutbox+2mm\relax);
+      \node[anchor=north east,fill=mhExerciseBlue,text=white,
+        font=\normalfont\normalsize\bfseries,inner xsep=2mm,inner ysep=1mm]
+        at ([xshift=0.25pt,yshift=0.2pt]\mhWorksheetWorkspaceStartName)
+        {\GetExerciseProperty{counter}};
+    }%
+  }%
+}
+\newcommand{\mhWorksheetWorkspaceEnd}{%
+  \par\nobreak\vspace{3mm}%
+  \nointerlineskip\hbox to 0pt{\zsavepos{mh-ws-end-\mhWorksheetCurrentFrame}\hss}%
+  \endgroup
+  \par
+}
+
+\DeclareExerciseEnvironmentTemplate{mh-worksheet}
+  {
+    \MathQuestionWorkspaceBegin
+    \MathRegisterCurrentExercise
+    \mhResetEquationNumbering
+    \MathPreExerciseHeader
+
+    \IfMathWorksheetWorkspaceTF
+      {\mhWorksheetWorkspaceStart}
+      {\begin{tcolorbox}[
+      enhanced,
+      breakable,
+      colframe=mhExerciseBlue,
+      colback=white,
+      boxrule=0.7pt,
+      sharp corners,
+      boxsep=0mm,
+      left=2mm,
+      right=2mm,
+      top=2mm,
+      bottom=3mm,
+      pad at break*=5pt,
+      before skip=10pt plus 2pt,
+      after skip=0pt,
+      overlay unbroken={\mhWorksheetExerciseFlag},
+      overlay first={\mhWorksheetExerciseFlag}
+    ]}
+  }
+  {
+    \MathWorksheetWorkspaceFinish
+    \MathQuestionWorkspaceEnd
+    \IfMathWorksheetWorkspaceTF
+      {\mhWorksheetWorkspaceEnd}
+      {\end{tcolorbox}}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Worksheet solution flag
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhWorksheetSolutionFlag}{%
+  \node[
+    anchor=north east,
+    fill=mhSolutionBorder,
+    text=white,
+    font=\normalfont\normalsize\bfseries,
+    inner xsep=2mm,
+    inner ysep=1mm
+  ]
+  at ([xshift=0.25pt,yshift=0.2pt]frame.north west)
+  {Sol.};
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Worksheet solution template
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-worksheet-solution}
+  {
+    \mhResetEquationNumbering
+    \MathPreSolutionHeader
+
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      colframe=mhSolutionBorder,
+      colback=mhSolutionBackground,
+      boxrule=0.7pt,
+      sharp corners,
+      boxsep=0mm,
+      left=2mm,
+      right=2mm,
+      top=2mm,
+      bottom=2mm,
+      pad at break*=5pt,
+      before skip=-0.7pt,
+      after skip=10pt plus 2pt,
+      overlay unbroken={\mhWorksheetSolutionFlag},
+      overlay first={\mhWorksheetSolutionFlag}
+    ]
+  }
+  {
+    \end{tcolorbox}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ACCESSIBLE TEMPLATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ACCESSIBLE TEMPLATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Accessible exercise
+%
+% Plain semantic presentation shared by all document types.
+% Manuals additionally display topic and objective metadata.
+% Exams additionally display and register point values.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-accessible}
+  {
+    \MathRegisterCurrentExercise
+    \mhResetEquationNumbering
+    \MathPreExerciseHeader
+
+    % Register exam points.
+    \IfMathAssessmentT{%
+      \GetExercisePropertyT{points}{%
+        \AssessmentAddPoints{\PropertyValue}%
+      }%
+    }%
+
+    \par
+    \medskip
+    \noindent
+    \textbf{Exercise \GetExerciseProperty{counter}.}%
+
+    % Display exam points.
+    \IfMathAssessmentT{%
+      \IfExercisePropertySetTF{points}
+        {%
+          \hfill
+          \textbf{\GetExerciseProperty{points} points}%
+        }
+        {}%
+    }%
+
+    % Manuals display curriculum metadata.
+    \IfMathManualT{%
+      \par
+      \smallskip
+      \noindent
+      \IfExercisePropertySetTF{topics}
+        {%
+          \textbf{Topic:}~
+          \MathTopicLabels{\GetExerciseProperty{topics}}%
+        }
+        {}%
+      \IfExercisePropertySetTF{objectives}
+        {%
+          \hfill
+          \textbf{Skills:}~
+          \MathObjectiveLabels{\GetExerciseProperty{objectives}}%
+        }
+        {}%
+    }%
+
+    \par
+    \smallskip
+  }
+  {
+    \par
+    \medskip
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Accessible solution
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareExerciseEnvironmentTemplate{mh-accessible-solution}
+  {
+    \mhResetEquationNumbering
+    \MathPreSolutionHeader
+    \typeout{BEGIN ACCESSIBLE SOLUTION: \GetExerciseProperty{ID}}
+    \par
+    \smallskip
+    \noindent
+    \textbf{Solution to Exercise \GetExerciseProperty{counter}.}
+
+    \par
+    \smallskip
+    \typeout{ACCESSIBLE SOLUTION BODY BEGIN: \GetExerciseProperty{ID}}
+  }
+  {
+    \par
+    \medskip
+    \typeout{END ACCESSIBLE SOLUTION: \GetExerciseProperty{ID}}
+  }
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Activate templates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\IfMathAccessibleTF
+  {
+    \xsimsetup{
+      exercise/template=mh-accessible,
+      solution/template=mh-accessible-solution
+    }
+  }
+  {
+    \IfMathAssessmentTF
+      {
+        \xsimsetup{
+          exercise/template=mh-exam,
+          solution/template=mh-exam-solution
+        }
+      }
+      {
+        \IfMathWorksheetTF
+          {
+            \xsimsetup{
+              exercise/template=mh-worksheet,
+              solution/template=mh-worksheet-solution
+            }
+          }
+          {
+            \IfMathManualTF
+              {
+                \xsimsetup{
+                  exercise/template=mh-manual,
+                  solution/template=mh-manual-solution
+                }
+              }
+              {
+                \xsimsetup{
+                  exercise/template=mh-document,
+                  solution/template=mh-document-solution
+                }
+              }
+          }
+      }
+  }
+
+\endinput

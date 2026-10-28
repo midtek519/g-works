@@ -1,0 +1,58 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{mhletter}[2026/10/13 v0.2 Shared professional correspondence]
+% Separate article class: no changes to mhdocument or course page styles.
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
+\ProcessOptions\relax
+\LoadClass[11pt,letterpaper,oneside]{article}
+\RequirePackage[margin=0.85in,headheight=15pt,headsep=18pt]{geometry}
+\RequirePackage{fancyhdr}
+\RequirePackage{graphicx}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{lmodern}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\raggedbottom
+\newcommand{\mhLetterName}{}
+\newcommand{\mhLetterTitle}{}
+\newcommand{\mhLetterDepartment}{}
+\newcommand{\mhLetterContact}{}
+\newcommand{\mhLetterDate}{\today}
+\newcommand{\mhLetterRecipient}{}
+\newcommand{\mhLetterSubject}{}
+\newcommand{\mhLetterSignature}{}
+\newcommand{\mhLetterStatus}{}
+\newcommand{\LetterStatus}[1]{\renewcommand{\mhLetterStatus}{#1}}
+\newcommand{\LetterSender}[3]{\renewcommand{\mhLetterName}{#1}\renewcommand{\mhLetterTitle}{#2}\renewcommand{\mhLetterDepartment}{#3}}
+\newcommand{\LetterContact}[1]{\renewcommand{\mhLetterContact}{#1}}
+\newcommand{\LetterDate}[1]{\renewcommand{\mhLetterDate}{#1}}
+\newcommand{\LetterRecipient}[1]{\renewcommand{\mhLetterRecipient}{#1}}
+\newcommand{\LetterSubject}[1]{\renewcommand{\mhLetterSubject}{#1}}
+% Signature paths should refer to private local files, never repository assets.
+\newcommand{\LetterSignatureFile}[1]{\renewcommand{\mhLetterSignature}{#1}}
+\fancypagestyle{mhletterfirst}{\fancyhf{}\fancyfoot[R]{\small\thepage}\renewcommand{\headrulewidth}{0pt}\renewcommand{\footrulewidth}{0pt}}
+\fancypagestyle{mhlettercontinuation}{\fancyhf{}\fancyhead[L]{\small\mhLetterDepartment}\fancyhead[R]{\small\mhLetterDate}\fancyfoot[R]{\small\thepage}\renewcommand{\headrulewidth}{0.2pt}\renewcommand{\footrulewidth}{0pt}}
+\pagestyle{mhlettercontinuation}
+\newcommand{\MakeLetterOpening}{%
+  \thispagestyle{mhletterfirst}%
+  {\small\mhLetterStatus\par}%
+  {\Large\bfseries\mhLetterDepartment\par}%
+  {\small\mhLetterContact\par}%
+  \vspace{0.3em}\hrule\vspace{1.2em}%
+  \mhLetterDate\par\vspace{0.5em}%
+  \mhLetterRecipient\par\vspace{0.5em}%
+  {\bfseries\mhLetterSubject\par}%
+}
+\newcommand{\LetterHeading}[1]{\par\addvspace{0.35em}\noindent\textbf{#1}\par\nopagebreak\vspace{-0.15em}}
+\newcommand{\MakeLetterClosing}{%
+  \par\addvspace{1em}%
+  \begin{minipage}{\linewidth}%
+  Sincerely,\par\vspace{0.5em}%
+  \ifx\mhLetterSignature\empty\vspace{1.2em}\else%
+    \IfFileExists{\mhLetterSignature}{\includegraphics[width=1.6in,height=0.55in,keepaspectratio]{\mhLetterSignature}\par}{\ClassWarning{mhletter}{Signature file missing; using typed name}}%
+  \fi%
+  \mhLetterName\par\mhLetterTitle%
+  \end{minipage}\par%
+}
+\RequirePackage{mh-letter}
+\endinput

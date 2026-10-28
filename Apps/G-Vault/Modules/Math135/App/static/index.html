@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173f46">
+  <title>G-Vault · Course Records</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/record-filters.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Application navigation">
+      <a class="brand" href="#students" aria-label="Course records home"><span class="brand-mark">G</span><span><span data-course-name>Course</span><small>Student records</small></span></a>
+      <div class="sidebar-label">YOUR WORKSPACE</div>
+      <nav id="navigation">
+        <button data-tab="students" class="nav-button active"><span aria-hidden="true">◎</span> Students</button>
+        <button data-tab="reports" class="nav-button"><span aria-hidden="true">▥</span> Reports</button>
+        <button data-tab="imports" class="nav-button"><span aria-hidden="true">↥</span> Imports</button>
+        <button data-tab="review" class="nav-button"><span aria-hidden="true">✓</span> Grade review</button>
+        <button data-tab="settings" class="nav-button"><span aria-hidden="true">⚙</span> Course settings</button>
+      </nav>
+      <div class="sidebar-bottom"><span class="local-indicator"></span><strong>On this computer</strong><p>Your records and reports stay in this local app.</p></div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar"><div><span class="eyebrow">RUTGERS MATHEMATICS</span><span class="workspace-name">Course records</span></div><span class="local-pill"><span class="local-indicator"></span> Local workspace</span></header>
+      <main id="main" tabindex="-1">
+        <div id="app-content"><div class="loading-state"><span class="spinner"></span><p>Opening your records…</p></div></div>
+      </main>
+      <footer class="app-footer">Course records · Averages, grades, and course history in one place</footer>
+    </div>
+  </div>
+  <div id="notification" class="notification" role="status" aria-live="polite" hidden></div>
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><div id="dialog-content"></div></dialog>
+</body>
+</html>

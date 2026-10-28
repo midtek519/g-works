@@ -1,0 +1,196 @@
+/* G-Whiz's personal visual system, applied only to managed module documents. */
+:root.gwhiz-native {
+  --ink:#20334d; --muted:#586b85; --accent:#275fbd; --hover:#e7effc;
+  --paper:#f4f7fc; --cream:#f4f7fc; --white:#fff; --line:#d4deed;
+  --green:#275fbd; --green-dark:#1d4d9e; --mint:#e7effc; --light:#e7effc;
+  --pale:#e7effc; --gold:#a9772e; --amber:#a9772e; --amber-bg:#fff9e9;
+  --red:#a13e31; --danger:#a13e31; --red-bg:#fff0eb; --radius:12px;
+  --shadow:0 3px 12px #20334d08;
+  font-family:"Segoe UI",system-ui,sans-serif; font-size:14px;
+  color:var(--ink); background:var(--paper); color-scheme:light;
+}
+.gwhiz-native body {
+  margin:0; padding:0; min-width:0; min-height:0; color:var(--ink);
+  background:var(--paper); font:14px/1.5 "Segoe UI",system-ui,sans-serif;
+}
+.gwhiz-native * {box-sizing:border-box}
+.gwhiz-native button,.gwhiz-native input,.gwhiz-native select,.gwhiz-native textarea,.gwhiz-native .button {
+  font-family:"Segoe UI",system-ui,sans-serif; font-size:13px; line-height:1.5;
+}
+.gwhiz-native h1 {font:400 29px/1.2 Georgia,serif;letter-spacing:-.6px;color:var(--ink)}
+.gwhiz-native h2 {font:600 17px/1.4 "Segoe UI",system-ui,sans-serif;color:var(--ink)}
+.gwhiz-native h3 {font:600 14px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--ink)}
+.gwhiz-native p {line-height:1.6}
+.gwhiz-native label {font-size:11px;font-weight:600;color:var(--ink)}
+.gwhiz-native .eyebrow,.gwhiz-native .section-label,.gwhiz-native .sidebar-label {
+  font:700 11px/1.5 "Segoe UI",system-ui,sans-serif;letter-spacing:1.7px;color:var(--muted);
+}
+.gwhiz-native .muted,.gwhiz-native .help,.gwhiz-native .field-help,.gwhiz-native .small-text,.gwhiz-native .tiny {
+  color:var(--muted);font-size:13px;line-height:1.5;
+}
+.gwhiz-native button,.gwhiz-native .button {
+  min-height:36px;padding:8px 12px;border:1px solid var(--line);border-radius:7px;
+  color:var(--ink);background:#fff;font-weight:500;box-shadow:none;
+}
+.gwhiz-native button:hover:not(:disabled),.gwhiz-native .button:hover {background:var(--hover);border-color:#abc4ea}
+.gwhiz-native button.primary,.gwhiz-native .button.primary {
+  color:#fff;background:var(--accent);border-color:var(--accent);
+}
+.gwhiz-native button.primary:hover:not(:disabled),.gwhiz-native .button.primary:hover {background:#1d4d9e}
+.gwhiz-native button.quiet,.gwhiz-native button.link,.gwhiz-native .text-button,.gwhiz-native .row-link {
+  color:var(--accent);background:transparent;border-color:transparent;
+}
+.gwhiz-native input,.gwhiz-native select,.gwhiz-native textarea {
+  color:var(--ink);border:1px solid #c7d4e7;border-radius:6px;background:#fff;padding:8px 10px;
+}
+.gwhiz-native input:focus,.gwhiz-native select:focus,.gwhiz-native textarea:focus {
+  outline:2px solid #dce9ff;outline-offset:0;border-color:#5687d5;
+}
+.gwhiz-native input[type=checkbox],.gwhiz-native input[type=radio] {accent-color:var(--accent)}
+.gwhiz-native textarea {line-height:1.65}
+.gwhiz-native .search input,.gwhiz-native .search-input {padding-left:34px}
+.gwhiz-native a {color:var(--accent);text-underline-offset:3px}
+.gwhiz-native .panel,.gwhiz-native .card,.gwhiz-native .stat,.gwhiz-native .metric {
+  background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:none;
+}
+.gwhiz-native .panel,.gwhiz-native .card {padding:23px}
+.gwhiz-native .metric.highlight,.gwhiz-native .metric.featured {background:var(--hover);border-color:#c7d8f2}
+.gwhiz-native .metric-value,.gwhiz-native .number {color:var(--accent);font-family:"Segoe UI",system-ui,sans-serif}
+.gwhiz-native table {font-size:12px;color:var(--ink)}
+.gwhiz-native th {color:var(--ink);background:#edf2fa;font-family:"Segoe UI",system-ui,sans-serif;font-size:11px}
+.gwhiz-native td,.gwhiz-native th {border-color:var(--line)}
+.gwhiz-native .chip,.gwhiz-native .badge,.gwhiz-native .pill {background:var(--hover);color:#275f91;border-color:#c7d8f2;font-size:11px}
+.gwhiz-native .badge.amber {background:#fff9e9;color:#80551e}
+.gwhiz-native .badge.red,.gwhiz-native .badge.danger {background:#fff0eb;color:var(--red)}
+.gwhiz-native .badge.gray {background:#edf1f7;color:var(--muted)}
+.gwhiz-native .initials {background:var(--hover);color:var(--accent);border:1px solid #c7d8f2}
+.gwhiz-native .people-intro {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.gwhiz-native .people-intro .lead {margin-bottom:0;max-width:70em}
+.gwhiz-native .people-intro>button {flex-shrink:0}
+@media(max-width:650px){.gwhiz-native .people-intro{flex-wrap:wrap;gap:8px}}
+.gwhiz-native .note,.gwhiz-native .notice {border-color:var(--gold);background:#fff9e9;font-size:13px}
+.gwhiz-native .error,.gwhiz-native .danger {color:var(--red)}
+.gwhiz-native .case-item.active,.gwhiz-native .person-item.active {background:var(--hover);border-color:#abc4ea;color:var(--ink)}
+.gwhiz-native .case-item,.gwhiz-native .person-item {border-color:var(--line)}
+.gwhiz-native .plot .bar,.gwhiz-native svg .bar {fill:var(--accent)}
+.gwhiz-native .plot text {fill:var(--muted)!important}
+.gwhiz-native dialog {font:14px/1.5 "Segoe UI",system-ui,sans-serif;border:1px solid var(--line);border-radius:12px;color:var(--ink)}
+.gwhiz-native pre,.gwhiz-native code {font-family:Consolas,monospace;font-size:13px}
+/* The single G-Whiz shell owns branding, global navigation and page titles. */
+.gwhiz-native .app-shell > .sidebar,.gwhiz-native body > .sidebar,
+.gwhiz-native .app-header,.gwhiz-native .main-shell > .topbar,
+.gwhiz-native .app-footer,.gwhiz-native .shell > footer,.gwhiz-native .footer-note {display:none!important}
+.gwhiz-native .app-shell {display:block!important;min-height:0!important}
+.gwhiz-native .main-shell,.gwhiz-native .shell {margin-left:0!important;min-width:0;min-height:0!important;width:100%}
+.gwhiz-native main,.gwhiz-native main.page {max-width:none!important;width:100%;margin:0!important;padding:0!important;background:transparent}
+.gwhiz-native .shell > .topbar {position:static;height:auto;min-height:0;padding:0 0 16px;margin:0;border:0;background:transparent;justify-content:flex-end}
+.gwhiz-native .shell > .topbar > div:first-child {display:none}
+.gwhiz-native #app-content > .page-heading > div:first-child,
+.gwhiz-native #page > .page-heading > div:first-child,
+.gwhiz-native .settings-wrap > .page-heading > div:first-child {display:none}
+.gwhiz-native #app-content > .page-heading,.gwhiz-native #page > .page-heading {justify-content:flex-end;margin:0 0 16px;min-height:0;gap:0}
+.gwhiz-native #app-content > .page-heading:not(:has(.heading-actions)),
+.gwhiz-native #page > .page-heading:not(:has(> button)) {display:none}
+.gwhiz-native .settings-wrap > .page-heading {min-height:0;margin:0 0 12px;justify-content:flex-end}
+.gwhiz-native .case-sidebar {background:#fff;border-color:var(--line);border-radius:12px}
+@media(max-width:800px){.gwhiz-native .panel,.gwhiz-native .card{padding:16px}}
+
+/* A denser working layout without changing the shared type scale. */
+.gwhiz-native button,.gwhiz-native .button{min-height:32px;padding:6px 10px}
+.gwhiz-native input,.gwhiz-native select,.gwhiz-native textarea{padding:6px 9px}
+.gwhiz-native .search input,.gwhiz-native .search-input{padding-left:32px}
+.gwhiz-native .panel,.gwhiz-native .card{padding:16px}
+.gwhiz-native .shell>.topbar{padding-bottom:8px}
+.gwhiz-native #app-content>.page-heading,.gwhiz-native #page>.page-heading{margin-bottom:8px}
+.gwhiz-native .metric-grid{gap:10px;margin:10px 0}
+.gwhiz-native .metric,.gwhiz-native .stat{padding:12px 14px;min-height:0}
+.gwhiz-native .metric-value,.gwhiz-native .stat .number{font-size:24px;line-height:1.25;margin:5px 0}
+.gwhiz-native .stats{gap:10px;margin:10px 0 14px}
+.gwhiz-native .people-layout,.gwhiz-native .case-layout,.gwhiz-native .report-grid{gap:14px}
+.gwhiz-native .sidebar-tools{padding:12px;gap:8px}
+.gwhiz-native .empty,.gwhiz-native .empty-state{min-height:0;padding:24px 16px}
+.gwhiz-native .section-gap{margin-top:12px}
+.gwhiz-native .record-filterbar{margin-bottom:10px;padding-bottom:10px}
+.gwhiz-native .record-semester select{min-height:32px;padding:5px 8px}
+.gwhiz-native button.record-filter-chip{font-size:11px;min-height:27px;padding:4px 7px}
+.gwhiz-native .two-column{gap:14px}
+.gwhiz-native .card:has(>.card-header){padding:0}
+.gwhiz-native .card>.card-header{padding:12px 14px;margin:0}
+.gwhiz-native .card>.card-body{padding:12px 14px}
+.gwhiz-native .card>.card-header h2{margin:0}
+.gwhiz-native .card>.card-header p{margin:4px 0 0;font-size:11px}
+/* Put the frequent actions and identifying details on the same working row. */
+.gwhiz-integrity .case-summarybar{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+.gwhiz-integrity .case-summarybar>.stats{display:flex;flex:1;gap:10px;margin:0}
+.gwhiz-integrity .case-summarybar .stat{display:flex;align-items:baseline;gap:9px;flex:1;min-width:0;padding:8px 12px}
+.gwhiz-integrity .case-summarybar .number{font-size:22px;margin:0;line-height:1.25}
+.gwhiz-integrity .case-summarybar .caption{margin:0;font-size:11px}
+.gwhiz-integrity .case-summarybar>button{flex-shrink:0}
+.gwhiz-integrity .case-heading{align-items:center;gap:10px;margin-bottom:8px}
+.gwhiz-integrity .case-heading>div{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0}
+.gwhiz-integrity .case-heading h2{margin:0;font-size:17px}
+.gwhiz-integrity .case-heading .meta{font-size:12px}
+.gwhiz-integrity .case-detail>.tabs{margin-bottom:10px}
+.gwhiz-integrity .case-details-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px 12px}
+.gwhiz-integrity .case-details-grid>*{min-width:0}
+.gwhiz-integrity .case-details-grid .span-all{grid-column:1/-1}
+.gwhiz-integrity .case-details-grid input,.gwhiz-integrity .case-details-grid select{width:100%;max-width:100%;min-height:32px}
+.gwhiz-integrity .case-details-grid label{margin-bottom:3px}
+.gwhiz-integrity .case-notes summary{font-size:12px;cursor:pointer}
+.gwhiz-integrity .case-notes textarea{min-height:70px;margin-top:6px}
+.gwhiz-integrity .case-people-panel .party-card{padding:0;border:0;margin-top:8px}
+.gwhiz-integrity .case-people-panel .party-card h3,.gwhiz-integrity .case-people-panel .party-card p{display:inline;margin:0 12px 0 0}
+.gwhiz-integrity .response-date-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gwhiz-integrity .response-date-grid>*{min-width:0}
+.gwhiz-integrity .meeting-response-step .step-main>strong{font-size:12px;font-weight:600}
+.gwhiz-integrity .meeting-response-step input:disabled{opacity:1}
+.gwhiz-integrity #meeting-response-form textarea{min-height:70px}
+.gwhiz-grades .record-filter-actions{display:flex;align-items:center;gap:7px;margin-left:auto;flex-wrap:wrap}
+.gwhiz-grades .metric-grid{margin-bottom:10px}
+.gwhiz-grades .metric-grid>.metric{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:baseline;padding:8px 12px}
+.gwhiz-grades .metric-grid .metric-label{font-size:11px}
+.gwhiz-grades .metric-grid .metric-value{font-size:22px;line-height:1.3;margin:0}
+.gwhiz-grades .metric-grid .metric-sub{grid-column:1/-1;font-size:10px;margin:0}
+.gwhiz-grades .card:has(>.toolbar){padding:0}
+.gwhiz-grades .students-card>.toolbar{padding:10px 12px;gap:8px}
+.gwhiz-grades .students-card th,.gwhiz-grades .students-card td{padding:7px 12px}
+.gwhiz-grades .students-card .row-link{min-height:0;padding:0;border:0;font-weight:500}
+.gwhiz-grades .student-identity,.gwhiz-grades .student-latest{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 9px}
+.gwhiz-grades .student-id{font-size:10px;color:var(--muted);white-space:nowrap}
+.gwhiz-grades .students-card .button.small{min-height:27px;padding:3px 7px;font-size:11px}
+.gwhiz-grades .students-card .table-footer{padding:9px 12px}
+@media(max-width:1000px){.gwhiz-integrity .case-details-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.gwhiz-integrity .case-summarybar .stat{gap:6px;padding:7px 9px}.gwhiz-integrity .case-summarybar .caption{font-size:10px}}
+@media(max-width:700px){.gwhiz-integrity .case-details-grid,.gwhiz-integrity .response-date-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gwhiz-integrity .case-summarybar{flex-wrap:wrap}.gwhiz-integrity .case-summarybar>.stats{flex-basis:100%}.gwhiz-grades .record-filter-actions{margin-left:0}}
+
+/* Compact checkbox labels, including labels inside grading-policy fields. */
+.gwhiz-grades label.check-option{display:flex;align-items:center;gap:8px;padding:4px 0;margin:0;font-size:12px;font-weight:400;line-height:1.4}
+.gwhiz-grades label.check-option input[type=checkbox]{flex:0 0 15px;width:15px;height:15px;padding:0;margin:0;border-radius:3px}
+.gwhiz-grades #policy-form .policy-adjustments{grid-template-columns:minmax(180px,280px) minmax(0,1fr);gap:12px 22px;margin-top:12px}
+.gwhiz-grades #policy-form .policy-rounding{border:0;min-width:0;padding:0;margin:0}
+.gwhiz-grades #policy-form .policy-rounding legend{font-size:11px;font-weight:600;padding:0;margin-bottom:5px}
+.gwhiz-grades #policy-form .policy-adjustments .field-help{margin:5px 0 0}
+@media(max-width:780px){.gwhiz-grades #policy-form .policy-adjustments{grid-template-columns:1fr}}
+
+.gwhiz-recommendations .shell:has(.people-toolbar)>.topbar{display:none}
+.gwhiz-recommendations .people-toolbar{display:flex;justify-content:flex-end;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 7px}
+.gwhiz-recommendations .people-toolbar #people-save-status{font-size:12px;margin-right:5px}
+.gwhiz-recommendations .people-intro{margin-bottom:10px}
+.gwhiz-recommendations .people-intro .lead{margin:0}
+
+/* Module families share their sidebar accent throughout the workspace. */
+:root.gwhiz-materials{--module-accent:#275fbd;--module-tint:#eaf1fc;--module-border:#b4c9ee;--module-hover:#204e9b;--accent:#275fbd;--green:#275fbd;--green-dark:#204e9b;--hover:#eaf1fc;--mint:#eaf1fc;--light:#eaf1fc;--pale:#eaf1fc}
+:root.gwhiz-grades{--module-accent:#087f79;--module-tint:#e7f5f2;--module-border:#a9d8d1;--module-hover:#066b66;--accent:#087f79;--green:#087f79;--green-dark:#066b66;--hover:#e7f5f2;--mint:#e7f5f2;--light:#e7f5f2;--pale:#e7f5f2}
+:root.gwhiz-grader{--module-accent:#7546b5;--module-tint:#f0eafa;--module-border:#cdb9e9;--module-hover:#603994;--accent:#7546b5;--green:#7546b5;--green-dark:#603994;--hover:#f0eafa;--mint:#f0eafa;--light:#f0eafa;--pale:#f0eafa}
+:root.gwhiz-recommendations{--module-accent:#956900;--module-tint:#fff5d9;--module-border:#ddca89;--module-hover:#795600;--accent:#956900;--green:#956900;--green-dark:#795600;--hover:#fff5d9;--mint:#fff5d9;--light:#fff5d9;--pale:#fff5d9}
+:root.gwhiz-integrity{--module-accent:#a24738;--module-tint:#faece8;--module-border:#dfb6ab;--module-hover:#84382d;--accent:#a24738;--green:#a24738;--green-dark:#84382d;--hover:#faece8;--mint:#faece8;--light:#faece8;--pale:#faece8}
+.gwhiz-native .gspot-subtool-icon{display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;width:17px;height:17px;margin-right:7px;color:var(--module-accent);flex:none;pointer-events:none}.gspot-subtool-icon svg{display:block;width:17px;height:17px}.gwhiz-native .tabs button.active,.gwhiz-native .tab.active{color:var(--module-accent);border-color:var(--module-accent)}.gwhiz-native button.primary:hover:not(:disabled),.gwhiz-native .button.primary:hover{background:var(--module-hover);border-color:var(--module-hover)}.gwhiz-native button:hover:not(:disabled),.gwhiz-native .button:hover{border-color:var(--module-border)}.gwhiz-native a:not(.button):not(.button-link){color:var(--module-accent)}
+
+/* Recommendation empty-state pencil follows the module gold. */
+.gwhiz-recommendations .empty-icon{color:var(--module-accent)}
+
+/* One navigation-only entry to the shared AI connection settings. */
+.gwhiz-native .gspot-shared-ai-settings{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--module-border,var(--line,#cbd6e6));background:var(--module-tint,#f3f7fc);padding:12px 14px;border-radius:7px;margin:0 0 16px}.gwhiz-native .gspot-shared-ai-settings h2{font:650 14px/1.4 'Segoe UI',system-ui,sans-serif;margin:0 0 3px}.gwhiz-native .gspot-shared-ai-settings p{font-size:12px;line-height:1.4;margin:0}.gwhiz-native .gspot-shared-ai-settings>button{flex:none;font-size:12px}@media(max-width:580px){.gwhiz-native .gspot-shared-ai-settings{align-items:start;flex-direction:column}}
+
+/* Shared AI is a universal connection, with the same green card in every module. */
+.gwhiz-native .gspot-shared-ai-settings{background:#edf7f1!important;border-color:#b3d6c0!important;color:#174e35!important;border-top:3px solid #31825a!important}.gwhiz-native .gspot-shared-ai-settings h2{color:#174e35!important}
+html[data-gspot-theme=midnight] .gspot-shared-ai-settings{background:#203a32!important;border-color:#456e5d!important;color:#c8edda!important}html[data-gspot-theme=midnight] .gspot-shared-ai-settings h2{color:#c8edda!important}

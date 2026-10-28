@@ -1,0 +1,1111 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage
+  {mh-syllabus}
+  [2026/10/11 v1.1.0 Shared Rutgers syllabus tools]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{tabularx}
+\RequirePackage{longtable}
+\RequirePackage{booktabs}
+\RequirePackage{graphicx}
+\RequirePackage{hyperref}
+\RequirePackage{mh-semester}
+\RequirePackage{etoolbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Instructor information
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\InstructorName}{}
+\newcommand{\InstructorEmail}{}
+\newcommand{\InstructorOffice}{}
+\newcommand{\InstructorOfficeHours}{}
+
+\newcommand{\SetInstructorName}[1]{%
+  \renewcommand{\InstructorName}{#1}%
+}
+
+\newcommand{\SetInstructorEmail}[1]{%
+  \renewcommand{\InstructorEmail}{#1}%
+}
+
+\newcommand{\SetInstructorOffice}[1]{%
+  \renewcommand{\InstructorOffice}{#1}%
+}
+
+\newcommand{\SetInstructorOfficeHours}[1]{%
+  \renewcommand{\InstructorOfficeHours}{#1}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Recitation instructor information
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\RecitationInstructorName}{}
+\newcommand{\RecitationInstructorEmail}{}
+\newcommand{\RecitationInstructorOffice}{}
+\newcommand{\RecitationInstructorOfficeHours}{}
+
+\newcommand{\SetRecitationInstructorName}[1]{%
+  \renewcommand{\RecitationInstructorName}{#1}%
+}
+
+\newcommand{\SetRecitationInstructorEmail}[1]{%
+  \renewcommand{\RecitationInstructorEmail}{#1}%
+}
+
+\newcommand{\SetRecitationInstructorOffice}[1]{%
+  \renewcommand{\RecitationInstructorOffice}{#1}%
+}
+
+\newcommand{\SetRecitationInstructorOfficeHours}[1]{%
+  \renewcommand{\RecitationInstructorOfficeHours}{#1}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Standard Rutgers 80-minute periods
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\PeriodTime}[1]{%
+  \ifcase#1\relax
+    \PackageError{mh-syllabus}
+      {Invalid class period `#1'}
+      {Valid class periods are 1 through 8.}%
+  \or 8:30--9:50\,am%
+  \or 10:20--11:40\,am%
+  \or 12:10--1:30\,pm%
+  \or 2:00--3:20\,pm%
+  \or 3:50--5:10\,pm%
+  \or 5:40--7:00\,pm%
+  \or 7:30--8:50\,pm%
+  \or 9:20--10:40\,pm%
+  \else
+    \PackageError{mh-syllabus}
+      {Unknown class period `#1'}
+      {Valid class periods are 1 through 8.}%
+  \fi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% One lecture group per syllabus
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\LectureSections}{}
+\newcommand{\LectureDays}{}
+\newcommand{\LecturePeriod}{}
+\newcommand{\LectureRoom}{}
+
+\newcommand{\SetLecture}[4]{%
+  \renewcommand{\LectureSections}{#1}%
+  \renewcommand{\LectureDays}{#2}%
+  \renewcommand{\LecturePeriod}{#3}%
+  \renewcommand{\LectureRoom}{#4}%
+  \def\mhLecturePeriodCombo{}%
+  \InvalidateSyllabusSchedule
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Special lecture period combinations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mhLecturePeriodCombo}{}
+
+\newcommand{\LecturePeriodCombo}[1]{%
+  \def\mhLecturePeriodCombo{#1}%
+  \ifdefstring{\mhLecturePeriodCombo}{W2F5}
+    {}
+    {%
+      \ifdefstring{\mhLecturePeriodCombo}{W3F4}
+        {}
+        {%
+          \PackageError{mh-syllabus}
+            {Unknown lecture period combination '#1'}
+            {Valid combinations are W2F5 and W3F4.}%
+        }%
+    }%
+  \renewcommand{\LectureDays}{WF}%
+  \InvalidateSyllabusSchedule
+}
+
+\newcommand{\IfLecturePeriodComboTF}[2]{%
+  \ifdefempty{\mhLecturePeriodCombo}
+    {#2}
+    {#1}%
+}
+
+\newcommand{\LecturePeriodDisplay}{%
+  \IfLecturePeriodComboTF
+    {%
+      \ifdefstring{\mhLecturePeriodCombo}{W2F5}
+        {W2 / F5}
+        {W3 / F4}%
+    }
+    {%
+      % Existing ordinary lecture-period display goes here.
+      \LectureDays\LecturePeriod
+    }%
+}
+
+\newcommand{\LectureTimeDisplay}{%
+  \IfLecturePeriodComboTF
+    {%
+      \ifdefstring{\mhLecturePeriodCombo}{W2F5}
+        {W2: \PeriodTime{2}; F5: \PeriodTime{5}}
+        {W3: \PeriodTime{3}; F4: \PeriodTime{4}}%
+    }
+    {%
+      \PeriodTime{\LecturePeriod}%
+    }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Final exam information
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\FinalExamDate}{}
+\newcommand{\FinalExamTime}{}
+
+\ExplSyntaxOn
+\bool_new:N \g_mhsyllabus_final_date_explicit_bool
+\bool_new:N \g_mhsyllabus_final_time_explicit_bool
+\seq_new:N \l_mhsyllabus_final_date_parts_seq
+
+% This is an authoring default, not an official course exam assignment.
+% Explicit setters (including TBA or an intentionally blank value) take priority.
+\cs_new_protected:Npn \mhsyllabus_final_defaults_apply:
+  {
+    \bool_if:NF \g_mhsyllabus_final_date_explicit_bool
+      {
+        \tl_if_empty:oTF {\SemesterExamFirstDate}
+          {\cs_gset:Npn \FinalExamDate {}}
+          {
+            % Match the calendar's month/day style; the semester header gives
+            % the year. The full-date getters remain available for other uses.
+            \seq_set_split:NnV \l_mhsyllabus_final_date_parts_seq {-}
+              \SemesterExamFirstDate
+            \cs_gset:Npx \FinalExamDate
+              {
+                \mhsyllabus_month_name:n
+                  {\seq_item:Nn \l_mhsyllabus_final_date_parts_seq {2}}
+                \exp_not:N \nobreakspace
+                \int_eval:n
+                  {\seq_item:Nn \l_mhsyllabus_final_date_parts_seq {3}}
+              }
+          }
+      }
+    \bool_if:NF \g_mhsyllabus_final_time_explicit_bool
+      {
+        \tl_if_empty:oTF {\SemesterExamFirstDate}
+          {\cs_gset:Npn \FinalExamTime {}}
+          {\cs_gset:Npn \FinalExamTime {12:00--3:00\,pm}}
+      }
+  }
+
+\cs_new_protected:Npn \mhsyllabus_reset_final_exam:
+  {
+    \bool_gset_false:N \g_mhsyllabus_final_date_explicit_bool
+    \bool_gset_false:N \g_mhsyllabus_final_time_explicit_bool
+    \mhsyllabus_final_defaults_apply:
+  }
+
+\NewDocumentCommand{\SetFinalExamDate}{m}
+  {
+    \bool_gset_true:N \g_mhsyllabus_final_date_explicit_bool
+    \cs_gset:Npn \FinalExamDate {#1}
+  }
+
+\NewDocumentCommand{\SetFinalExamTime}{m}
+  {
+    \bool_gset_true:N \g_mhsyllabus_final_time_explicit_bool
+    \cs_gset:Npn \FinalExamTime {#1}
+  }
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Canvas site
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\AllSectionsCanvasSite}{}
+\newcommand{\SetAllSectionsCanvasSite}[1]{\renewcommand{\AllSectionsCanvasSite}{#1}}
+
+\newcommand{\InstructorCanvasSite}{}
+
+\newcommand{\SetInstructorCanvasSite}[1]{%
+  \renewcommand{\InstructorCanvasSite}{#1}%
+}
+
+% Unannounced contact details and course sites remain readable without empty
+% hyperlink targets. The course profile supplies the eventual URL or email.
+\ExplSyntaxOn
+\NewDocumentCommand{\SyllabusOptionalLink}{mm}
+  {
+    \tl_if_blank:eTF {#1}
+      {#2\nobreakspace(TBA)}
+      {\href{#1}{#2}}
+  }
+\NewDocumentCommand{\SyllabusEmail}{m}
+  {
+    \tl_if_blank:eTF {#1}
+      {TBA}
+      {\href{mailto:#1}{#1}}
+  }
+\ExplSyntaxOff
+
+% Exam dates are derived from the selected calendar and course topic mapping.
+\newcommand{\MidtermOneDate}{}
+\newcommand{\MidtermTwoDate}{}
+\newcommand{\MidtermThreeDate}{}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\InvalidateSyllabusSchedule}{}
+  {\mhsyllabus_invalidate_schedule:}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Recitations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\seq_new:N \g_mhsyllabus_recitations_seq
+\seq_new:N \g_mhsyllabus_recitation_daycodes_seq
+
+\NewDocumentCommand{\AddRecitation}{mmmm}
+  {
+    \str_case:nnF {#2} {{M}{} {T}{} {W}{} {Th}{} {F}{}}
+      {\msg_fatal:nnn {mh-semester}{invalid-day}{#2}}
+    % Complete row for the meeting-times table.
+    \seq_gput_right:Nn \g_mhsyllabus_recitations_seq
+      {
+        Section~#1
+          & Recitation
+          & #2#3
+          & \PeriodTime{#3}
+          & #4
+          \\
+      }
+
+    % Each distinct recitation weekday is also used by the course calendar.
+    \seq_if_in:NnF \g_mhsyllabus_recitation_daycodes_seq {#2}
+      {
+        \seq_gput_right:Nn
+          \g_mhsyllabus_recitation_daycodes_seq
+          {#2}
+      }
+    \mhsyllabus_invalidate_schedule:
+  }
+
+% Reset meetings before loading another course/section profile.
+\NewDocumentCommand{\ClearSyllabusMeetings}{}
+  {
+    \seq_gclear:N \g_mhsyllabus_recitations_seq
+    \seq_gclear:N \g_mhsyllabus_recitation_daycodes_seq
+    \cs_gset:Npn \LectureSections {}
+    \cs_gset:Npn \LectureDays {}
+    \cs_gset:Npn \LecturePeriod {}
+    \cs_gset:Npn \LectureRoom {}
+    \cs_gset:Npn \mhLecturePeriodCombo {}
+    \mhsyllabus_reset_final_exam:
+    \mhsyllabus_invalidate_schedule:
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Day-code matching
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\prg_new_conditional:Npnn
+  \mhsyllabus_daycode_matches:nn #1#2
+  {T,F,TF}
+  {
+    \str_case:enF {#1}
+      {
+        {M}
+          {
+            \int_compare:nNnTF {#2} = {0}
+              {\prg_return_true:}
+              {\prg_return_false:}
+          }
+
+        {T}
+          {
+            \int_compare:nNnTF {#2} = {1}
+              {\prg_return_true:}
+              {\prg_return_false:}
+          }
+
+        {W}
+          {
+            \int_compare:nNnTF {#2} = {2}
+              {\prg_return_true:}
+              {\prg_return_false:}
+          }
+
+        {Th}
+          {
+            \int_compare:nNnTF {#2} = {3}
+              {\prg_return_true:}
+              {\prg_return_false:}
+          }
+
+        {F}
+          {
+            \int_compare:nNnTF {#2} = {4}
+              {\prg_return_true:}
+              {\prg_return_false:}
+          }
+
+        {MW}
+          {
+            \int_compare:nNnTF {#2} = {0}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {2}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {MT}
+          {
+            \int_compare:nNnTF {#2} = {0}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {1}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {MTh}
+          {
+            \int_compare:nNnTF {#2} = {0}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {3}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {MF}
+          {
+            \int_compare:nNnTF {#2} = {0}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {4}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {TW}
+          {
+            \int_compare:nNnTF {#2} = {1}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {2}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {TTh}
+          {
+            \int_compare:nNnTF {#2} = {1}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {3}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {TF}
+          {
+            \int_compare:nNnTF {#2} = {1}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {4}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {WTh}
+          {
+            \int_compare:nNnTF {#2} = {2}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {3}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {WF}
+          {
+            \int_compare:nNnTF {#2} = {2}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {4}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+
+        {ThF}
+          {
+            \int_compare:nNnTF {#2} = {3}
+              {\prg_return_true:}
+              {
+                \int_compare:nNnTF {#2} = {4}
+                  {\prg_return_true:}
+                  {\prg_return_false:}
+              }
+          }
+      }
+      {
+        \PackageError{mh-syllabus}
+          {Unknown meeting-day code `#1'}
+          {Use a supported code such as MTh, TTh, MW, F, etc.}
+        \prg_return_false:
+      }
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Date formatting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new:Npn \mhsyllabus_month_name:n #1
+  {
+    \int_case:nnF {#1}
+      {
+        {1}  {Jan.}
+        {2}  {Feb.}
+        {3}  {Mar.}
+        {4}  {Apr.}
+        {5}  {May}
+        {6}  {June}
+        {7}  {July}
+        {8}  {Aug.}
+        {9}  {Sept.}
+        {10} {Oct.}
+        {11} {Nov.}
+        {12} {Dec.}
+      }
+      {?}
+  }
+
+\cs_new:Npn \mhsyllabus_format_current_date:
+  {
+    \mhsyllabus_month_name:n
+      {\pgfcalendarcurrentmonth}
+    \c_space_tl
+    \int_eval:n
+      {\pgfcalendarcurrentday}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Shared topic and calendar engine; course packages supply the curriculum.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\seq_new:N \g_mhsyllabus_topic_labels_seq
+\seq_new:N \g_mhsyllabus_topic_texts_seq
+\seq_new:N \g_mhsyllabus_topic_titles_seq
+\seq_new:N \g_mhsyllabus_topic_rules_seq
+\seq_new:N \l_mhsyllabus_schedule_seq
+\int_new:N \l_mhsyllabus_lecture_index_int
+\int_new:N \l_mhsyllabus_recitation_index_int
+\bool_new:N \g_mhsyllabus_schedule_built_bool
+\prop_new:N \g_mhsyllabus_midterm_topics_prop
+\prop_new:N \g_mhsyllabus_meeting_topics_prop
+\seq_new:N \l_mhsyllabus_topic_order_seq
+\seq_new:N \l_mhsyllabus_seen_topics_seq
+\int_new:N \l_mhsyllabus_topic_index_int
+\int_new:N \l_mhsyllabus_first_topic_int
+\int_new:N \l_mhsyllabus_second_topic_int
+\bool_new:N \l_mhsyllabus_has_recitation_bool
+\prop_new:N \g_mhsyllabus_recitation_counts_prop
+\int_new:N \l_mhsyllabus_recitation_group_index_int
+\newcommand{\RecitationIntroduction}{Introduction}
+
+\msg_new:nnn {mh-syllabus}{invalid-topic}
+  {Topic~index~'#1'~must~be~an~integer~in~the~current~course~topic~list.}
+\msg_new:nnn {mh-syllabus}{invalid-order}
+  {Lecture~topic~order~must~contain~each~course~topic~index~exactly~once.}
+\msg_new:nnn {mh-syllabus}{invalid-midterm}
+  {Midterm~number~'#1'~must~be~1,~2~or~3.}
+\msg_new:nnn {mh-syllabus}{unassigned-meeting}
+  {Lecture~meeting~#1~has~no~assigned~topic.~Review~the~course~pacing.}
+\msg_new:nnn {mh-syllabus}{missing-midterm}
+  {Midterm~#1~has~no~meeting~in~this~calendar.~Review~the~course~pacing.}
+\msg_new:nnn {mh-syllabus}{incomplete-setting}
+  {Syllabus~setting~'#1'~is~empty.~Fill~it~in~the~selected~course~profile;
+   ~use~an~explicit~TBA~for~an~unannounced~final~exam.}
+
+\NewDocumentCommand{\ValidateSyllabusSetup}{}
+  {
+    \mhsemester_require_range:
+    \mhsyllabus_final_defaults_apply:
+    \clist_map_inline:nn
+      {SemesterName,InstructorName,LectureSections,LectureDays,LecturePeriod,
+       LectureRoom,FinalExamDate,FinalExamTime}
+      {
+        \exp_args:Nv \tl_if_empty:nT {##1}
+          {\msg_fatal:nnn {mh-syllabus}{incomplete-setting}{##1}}
+      }
+  }
+
+\cs_new_protected:Npn \mhsyllabus_add_topic:nnnn #1#2#3#4
+  {
+    \seq_gput_right:Nn \g_mhsyllabus_topic_labels_seq {#1}
+    \seq_gput_right:Nn \g_mhsyllabus_topic_texts_seq {#2}
+    \seq_gput_right:Nn \g_mhsyllabus_topic_titles_seq {#3}
+    \seq_gput_right:Nn \g_mhsyllabus_topic_rules_seq {#4}
+    \mhsyllabus_invalidate_schedule:
+  }
+
+\cs_new_protected:Npn \mhsyllabus_require_topic:n #1
+  {
+    \tl_set:Nx \l_tmpa_tl {#1}
+    \exp_args:NnV \regex_match:nnF {\A[0-9]+\Z} \l_tmpa_tl
+      {\msg_fatal:nnn {mh-syllabus}{invalid-topic}{#1}}
+    \bool_if:nF
+      {
+        \int_compare_p:n {#1 > 0}
+        && \int_compare_p:n {#1 <= \seq_count:N \g_mhsyllabus_topic_labels_seq}
+      }
+      {\msg_fatal:nnn {mh-syllabus}{invalid-topic}{#1}}
+  }
+
+% Map an exam to a curriculum row, not to a hardcoded civil date.
+\NewDocumentCommand{\SetMidtermTopic}{mm}
+  {
+    \str_case:nnF {#1} {{1}{} {2}{} {3}{}}
+      {\msg_fatal:nnn {mh-syllabus}{invalid-midterm}{#1}}
+    \mhsyllabus_require_topic:n {#2}
+    \prop_gput:Nnx \g_mhsyllabus_midterm_topics_prop {#1}{#2}
+    \mhsyllabus_invalidate_schedule:
+  }
+
+\NewDocumentCommand{\ResetLectureTopicOrder}{}
+  {
+    \prop_gclear:N \g_mhsyllabus_meeting_topics_prop
+    \mhsyllabus_invalidate_schedule:
+  }
+\NewDocumentCommand{\SetLectureTopicOrder}{m}
+  {
+    \seq_set_from_clist:Nn \l_mhsyllabus_topic_order_seq {#1}
+    \int_compare:nNnF {\seq_count:N \l_mhsyllabus_topic_order_seq}
+      = {\seq_count:N \g_mhsyllabus_topic_labels_seq}
+      {\msg_fatal:nn {mh-syllabus}{invalid-order}}
+    \seq_clear:N \l_mhsyllabus_seen_topics_seq
+    \seq_map_inline:Nn \l_mhsyllabus_topic_order_seq
+      {
+        \mhsyllabus_require_topic:n {##1}
+        \tl_set:Nx \l_tmpa_tl {\int_eval:n {##1}}
+        \seq_if_in:NVTF \l_mhsyllabus_seen_topics_seq \l_tmpa_tl
+          {\msg_fatal:nn {mh-syllabus}{invalid-order}}
+          {\seq_put_right:NV \l_mhsyllabus_seen_topics_seq \l_tmpa_tl}
+      }
+    \ResetLectureTopicOrder
+    \seq_map_indexed_inline:Nn \l_mhsyllabus_topic_order_seq
+      {\prop_gput:Nnn \g_mhsyllabus_meeting_topics_prop {##1}{##2}}
+  }
+\cs_new:Npn \mhsyllabus_topic_index_for_meeting:n #1
+  {
+    \prop_if_in:NeTF \g_mhsyllabus_meeting_topics_prop {\int_eval:n {#1}}
+      {\prop_item:Ne \g_mhsyllabus_meeting_topics_prop {\int_eval:n {#1}}}
+      {\int_eval:n {#1}}
+  }
+\NewDocumentCommand{\SwapLectureTopics}{mm}
+  {
+    \mhsyllabus_require_topic:n {#1}
+    \mhsyllabus_require_topic:n {#2}
+    \int_set:Nn \l_mhsyllabus_first_topic_int
+      {\mhsyllabus_topic_index_for_meeting:n {#1}}
+    \int_set:Nn \l_mhsyllabus_second_topic_int
+      {\mhsyllabus_topic_index_for_meeting:n {#2}}
+    \prop_gput:Nxx \g_mhsyllabus_meeting_topics_prop
+      {\int_eval:n {#1}}{\int_use:N \l_mhsyllabus_second_topic_int}
+    \prop_gput:Nxx \g_mhsyllabus_meeting_topics_prop
+      {\int_eval:n {#2}}{\int_use:N \l_mhsyllabus_first_topic_int}
+    \mhsyllabus_invalidate_schedule:
+  }
+\NewDocumentCommand{\IfLectureOnDayT}{mm}
+  {
+    \str_case:nnF {#1}
+      {
+        {M}{\mhsyllabus_daycode_matches:nnT {\LectureDays}{0}{#2}}
+        {T}{\mhsyllabus_daycode_matches:nnT {\LectureDays}{1}{#2}}
+        {W}{\mhsyllabus_daycode_matches:nnT {\LectureDays}{2}{#2}}
+        {Th}{\mhsyllabus_daycode_matches:nnT {\LectureDays}{3}{#2}}
+        {F}{\mhsyllabus_daycode_matches:nnT {\LectureDays}{4}{#2}}
+      }
+      {\msg_fatal:nnn {mh-semester}{invalid-day}{#1}}
+  }
+
+\cs_new:Npn \mhsyllabus_midterm_date_cs:n #1
+  {\int_case:nn {#1} {{1}{MidtermOneDate}{2}{MidtermTwoDate}{3}{MidtermThreeDate}}}
+\cs_new_protected:Npn \mhsyllabus_collect_schedule_date:
+  {
+    \mhsemester_effective_weekday_set:
+    \int_compare:nNnT {\l_mhsemester_effective_weekday_int} > {-1}
+      {
+        \mhsyllabus_daycode_matches:nnT
+          {\LectureDays}{\l_mhsemester_effective_weekday_int}
+          {
+            \int_gincr:N \l_mhsyllabus_lecture_index_int
+            \int_set:Nn \l_mhsyllabus_topic_index_int
+              {\mhsyllabus_topic_index_for_meeting:n {\l_mhsyllabus_lecture_index_int}}
+            \prop_map_inline:Nn \g_mhsyllabus_midterm_topics_prop
+              {
+                \int_compare:nNnT {\l_mhsyllabus_topic_index_int} = {##2}
+                  {
+                    \cs_gset:cpx {\mhsyllabus_midterm_date_cs:n {##1}}
+                      {\mhsyllabus_format_current_date:}
+                  }
+              }
+            \int_compare:nNnT {\l_mhsyllabus_topic_index_int}
+              > {\seq_count:N \g_mhsyllabus_topic_labels_seq}
+              {
+                \msg_warning:nnx {mh-syllabus}{unassigned-meeting}
+                  {\int_use:N \l_mhsyllabus_lecture_index_int}
+              }
+            \seq_gput_right:Nx \l_mhsyllabus_schedule_seq
+              {
+                \exp_not:N \mhsyllabus_schedule_lecture:nn
+                  {\mhsyllabus_format_current_date:}
+                  {\int_use:N \l_mhsyllabus_topic_index_int}
+              }
+          }
+        \bool_set_false:N \l_mhsyllabus_has_recitation_bool
+        \seq_map_inline:Nn \g_mhsyllabus_recitation_daycodes_seq
+          {
+            \mhsyllabus_daycode_matches:nnT
+              {##1}{\l_mhsemester_effective_weekday_int}
+              {\bool_set_true:N \l_mhsyllabus_has_recitation_bool}
+          }
+        \bool_if:NT \l_mhsyllabus_has_recitation_bool
+          {
+            \int_gincr:N \l_mhsyllabus_recitation_index_int
+            % Sections on different weekdays progress independently. Several
+            % sections on one weekday still share one calendar/quiz row.
+            \prop_get:NeNTF \g_mhsyllabus_recitation_counts_prop
+              {\int_use:N \l_mhsemester_effective_weekday_int} \l_tmpa_tl
+              {\int_set:Nn \l_mhsyllabus_recitation_group_index_int {\l_tmpa_tl+1}}
+              {\int_set:Nn \l_mhsyllabus_recitation_group_index_int {1}}
+            \prop_gput:Nxx \g_mhsyllabus_recitation_counts_prop
+              {\int_use:N \l_mhsemester_effective_weekday_int}
+              {\int_use:N \l_mhsyllabus_recitation_group_index_int}
+            \seq_gput_right:Nx \l_mhsyllabus_schedule_seq
+              {
+                \exp_not:N \mhsyllabus_schedule_recitation:nn
+                  {\mhsyllabus_format_current_date:}
+                  {\int_use:N \l_mhsyllabus_recitation_group_index_int}
+              }
+          }
+      }
+  }
+\cs_new_protected:Npn \mhsyllabus_schedule_lecture:nn #1#2
+  {
+    \int_compare:nNnTF {#2} > {\seq_count:N \g_mhsyllabus_topic_labels_seq}
+      {#1 & -- & -- & \textbf{Topic~not~assigned;~review~pacing} \\}
+      {
+        #1
+          & \seq_item:Nn \g_mhsyllabus_topic_labels_seq {#2}
+          & \seq_item:Nn \g_mhsyllabus_topic_texts_seq {#2}
+          & \seq_item:Nn \g_mhsyllabus_topic_titles_seq {#2} \\
+        \int_compare:nNnT {\seq_item:Nn \g_mhsyllabus_topic_rules_seq {#2}} = {1}
+          {\midrule}
+      }
+  }
+\cs_new_protected:Npn \mhsyllabus_schedule_recitation:nn #1#2
+  {
+    #1 & \textit{Rec.} & --
+      & \int_compare:nNnTF {#2} = {1}
+          {\RecitationIntroduction}{Quiz~\int_eval:n {#2-1}} \\
+  }
+\cs_new_protected:Npn \mhsyllabus_build_schedule:
+  {
+    \bool_if:NF \g_mhsyllabus_schedule_built_bool
+      {
+        \mhsemester_require_range:
+        \seq_gclear:N \l_mhsyllabus_schedule_seq
+        \int_gzero:N \l_mhsyllabus_lecture_index_int
+        \int_gzero:N \l_mhsyllabus_recitation_index_int
+        \prop_gclear:N \g_mhsyllabus_recitation_counts_prop
+        \cs_gset:Npn \MidtermOneDate {}
+        \cs_gset:Npn \MidtermTwoDate {}
+        \cs_gset:Npn \MidtermThreeDate {}
+        \pgfcalendar{mhsyllabusschedule}
+          {\c_mhsyllabus_semester_start_tl}{\c_mhsyllabus_semester_end_tl}
+          {\mhsyllabus_collect_schedule_date:}
+        \prop_map_inline:Nn \g_mhsyllabus_midterm_topics_prop
+          {
+            \exp_args:Nv \tl_if_empty:nT
+              {\mhsyllabus_midterm_date_cs:n {##1}}
+              {\msg_warning:nnn {mh-syllabus}{missing-midterm}{##1}}
+          }
+        \bool_gset_true:N \g_mhsyllabus_schedule_built_bool
+      }
+  }
+\NewDocumentCommand{\BuildSyllabusSchedule}{}{\mhsyllabus_build_schedule:}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course calendar
+%
+% Course packages supply the topic rows and exam-to-topic mappings.
+% Semester/course profiles supply dates, exceptions, meetings and pacing.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentCommand{\SyllabusCourseCalendar}{}
+  {
+    \mhsyllabus_build_schedule:
+
+    \int_compare:nNnF
+      {\l_mhsyllabus_lecture_index_int}
+      =
+      {\seq_count:N \g_mhsyllabus_topic_labels_seq}
+      {
+        \PackageWarning{mh-syllabus}
+          {
+            The~lecture~calendar~contains~
+            \int_use:N \l_mhsyllabus_lecture_index_int
+            \space meetings,~but~the~topic~list~contains~
+            \int_eval:n
+              {\seq_count:N \g_mhsyllabus_topic_labels_seq}
+            \space entries
+          }
+      }
+
+    \begin{longtable}
+      {
+        @{}
+        p{0.08\linewidth}
+        p{0.05\linewidth}
+        p{0.11\linewidth}
+        p{0.69\linewidth}
+        @{}
+      }
+
+      \toprule
+      \textbf{Date}
+        & \textbf{Mtg.}
+        & \textbf{Text~\S}
+        & \textbf{Topic~or~Activity}
+        \\
+      \midrule
+      \endfirsthead
+
+      \toprule
+      \textbf{Date}
+        & \textbf{Mtg.}
+        & \textbf{Text~\S}
+        & \textbf{Topic~or~Activity}
+        \\
+      \midrule
+      \endhead
+
+      \seq_map_inline:Nn
+        \l_mhsyllabus_schedule_seq
+        {##1}
+
+      \FinalExamDate
+        & --
+        & --
+        & \textbf{Final~Exam,~\FinalExamTime~--~covers~all~topics}
+        \\
+      \bottomrule
+    \end{longtable}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Meeting-times table
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentCommand{\SyllabusMeetingTimes}{}
+  {
+    \begin{tabularx}{\linewidth}
+      {
+        @{}
+        >{\raggedright\arraybackslash}p{0.19\linewidth}
+        >{\raggedright\arraybackslash}p{0.15\linewidth}
+        >{\raggedright\arraybackslash}p{0.10\linewidth}
+        >{\raggedright\arraybackslash}p{0.21\linewidth}
+        >{\raggedright\arraybackslash}X
+        @{}
+      }
+
+      \IfLecturePeriodComboTF
+        {%
+          \ifdefstring{\mhLecturePeriodCombo}{W2F5}
+            {%
+              \textbf{Sec.~\LectureSections}
+                & \textbf{Lecture}
+                & \textbf{W2}
+                & \textbf{\PeriodTime{2}}
+                & \textbf{\LectureRoom}
+                \\
+
+              {}
+                & \textbf{Lecture}
+                & \textbf{F5}
+                & \textbf{\PeriodTime{5}}
+                & \textbf{\LectureRoom}
+                \\
+            }
+            {%
+              \textbf{Sec.~\LectureSections}
+                & \textbf{Lecture}
+                & \textbf{W3}
+                & \textbf{\PeriodTime{3}}
+                & \textbf{\LectureRoom}
+                \\
+
+              {}
+                & \textbf{Lecture}
+                & \textbf{F4}
+                & \textbf{\PeriodTime{4}}
+                & \textbf{\LectureRoom}
+                \\
+            }%
+        }
+        {%
+          \textbf{Sec.~\LectureSections}
+            & \textbf{Lecture}
+            & \textbf{\LecturePeriodDisplay}
+            & \textbf{\LectureTimeDisplay}
+            & \textbf{\LectureRoom}
+            \\
+        }%
+
+      \seq_map_inline:Nn
+        \g_mhsyllabus_recitations_seq
+        {##1}
+
+    \end{tabularx}%
+    \vspace{-\baselineskip}
+  }
+
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Syllabus header
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusCourseInfo}{%
+  \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+    Instructor:
+      & \InstructorName
+      \\[2pt]
+    Email:
+      & \SyllabusEmail{\InstructorEmail}
+      \\[2pt]
+    Lecture:
+      & \IfLecturePeriodComboTF
+          {%
+            Sec.~\LectureSections:\ \LecturePeriodDisplay, \LectureRoom
+            \newline
+            \LectureTimeDisplay
+          }
+          {%
+            Sec.~\LectureSections:\ \LecturePeriodDisplay,
+            \LectureTimeDisplay, \LectureRoom
+          }%
+      \\[2pt]
+    Office Hours:
+      & \InstructorOfficeHours, \InstructorOffice
+  \end{tabularx}%
+}
+
+\newcommand{\SyllabusHeader}{%
+  \noindent
+  \begin{minipage}[t]{0.40\textwidth}
+    \vspace{0pt}%
+    \includegraphics[
+      width=\linewidth
+    ]{img/RSUNJ_H_RED_RGB.png}%
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.55\textwidth}
+    \vspace{0pt}%
+    \SyllabusCourseInfo
+  \end{minipage}%
+  \par
+  \vspace{1em}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Standard syllabus block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusItem}[2]{%
+  \begin{minipage}[t]{0.14\linewidth}
+    \vspace{0pt}%
+    \textit{\textbf{#1}}%
+    \vfill\null
+  \end{minipage}%
+  \hspace{0.01\linewidth}%
+  \begin{minipage}[t]{0.84\linewidth}
+    \vspace{0pt}%
+    #2
+  \end{minipage}%
+  \par
+  \Vi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Meetings block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusMeetings}{%
+  \SyllabusItem{Meetings}{%
+    \SyllabusMeetingTimes
+  }%
+}
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Recitation instructor
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusRecitationInstructor}{%
+  \SyllabusItem{Recitation\\Instructor}{%
+    \begin{tabular}[t]{lll}
+        \textbf{Name:}   & \RecitationInstructorName\\
+        \textbf{Email:}  & \SyllabusEmail{\RecitationInstructorEmail}\\
+        \textbf{Office Hours:} & \RecitationInstructorOfficeHours, \RecitationInstructorOffice
+    \end{tabular}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SAS Core learning goals
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusSASCoreGoals}{%
+  \SyllabusItem{SAS Core\\Learning\\Goals}{%
+    This course fulfills both the Quantitative Information (QQ) and
+    Mathematical or Formal Reasoning (QR) learning goals of the SAS Core
+    Curriculum:
+    \begin{itemize}[
+      topsep=2pt,
+      itemsep=-1ex,
+      partopsep=1ex,
+      parsep=1ex
+    ]
+      \item
+        \textbf{QQ:}
+        Formulate, evaluate, and communicate conclusions and inferences from
+        quantitative information.
+
+      \item
+        \textbf{QR:}
+        Apply effective and efficient mathematical or other formal processes
+        to reason and to solve problems.
+    \end{itemize}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Technology
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusTechnology}{%
+  \SyllabusItem{Technology}{%
+    To best participate in this course, you must have the
+    \href{https://sas.rutgers.edu/technology-recommendations}
+      {\underline{technology recommended by SAS}}.
+    You are expected to complete online homework assignments through MyLab,
+    but otherwise are not required to use any other technology for this course.
+    \vi
+
+    If you do not have the appropriate technology for financial reasons, you
+    can use any of the
+    \href{https://it.rutgers.edu/new-brunswick/new-brunswick-computer-labs/}
+      {\underline{computer labs on campus}}
+    or you can
+    \href{mailto:deanofstudents@echo.rutgers.edu}
+      {email the Dean of Students}
+    for assistance.
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Academic integrity
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusAcademicIntegrity}{%
+  \SyllabusItem{Academic\\Integrity}{%
+    You are expected to be familiar with and abide by the
+    \href{http://nbacademicintegrity.rutgers.edu/home/academic-integrity-policy/}
+      {\underline{Academic Integrity Policy}}.
+    Violations of the policy are taken very seriously. You are also expected
+    to sign the Rutgers Honor Pledge on each major exam or assignment.
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Testing services / accommodations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusTestingServices}{%
+  \SyllabusItem{Testing\\Services}{%
+    The Office of Disability Services (ODS) determines
+    \href{https://ods.rutgers.edu}
+      {\underline{full disability policies and procedures}}.
+    Students with disabilities requesting accommodations must do the
+    following: (1) consult
+    \href{https://ods.rutgers.edu/students/getting-registered}
+      {\underline{ODS policies on requesting accommodations}},
+    and (2) present a
+    \href{https://ods.rutgers.edu/my-accommodations/letter-of-accommodations}
+      {\underline{Letter of Accommodations}}
+    to the course coordinator and their instructor as early in the term as
+    possible.
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Student wellness
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusStudentWellness}{%
+  \SyllabusItem{Student\\Wellness}{%
+    \begin{itemize}[
+      topsep=2pt,
+      itemsep=0ex,
+      partopsep=-1ex,
+      parsep=1ex
+    ]
+      \item
+        \href{https://success.rutgers.edu/}
+          {\underline{Student Success Essentials}}
+
+      \item
+        \href{https://studentaffairs.rutgers.edu/resources/bias-outreach-restoration-and-education}
+          {\underline{Bias Incident Reporting}}
+
+      \item
+        \href{https://health.rutgers.edu/}
+          {\underline{Student Health Services}}
+
+      \item
+        \href{https://health.rutgers.edu/counseling-services}
+          {\underline{Counseling Services (CAPS)}}
+
+      \item
+        \href{https://ods.rutgers.edu/}
+          {\underline{Office of Disability Services}}
+
+      \item
+        \href{https://ruoffcampus.rutgers.edu/basic-needs}
+          {\underline{Basic Needs Assistance}}
+
+      \item
+        \href{https://vpva.rutgers.edu/}
+          {\underline{Violence Prevention and Victim Assistance}}
+    \end{itemize}
+  }%
+}
+
+\endinput

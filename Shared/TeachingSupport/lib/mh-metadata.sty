@@ -1,0 +1,47 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage
+  {mh-metadata}
+  [2026/08/27 v0.3.0 Controlled metadata vocabularies for Math exercises]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exercise types
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathType{free-response}   {Free Response}
+\DeclareMathType{multiple-choice} {Multiple Choice/Select}
+\DeclareMathType{true-false}      {True/False}
+\DeclareMathType{fill-in}         {Fill in the Blank}
+\DeclareMathType{mixed}           {Mixed}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exercise traits
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathTrait{challenge}    {Challenge}
+\DeclareMathTrait{conceptual}   {Conceptual}
+\DeclareMathTrait{procedural}   {Procedural}
+\DeclareMathTrait{application}  {Application}
+\DeclareMathTrait{definition}   {Definition}
+\DeclareMathTrait{modeling}     {Modeling}
+\DeclareMathTrait{graphical}    {Graphical}
+\DeclareMathTrait{figure}       {Figure}
+\DeclareMathTrait{multipart}    {Multipart}
+\DeclareMathTrait{life-science} {Life Science}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Practice levels
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathLevel{core}       {Core Practice}
+\DeclareMathLevel{additional} {Additional Practice}
+\DeclareMathLevel{extended}   {Extended Practice}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Development statuses
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathStatus{draft}    {Draft}
+\DeclareMathStatus{approved} {Approved}
+\DeclareMathStatus{retired}  {Retired}
+
+\endinput

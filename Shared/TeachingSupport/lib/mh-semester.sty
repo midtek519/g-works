@@ -1,0 +1,295 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesExplPackage{mh-semester}{2026-10-11}{1.1.0}
+  {Course-independent semester dates and calendar exceptions}
+\RequirePackage{pgfcalendar}
+
+\newcommand{\SemesterTag}{}
+\newcommand{\SemesterName}{}
+\newcommand{\SemesterFirstDay}{}
+\newcommand{\SemesterLastDay}{}
+\newcommand{\SemesterExamFirstDate}{}
+\newcommand{\SemesterExamLastDate}{}
+\newcommand{\SemesterExamFirstDay}{}
+\newcommand{\SemesterExamLastDay}{}
+\newcommand{\SetSemesterName}[1]{\gdef\SemesterName{#1}}
+\newcommand{\SetSemesterFirstDay}[1]{\gdef\SemesterFirstDay{#1}}
+\newcommand{\SetSemesterLastDay}[1]{\gdef\SemesterLastDay{#1}}
+
+\ExplSyntaxOn
+% The historical names are retained for existing course calendar code.
+\tl_new:N \c_mhsyllabus_semester_start_tl
+\tl_new:N \c_mhsyllabus_semester_end_tl
+\prop_new:N \g_mhsemester_exceptions_prop
+\int_new:N \l_mhsemester_effective_weekday_int
+\tl_new:N \l_mhsemester_date_tl
+\tl_new:N \l_mhsemester_tag_tl
+\tl_new:N \l_mhsemester_file_tl
+\seq_new:N \l_mhsemester_date_parts_seq
+\int_new:N \l_mhsemester_year_int
+\int_new:N \l_mhsemester_month_int
+\int_new:N \l_mhsemester_day_int
+\int_new:N \l_mhsemester_days_in_month_int
+\int_new:N \l_mhsemester_start_julian_int
+\int_new:N \l_mhsemester_end_julian_int
+\int_new:N \l_mhsemester_date_julian_int
+\tl_new:N \l_mhsemester_year_tl
+\tl_new:N \l_mhsemester_month_tl
+\tl_new:N \l_mhsemester_day_tl
+
+\msg_new:nnn {mh-semester}{invalid-date}
+  {Invalid~date~'#1'.~Use~a~real~Gregorian~date~in~YYYY-MM-DD~format.}
+\msg_new:nnn {mh-semester}{reversed-range}
+  {Date~range~'#1'~ends~before~it~starts.}
+\msg_new:nnn {mh-semester}{missing-dates}
+  {Set~the~semester~dates~before~adding~exceptions~or~building~a~calendar.}
+\msg_new:nnn {mh-semester}{outside-range}
+  {Exception~date~'#1'~is~outside~the~semester's~instructional~date~range.}
+\msg_new:nnn {mh-semester}{conflicting-exception}
+  {Date~'#1'~has~conflicting~calendar~exceptions.~Remove~one~declaration.}
+\msg_new:nnn {mh-semester}{invalid-day}
+  {Invalid~designation~'#1'.~Use~one~of~M,~T,~W,~Th,~F.}
+\msg_new:nnn {mh-semester}{invalid-tag}
+  {Invalid~semester~tag~'#1'.~Use~letters,~digits,~hyphens~or~underscores.}
+\msg_new:nnn {mh-semester}{missing-file}
+  {Semester~file~'#1'~was~not~found.~Compile~from~the~project~root.}
+\msg_new:nnn {mh-semester}{incomplete-semester}
+  {Semester~'#1'~must~set~its~name~and~instructional~date~range.}
+
+\cs_new_protected:Npn \mhsyllabus_invalidate_schedule:
+  {
+    \cs_if_exist:NT \g_mhsyllabus_schedule_built_bool
+      {\bool_gset_false:N \g_mhsyllabus_schedule_built_bool}
+  }
+
+% PGF normalizes impossible civil dates; validate before using its arithmetic.
+\cs_new_protected:Npn \mhsemester_require_date:n #1
+  {
+    \tl_set:Nx \l_mhsemester_date_tl {#1}
+    \exp_args:NnV \regex_extract_once:nnNTF
+      {\A([0-9]{4})-([0-9]{2})-([0-9]{2})\Z}
+      \l_mhsemester_date_tl \l_mhsemester_date_parts_seq
+      {
+        \int_set:Nn \l_mhsemester_year_int
+          {\seq_item:Nn \l_mhsemester_date_parts_seq {2}}
+        \int_set:Nn \l_mhsemester_month_int
+          {\seq_item:Nn \l_mhsemester_date_parts_seq {3}}
+        \int_set:Nn \l_mhsemester_day_int
+          {\seq_item:Nn \l_mhsemester_date_parts_seq {4}}
+        \int_compare:nNnF {\l_mhsemester_year_int} > {0}
+          {\msg_fatal:nnn {mh-semester}{invalid-date}{#1}}
+        \int_set:Nn \l_mhsemester_days_in_month_int
+          {
+            \int_case:nnF {\l_mhsemester_month_int}
+              {
+                {1}{31} {2}{28} {3}{31} {4}{30} {5}{31} {6}{30}
+                {7}{31} {8}{31} {9}{30} {10}{31} {11}{30} {12}{31}
+              } {0}
+          }
+        \int_compare:nNnT {\l_mhsemester_month_int} = {2}
+          {
+            \bool_if:nT
+              {
+                \int_compare_p:n {\int_mod:nn {\l_mhsemester_year_int}{400}=0}
+                ||
+                (
+                  \int_compare_p:n {\int_mod:nn {\l_mhsemester_year_int}{4}=0}
+                  &&
+                  !\int_compare_p:n {\int_mod:nn {\l_mhsemester_year_int}{100}=0}
+                )
+              }
+              {\int_set:Nn \l_mhsemester_days_in_month_int {29}}
+          }
+        \bool_if:nF
+          {
+            \int_compare_p:n {\l_mhsemester_day_int > 0}
+            && \int_compare_p:n
+              {\l_mhsemester_day_int <= \l_mhsemester_days_in_month_int}
+          }
+          {\msg_fatal:nnn {mh-semester}{invalid-date}{#1}}
+      }
+      {\msg_fatal:nnn {mh-semester}{invalid-date}{#1}}
+  }
+
+\cs_new:Npn \mhsemester_month_name:n #1
+  {
+    \int_case:nn {#1}
+      {
+        {1}{January} {2}{February} {3}{March} {4}{April} {5}{May}
+        {6}{June} {7}{July} {8}{August} {9}{September} {10}{October}
+        {11}{November} {12}{December}
+      }
+  }
+
+\cs_new_protected:Npn \mhsemester_set_printable_date:Nn #1#2
+  {
+    \pgfcalendardatetojulian{#2}{\l_mhsemester_date_julian_int}
+    \pgfcalendarjuliantodate{\l_mhsemester_date_julian_int}
+      {\l_mhsemester_year_tl}{\l_mhsemester_month_tl}{\l_mhsemester_day_tl}
+    \cs_gset:Npx #1
+      {
+        \mhsemester_month_name:n {\l_mhsemester_month_tl}
+        \exp_not:N \nobreakspace
+        \int_eval:n {\l_mhsemester_day_tl},
+        \exp_not:N \nobreakspace \l_mhsemester_year_tl
+      }
+  }
+
+\cs_new_protected:Npn \mhsemester_require_range:
+  {
+    \tl_if_empty:NT \c_mhsyllabus_semester_start_tl
+      {\msg_fatal:nn {mh-semester}{missing-dates}}
+    \tl_if_empty:NT \c_mhsyllabus_semester_end_tl
+      {\msg_fatal:nn {mh-semester}{missing-dates}}
+  }
+
+\cs_new_protected:Npn \mhsemester_require_in_range:n #1
+  {
+    \mhsemester_require_range:
+    \mhsemester_require_date:n {#1}
+    \pgfcalendardatetojulian{\c_mhsyllabus_semester_start_tl}
+      {\l_mhsemester_start_julian_int}
+    \pgfcalendardatetojulian{\c_mhsyllabus_semester_end_tl}
+      {\l_mhsemester_end_julian_int}
+    \pgfcalendardatetojulian{#1}{\l_mhsemester_date_julian_int}
+    \bool_if:nF
+      {
+        \int_compare_p:n
+          {\l_mhsemester_date_julian_int >= \l_mhsemester_start_julian_int}
+        && \int_compare_p:n
+          {\l_mhsemester_date_julian_int <= \l_mhsemester_end_julian_int}
+      }
+      {\msg_fatal:nnn {mh-semester}{outside-range}{#1}}
+  }
+
+\NewDocumentCommand{\SetSemesterDateRange}{mm}
+  {
+    \mhsemester_require_date:n {#1}
+    \mhsemester_require_date:n {#2}
+    \pgfcalendardatetojulian{#1}{\l_mhsemester_start_julian_int}
+    \pgfcalendardatetojulian{#2}{\l_mhsemester_end_julian_int}
+    \int_compare:nNnT
+      {\l_mhsemester_start_julian_int} > {\l_mhsemester_end_julian_int}
+      {\msg_fatal:nnn {mh-semester}{reversed-range}{#1~to~#2}}
+    \tl_gset:Nx \c_mhsyllabus_semester_start_tl {#1}
+    \tl_gset:Nx \c_mhsyllabus_semester_end_tl {#2}
+    \mhsemester_set_printable_date:Nn \SemesterFirstDay {#1}
+    \mhsemester_set_printable_date:Nn \SemesterLastDay {#2}
+    % Existing exceptions must still belong to the updated range.
+    \prop_map_inline:Nn \g_mhsemester_exceptions_prop
+      {\mhsemester_require_in_range:n {##1}}
+    \mhsyllabus_invalidate_schedule:
+  }
+\NewDocumentCommand{\SetSemesterDates}{mm}{\SetSemesterDateRange{#1}{#2}}
+
+% Final-exam dates belong to their own period, outside the instructional range.
+% The ISO dates are reusable data; the Day commands provide printable dates.
+\NewDocumentCommand{\SetSemesterExamPeriod}{mm}
+  {
+    \mhsemester_require_date:n {#1}
+    \mhsemester_require_date:n {#2}
+    \pgfcalendardatetojulian{#1}{\l_mhsemester_start_julian_int}
+    \pgfcalendardatetojulian{#2}{\l_mhsemester_end_julian_int}
+    \int_compare:nNnT
+      {\l_mhsemester_start_julian_int} > {\l_mhsemester_end_julian_int}
+      {\msg_fatal:nnn {mh-semester}{reversed-range}{#1~to~#2}}
+    \cs_gset:Npx \SemesterExamFirstDate {#1}
+    \cs_gset:Npx \SemesterExamLastDate {#2}
+    \mhsemester_set_printable_date:Nn \SemesterExamFirstDay {#1}
+    \mhsemester_set_printable_date:Nn \SemesterExamLastDay {#2}
+    \cs_if_exist:NT \mhsyllabus_final_defaults_apply:
+      {\mhsyllabus_final_defaults_apply:}
+  }
+
+\NewDocumentCommand{\ClearSemesterExceptions}{}
+  {
+    \prop_gclear:N \g_mhsemester_exceptions_prop
+    \mhsyllabus_invalidate_schedule:
+  }
+
+% Store one effective weekday per civil date. Identical repeats are harmless;
+% contradictory declarations fail instead of silently using whichever is last.
+\cs_new_protected:Npn \mhsemester_add_exception:nn #1#2
+  {
+    \mhsemester_require_in_range:n {#1}
+    \prop_get:NVNTF \g_mhsemester_exceptions_prop \l_mhsemester_date_tl \l_tmpa_tl
+      {
+        \int_compare:nNnF {\l_tmpa_tl} = {#2}
+          {\msg_fatal:nnn {mh-semester}{conflicting-exception}{#1}}
+      }
+      {\prop_gput:NVx \g_mhsemester_exceptions_prop \l_mhsemester_date_tl {#2}}
+    \mhsyllabus_invalidate_schedule:
+  }
+\NewDocumentCommand{\AddNoClassDate}{m}
+  {\mhsemester_add_exception:nn {#1}{-1}}
+\NewDocumentCommand{\AddNoClassRange}{mm}
+  {
+    \mhsemester_require_in_range:n {#1}
+    \mhsemester_require_in_range:n {#2}
+    \pgfcalendardatetojulian{#1}{\l_mhsemester_start_julian_int}
+    \pgfcalendardatetojulian{#2}{\l_mhsemester_end_julian_int}
+    \int_compare:nNnT
+      {\l_mhsemester_start_julian_int} > {\l_mhsemester_end_julian_int}
+      {\msg_fatal:nnn {mh-semester}{reversed-range}{#1~to~#2}}
+    \pgfcalendar{mhsemesterbreak}{#1}{#2}
+      {
+        \exp_args:Nx \AddNoClassDate
+          {\pgfcalendarcurrentyear-\pgfcalendarcurrentmonth-\pgfcalendarcurrentday}
+      }
+  }
+\NewDocumentCommand{\AddClassDayOverride}{mm}
+  {
+    \str_case:nnF {#2}
+      {
+        {M}{\mhsemester_add_exception:nn {#1}{0}}
+        {T}{\mhsemester_add_exception:nn {#1}{1}}
+        {W}{\mhsemester_add_exception:nn {#1}{2}}
+        {Th}{\mhsemester_add_exception:nn {#1}{3}}
+        {F}{\mhsemester_add_exception:nn {#1}{4}}
+      }
+      {\msg_fatal:nnn {mh-semester}{invalid-day}{#2}}
+  }
+
+\cs_new_protected:Npn \mhsemester_effective_weekday_set:
+  {
+    \tl_set:Nx \l_mhsemester_date_tl
+      {\pgfcalendarcurrentyear-\pgfcalendarcurrentmonth-\pgfcalendarcurrentday}
+    \int_set:Nn \l_mhsemester_effective_weekday_int {\pgfcalendarcurrentweekday}
+    \prop_get:NVNT \g_mhsemester_exceptions_prop \l_mhsemester_date_tl \l_tmpa_tl
+      {\int_set:Nn \l_mhsemester_effective_weekday_int {\l_tmpa_tl}}
+  }
+
+\NewDocumentCommand{\UseSemester}{m}
+  {
+    % Expand before clearing the old selection, so macro arguments are safe.
+    \tl_set:Nx \l_mhsemester_tag_tl {#1}
+    \exp_args:NnV \regex_match:nnF {\A[A-Za-z0-9][A-Za-z0-9_\-]*\Z}
+      \l_mhsemester_tag_tl
+      {\msg_fatal:nnn {mh-semester}{invalid-tag}{#1}}
+    \tl_set:Nx \l_mhsemester_file_tl {semesters/\l_mhsemester_tag_tl.tex}
+    \exp_args:NV \file_if_exist:nF \l_mhsemester_file_tl
+      {\msg_fatal:nnx {mh-semester}{missing-file}{\l_mhsemester_file_tl}}
+    \cs_gset:Npx \SemesterTag {\l_mhsemester_tag_tl}
+    \cs_gset:Npn \SemesterName {}
+    \cs_gset:Npn \SemesterFirstDay {}
+    \cs_gset:Npn \SemesterLastDay {}
+    \cs_gset:Npn \SemesterExamFirstDate {}
+    \cs_gset:Npn \SemesterExamLastDate {}
+    \cs_gset:Npn \SemesterExamFirstDay {}
+    \cs_gset:Npn \SemesterExamLastDay {}
+    \tl_gclear:N \c_mhsyllabus_semester_start_tl
+    \tl_gclear:N \c_mhsyllabus_semester_end_tl
+    \ClearSemesterExceptions
+    % Course final overrides are scoped to the selected semester.
+    \cs_if_exist:NT \mhsyllabus_reset_final_exam:
+      {\mhsyllabus_reset_final_exam:}
+    % Semester .tex files use ordinary LaTeX spacing. All setters are global.
+    \group_begin:
+      \ExplSyntaxOff
+      \exp_args:NV \file_input:n \l_mhsemester_file_tl
+    \group_end:
+    \mhsemester_require_range:
+    \tl_if_empty:oT {\SemesterName}
+      {\msg_fatal:nnx {mh-semester}{incomplete-semester}{\SemesterTag}}
+  }
+\ExplSyntaxOff
+\endinput

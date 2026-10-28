@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Recommendation Letters</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/local-ai.css">
+  <script src="/app.js" defer></script>
+  <script src="/wizard.js" defer></script>
+  <script src="/local-ai.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#students" data-view="students"><span class="brand-mark">R</span><span>Recommendation<br><strong>Letters</strong></span></a>
+    <p class="sidebar-label">YOUR WORKSPACE</p>
+    <nav aria-label="Main navigation">
+      <button data-view="students" class="nav-item active"><span aria-hidden="true">◉</span> People <span id="student-count" class="nav-count"></span></button>
+      <button data-view="letters" class="nav-item"><span aria-hidden="true">▤</span> Letters</button>
+      <button data-view="settings" class="nav-item"><span aria-hidden="true">⚙</span> Writing preferences</button>
+    </nav>
+    <div class="local-note"><span class="status-dot"></span> Local workspace<p>Student lookup, editing, and PDF generation stay on this computer.</p><p>Drafting briefs are shared only when you choose to use them outside this app.</p></div>
+  </aside>
+  <div class="shell">
+    <header class="topbar"><div><span class="eyebrow">TEACHING / RECOMMENDATIONS</span><h1 id="page-title">People</h1></div><div class="top-actions"><span id="save-status" class="muted"></span><button id="add-student" class="primary">+ Add person</button></div></header>
+    <main id="main" aria-live="polite"><div class="loading">Opening your local workspace…</div></main>
+    <footer>Individual letters. Your judgment. A reusable local record.</footer>
+  </div>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="modal" aria-labelledby="modal-title"><div id="modal-content"></div></dialog>
+</body>
+</html>

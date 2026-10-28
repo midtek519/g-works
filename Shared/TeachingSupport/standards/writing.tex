@@ -1,0 +1,285 @@
+\documentclass[document,notitlepage]{mhdocument}
+
+\title{MathHouse Shared Writing and TeX Standards}
+\date{}
+\SetMathLeftHeader{MathHouse}
+\SetMathCenterHeader{Shared Writing and TeX Standards}
+\SetMathRightHeader{}
+\SetMathPDFTitle{MathHouse Shared Writing and TeX Standards}
+
+\begin{document}
+\setcounter{secnumdepth}{-1}
+\setlist[enumerate,1]{label=(\arabic*)}
+\maketitle
+
+These standards govern shared writing, notation, graphics, and document structure. Course-specific mathematical conventions are documented separately; the Math 135 conventions are in \path{mh-135-course-documents/manual/standards.tex}.
+
+\section{General Principles}
+\begin{enumerate}
+\item Parsimony is a general goal in both mathematical work and English prose. Explanations should be succinct but complete. When two explanations communicate the same mathematical content adequately, prefer the shorter and more direct one. Parsimony does not mean omitting steps that are pedagogically important.
+\end{enumerate}
+
+\section{Parsimony and Basic Formatting}
+
+\subsection{Items and Displayed Mathematics}
+
+\begin{enumerate}[resume]
+\item An \verb|\item| should never begin immediately with a displayed equation. Begin with English text or inline mathematics instead.
+
+\item Use inline mathematics when an expression fits naturally into the surrounding sentence. Individual numbers, variables, single terms, short expressions, and simple fractions should normally remain inline. Complicated rational expressions or otherwise vertically substantial mathematics may warrant display math.
+
+\item Prefer proper fraction notation to slash notation. For example, prefer \(\frac{1}{2}\) and \(\frac{\pi}{2}\) to \(1/2\) and \(\pi/2\).
+
+\item Use the custom \verb|\ds| command for large inline expressions that need display-style sizing, such as integrals or stacked fractions. Do not routinely apply it to simple fractions such as \(\frac{1}{t}\) or \(\frac{\pi}{2}\). For example:
+\begin{verbatim}
+Evaluate \(\ds\int_0^1 x^2\,dx\).
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Introducing Functions}
+
+\begin{enumerate}[resume]
+\item When an exercise introduces a function and immediately proceeds to further instructions or an enumerated list, keep the function definition inline, using \verb|\ds| when needed:
+\begin{verbatim}
+Let \(f(x)=\frac{x+1}{x-2}\). Answer the following questions.
+\end{verbatim}
+Do not strand a short introductory word or phrase such as ``Let,'' ``Suppose,'' or ``Consider'' above a displayed function definition.
+\end{enumerate}
+
+\subsection{Showing Mathematical Work}
+
+\begin{enumerate}[resume]
+\item When several expressions form a sequence of calculations, generally present the work as displayed mathematics rather than as several consecutive inline expressions.
+
+\item Routine work should generally remain together rather than being interrupted by English explanations of each algebraic operation. For example,
+\[
+f(2)=2^2+3(2)-1=4+6-1=9.
+\]
+
+\item Keep a chain of calculations on one line when it fits comfortably. Use two or more lines when needed for readability or to avoid overfull lines. Use \texttt{align}, \texttt{align*}, \texttt{gather}, or \texttt{gather*} only when the work genuinely requires two or more displayed lines. A one-line calculation should use an ordinary display environment.
+
+\item The amount of algebra shown should reflect the instructional purpose of the section. In sections devoted to calculating limits, show more intermediate algebra because the algebraic manipulations are themselves part of the instructional objective. It is appropriate to explain such steps with language such as ``We rationalize the numerator by multiplying the numerator and denominator by the conjugate radical,'' or, when sufficient, simply ``We rationalize the numerator.''
+
+\item When routine algebra is not the instructional objective, it should generally not be explained and need not be shown step by step. Show primarily algebraic steps that are advanced, nonobvious, or relevant to the mathematical idea being illustrated.
+\end{enumerate}
+
+\subsection{Multicolumn Lists}
+
+\begin{enumerate}[resume]
+\item Use \texttt{multicols} within enumerated environments when doing so saves vertical space without making the material cramped. This is particularly appropriate when the items are simple expressions, short equations, or brief statements that fit comfortably within a column. Choose the number of columns according to the length of the items.
+\end{enumerate}
+
+\subsection{English Prose and Paragraphs}
+
+\begin{enumerate}[resume]
+\item Prefer cohesive prose paragraphs over a succession of short paragraphs. Related short sentences should generally be combined when they form a continuous explanation.
+
+\item When a genuine paragraph break is useful, use a blank line together with the custom \verb|\vi| command to provide a short vertical space:
+\begin{verbatim}
+This is the first paragraph.
+
+\vi
+This is the next paragraph.
+\end{verbatim}
+
+\end{enumerate}
+
+\section{CTA and Graphing Standards}
+
+\subsection{PGFPlots Defaults}
+
+\begin{enumerate}[resume]
+\item Unless explicitly overridden, graphs created with the \texttt{cta}
+environment use the standard PGFPlots defaults. Axes are centered and thick,
+major gridlines are shown, the horizontal and vertical scales are equal,
+trigonometric functions use radians, axis labels are omitted, labels and tick
+labels use a small font, and tick marks are spaced one unit apart. Plots are
+restricted to the specified horizontal and vertical viewing windows.
+
+\item Unless explicitly overridden, plots are very thick, blue, smooth, and
+have no point markers. Do not repeat these options in individual
+\verb|\addplot| commands.
+
+\item Use the predefined \texttt{soldot} style for a filled point and the
+\texttt{holdot} style for an open point.
+
+\item When shading is required, the predefined \texttt{shaded graph} layer set
+is available to control the drawing order. From back to front, the relevant
+layers are the axis background, pre-main material, grid, ticks, axes, tick
+labels, main plotted material, axis descriptions, and axis foreground.
+\end{enumerate}
+
+\subsection{Alt Text}
+
+\begin{enumerate}[resume]
+\item Every \texttt{cta} or \texttt{ctatikz} graphic must include descriptive
+alt text.
+
+\item Alt text should describe the mathematically relevant information conveyed
+by the graphic in clear English. Do not use mathematical symbols, LaTeX
+notation, or inline equations in alt text. Express mathematical relationships
+verbally instead. For example, describe a graph as ``an upward-opening
+parabola with vertex at the origin'' rather than including a symbolic equation.
+\end{enumerate}
+
+\subsection{Efficient Plotting}
+
+\begin{enumerate}[resume]
+\item Do not repeat options already supplied by the PGFPlots defaults. In
+particular, individual plots ordinarily should not specify \texttt{blue},
+\texttt{very thick}, \texttt{smooth}, or \texttt{no marks}.
+
+\item For straight lines and line segments, prefer
+\verb|\addplot coordinates| with the necessary endpoints rather than plotting
+a linear function over a domain. For example, prefer
+\begin{verbatim}
+\addplot coordinates {(-2,-3) (3,7)};
+\end{verbatim}
+to
+\begin{verbatim}
+\addplot[domain=-2:3] {2*x+1};
+\end{verbatim}
+when the purpose is simply to draw the corresponding line segment.
+
+\item Use an explicit analytic function when the graph must have mathematically
+specified calculus behavior, such as being increasing, decreasing, concave
+upward, or concave downward on particular intervals. Prefer simple functions
+whose derivatives and second derivatives make the required behavior easy to
+verify.
+
+\item Similarly, when a graph must have a specified vertical asymptote, prefer
+a simple rational function with that asymptote rather than attempting to
+construct the shape manually.
+
+\item When plotting a function with a vertical asymptote or other discontinuity,
+split the plot into separate domains on either side of the discontinuity rather
+than allowing PGFPlots to connect points across it. For example, a reciprocal
+function with a vertical asymptote at \(x=a\) should be plotted using separate
+domains to the left and right of \(a\).
+
+\item Coordinate-based paths and B\'ezier curves may be used for schematic
+graphics when the precise mathematical behavior of the curve is unimportant.
+Do not rely on a manually shaped B\'ezier curve when particular intervals of
+increase, decrease, or concavity must be mathematically guaranteed.
+\end{enumerate}
+
+\section{Notation Standards}
+\subsection{Special Functions}
+
+\begin{enumerate}[resume]
+\item Always enclose the arguments of named or special functions in parentheses. This includes trigonometric, inverse trigonometric, logarithmic, and similar named functions. Prefer
+\[
+\ln(x),\qquad \sin(x),\qquad \cos(2x),\qquad \tan(x^2),\qquad \arctan(x)
+\]
+to forms such as \(\ln x\), \(\sin x\), or \(\cos 2x\).
+\end{enumerate}
+
+\subsection{Limits}
+
+\begin{enumerate}[resume]
+\item For a limit, enclose the expression following the limit operator in parentheses unless the expression consists of a single, non-fraction term. Thus, use
+\[
+\lim_{x\to a}\left(\frac{x^2+1}{x+3}\right)
+\qquad\text{and}\qquad
+\lim_{x\to a}(x+3),
+\]
+but
+\[
+\lim_{x\to a}f(x)
+\qquad\text{and}\qquad
+\lim_{x\to a}\sin(x).
+\]
+\end{enumerate}
+
+\subsection{Integrals}
+
+\begin{enumerate}[resume]
+\item Use parentheses in an integrand only when needed to group a sum or clarify the expression. Do not surround a standalone fraction with outer parentheses. For example, use
+\[
+\int (x+3)\,dx
+\qquad\text{and}\qquad
+\int \frac{x^2+1}{x+3}\,dx,
+\]
+as well as
+\[
+\int f(x)\,dx,\qquad
+\int \sin(x)\,dx,\qquad
+\int x^2\,dx.
+\]
+The same convention applies to integrals with bounds. Use a thin space before the differential, as in
+\[
+\int_a^b f(x)\,dx.
+\]
+\end{enumerate}
+
+\subsection{Evaluation Notation}
+
+\begin{enumerate}[resume]
+\item Use \verb|\Bigg|| to indicate evaluation of an expression. For evaluation at a specified input, use
+\[
+\left(x^3+2\right)\Bigg|_{x=1}.
+\]
+For evaluation at upper and lower bounds, particularly when applying the Fundamental Theorem of Calculus, use
+\[
+\left(x^3+2\right)\Bigg|_1^3.
+\]
+\end{enumerate}
+
+\subsection{Equations of Lines}
+
+\begin{enumerate}[resume]
+\item Generally retain equations of lines in point-slope form because that is often the form in which the relevant information is obtained. Prefer
+\[
+y=y_0+m(x-x_0)
+\]
+to
+\[
+y-y_0=m(x-x_0).
+\]
+For example, for a line of slope \(-2\) through \((1,3)\), prefer
+\[
+y=3-2(x-1)
+\]
+rather than
+\[
+y-3=-2(x-1).
+\]
+Do not simplify to slope-intercept form unless there is a mathematical or pedagogical reason to do so.
+\end{enumerate}
+
+\subsection{Piecewise Functions}
+
+\begin{enumerate}[resume]
+\item In piecewise-function notation, do not place commas or periods within the condition following \verb|\ifm|. For example, write
+\[
+f(x)=
+\begin{cases}
+x^2 & \ifm x<0 \\
+x+1 & \ifm x\geq0
+\end{cases}
+\]
+without punctuation after the conditions.
+\end{enumerate}
+
+
+
+\section{Document Types and Answer Space}
+\begin{enumerate}[resume]
+\item Worksheets normally present compact lists of exercises without answer workspace. Quizzes and exams use the \texttt{exam} document type; mark exercises that need proportional answer space with \texttt{workspace}, and use \verb|\workspace{1}| or another positive relative weight within them. A weight of two receives twice the flexible space of a weight of one on the same page. Use \verb|\cp| when a page break should occur only in student mode.
+\end{enumerate}
+
+\section{Exercise Metadata and Review}
+\begin{enumerate}[resume]
+\item Each course maintains its own exercise bank. When an exercise is created, assign it to its original lecture file or pseudo-lecture group, such as true/false or synthesis, and allocate its ID there. The ID is permanent wherever the exercise later appears, including worksheets, quizzes, exams, or another teaching position. Placement and curriculum metadata may change without changing identity.
+
+\item Canonical exercise banks use declared topic and objective identifiers. Response \texttt{type} describes the answer format, such as \texttt{fill-in}, \texttt{multiple-choice}, \texttt{true-false}, or \texttt{free-response} (open response). Traits are non-exclusive qualities, such as conceptual reasoning, procedural work, or applications; an exercise may have several. Ad hoc coursework may omit metadata it does not need, but supplied controlled values must be declared.
+
+\item The default for future automated exercise selection is approved exercises only. Drafts may be selected by explicit author choice. This selection policy does not silently remove drafts from existing hand-authored documents or change manual membership. Adding, combining, retiring, or renumbering canonical exercises requires an explicit author decision.
+\end{enumerate}
+
+\section{Explanations of Improper Integrals}
+\begin{enumerate}[resume]
+\item When improper integrals are part of the course, identify infinite bounds or local unboundedness; a bounded discontinuity alone does not make an integral improper. Split at each interior point where the integral is improper, then express every resulting improper integral as a limit of Riemann integrals before evaluating it. The original integral converges only if all pieces converge to finite values. If one piece diverges, the original integral diverges regardless of the behavior of the other pieces.
+\end{enumerate}
+
+\end{document}

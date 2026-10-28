@@ -1,0 +1,320 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-152-syllabus}[2026/10/06 v1.0.0 Math 152 syllabus tools]
+
+\RequirePackage{mh-syllabus}
+
+\ExplSyntaxOn
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Default Math 152 lecture topics
+%
+% Fourth field = 1 means draw a horizontal rule after that row.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mhsyllabus_add_topic:nnnn {1} {\S~5.5,~5.6}
+  {Review~of~integration~($u$-substitution,~areas~between~curves)} {0}
+
+\mhsyllabus_add_topic:nnnn {2} {\S~6.1}
+  {Volume~by~cross-sections~(including~disk/washer~method)} {0}
+
+\mhsyllabus_add_topic:nnnn {3} {\S~6.2}
+  {Volume~by~shells} {0}
+
+\mhsyllabus_add_topic:nnnn {4} {\S~6.3}
+  {Arc~length} {0}
+
+\mhsyllabus_add_topic:nnnn {5} {\S~6.4}
+  {Areas~of~surfaces~of~revolution} {0}
+
+\mhsyllabus_add_topic:nnnn {6} {\S~8.2}
+  {Integration~by~parts} {0}
+
+\mhsyllabus_add_topic:nnnn {7} {--}
+  {\textbf{Midterm~Exam~\#1~--~covers~\S~5.5,~5.6,~6.1--6.4}} {1}
+
+\mhsyllabus_add_topic:nnnn {8} {\S~8.3}
+  {Trigonometric~integrals} {0}
+
+\mhsyllabus_add_topic:nnnn {9} {\S~8.4}
+  {Trigonometric~substitution} {0}
+
+\mhsyllabus_add_topic:nnnn {10} {\S~8.8}
+  {Improper~integrals} {0}
+
+\mhsyllabus_add_topic:nnnn {11} {\S~10.1}
+  {Sequences} {0}
+
+\mhsyllabus_add_topic:nnnn {12} {\S~10.2}
+  {Infinite~series} {0}
+
+\mhsyllabus_add_topic:nnnn {13} {\S~10.3}
+  {The~Integral~Test} {0}
+
+\mhsyllabus_add_topic:nnnn {14} {--}
+  {\textbf{Midterm~Exam~\#2~--~covers~\S~8.2--8.4,~8.8,~10.1--10.2}} {1}
+
+\mhsyllabus_add_topic:nnnn {15} {\S~10.4}
+  {Comparison~Tests} {0}
+
+\mhsyllabus_add_topic:nnnn {16} {\S~10.5}
+  {Ratio/Root~tests~and~absolute~convergence} {0}
+
+\mhsyllabus_add_topic:nnnn {17} {\S~10.6}
+  {Alternating~series~and~conditional~convergence} {0}
+
+\mhsyllabus_add_topic:nnnn {18} {\S~10.7}
+  {Power~series} {0}
+
+\mhsyllabus_add_topic:nnnn {19} {\S~10.8}
+  {Taylor~and~Maclaurin~series} {0}
+
+\mhsyllabus_add_topic:nnnn {20} {\S~10.9}
+  {Operations~on~Taylor~series} {0}
+
+\mhsyllabus_add_topic:nnnn {21} {\S~10.10}
+  {Applications~of~Taylor~series} {0}
+
+\mhsyllabus_add_topic:nnnn {22} {\S~11.1,~11.2}
+  {Parametric~curves} {0}
+
+\mhsyllabus_add_topic:nnnn {23} {--}
+  {\textbf{Midterm~Exam~\#3~--~covers~\S~10.3--10.10}} {1}
+
+\mhsyllabus_add_topic:nnnn {24} {\S~11.3,~11.4}
+  {Polar~coordinates;~graphing~polar~equations} {0}
+
+\mhsyllabus_add_topic:nnnn {25} {\S~11.5}
+  {Areas~in~polar~coordinates} {0}
+
+\mhsyllabus_add_topic:nnnn {26} {\S~18.1}
+  {Complex~numbers~(part~1~of~2)} {0}
+
+\mhsyllabus_add_topic:nnnn {27} {\S~18.1}
+  {Complex~numbers~(part~2~of~2)} {0}
+
+\mhsyllabus_add_topic:nnnn {28} {--}
+  {Catch~up~and~review} {0}
+
+% Default exam positions; civil dates follow the selected calendar.
+\SetMidtermTopic{1}{7}
+\SetMidtermTopic{2}{14}
+\SetMidtermTopic{3}{23}
+\renewcommand{\RecitationIntroduction}{Introduction,~review~of~integration}
+
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course description
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusCourseDescription}{%
+  \SyllabusItem{Course\\Description}{%
+    Welcome to Math 152! This course is a continuation of Math 151, and is part of the three-semester calculus sequence for the mathematical and physical sciences. We will start by building on the ideas of Calculus I to further study integral calculus and its applications. We will then learn about the theory and applications of infinite series and power series. Finally, we will explore calculus in other coordinate systems (parametric, polar) and complex numbers.
+  }%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course learning goals
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusLearningGoals}{%
+  \SyllabusItem{Course\\Learning\\Goals}{%
+    By the end of this course, learners will be able to:
+    \begin{enumerate}[label=\textbf{[\arabic*]},topsep=2pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+        \item Use integrals to solve application problems, e.g., volumes, surface area, and arc length.
+        \item Use various techniques for finding antiderivatives, including integration by parts, and trigonometric substitution.
+        \item Determine the convergence or divergence of sequences and series, using tests such as the integral test, the $n$th term test, comparison tests, the alternating series test, and the ratio and root test.
+        \item Represent functions using their Taylor and Maclaurin polynomials and series, and to integrate and differentiate those polynomials and series.
+        \item Solve problems using parametric equations and polar forms.
+        \item Learn polar and exponential form of complex numbers, and applications of complex numbers.
+    \end{enumerate}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Textbook and MyLab
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusTextbook}{%
+  \SyllabusItem{Textbook \&\\MyLab}{%
+    \textit{Thomas' Calculus: Early Transcendentals, 15th ed.},
+Joel Hass, Christopher Heil, Przemyslaw Bogacki, and Maurice Weir.
+Pearson, 2022.
+
+\vi
+
+ISBN 978-0137559756 includes MyLab Math with e-text only; ISBN
+978-0137560103 includes MyLab Math with a prepaid physical text shipped
+from Pearson.}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Absences and makeups
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusAbsences}{%
+  \SyllabusItem{Absences \&\\Makeups}{%
+    You are expected to attend all classes and take all quizzes and exams at the scheduled times.
+
+    \begin{itemize}[itemsep=0pt,topsep=2pt]
+      \item \textbf{Lectures:}
+        Regular attendance and active participation are both expected and crucial for your success.
+    
+      \item \textbf{Homework:}
+        There are no extensions or make-ups given for online homework.
+    
+      \item \textbf{Write-Ups and Quizzes:}
+        There are no makeups for recitation write-ups or quizzes for any reason. Instead, the dropped write-ups and quizzes will account for absences due to minor illness and other unforeseen circumstances. You may also be excused from a quiz for religious observance.
+
+      \item \textbf{Midterm Exams:}
+        If you must miss a midterm exam, you must notify your professor as soon as possible. A makeup exam or other arrangement can be offered only if the absence is due to a religious observance or an unavoidable, verifiable emergency.
+        
+      \item \textbf{Final Exam:}
+        The Final Exam cannot be excused, and you must take the Final Exam (or a make-up Final Exam). A student who does not take the final exam will fail the course, even if their average would otherwise be a passing grade.
+    \end{itemize}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% AI Policy
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusAIPolicy}{%
+  \SyllabusItem{AI Policy}{%
+    We genuinely want you to learn and succeed in this course. Our experience shows that students who rely on artificial intelligence to complete assignments do not learn as effectively as students who complete assignments on their own. For this reason, you should not use AI to complete the online homework, the recitation problems or the review sheet problems. There are no devices permitted during exams or quizzes, hence no use of AI is permitted in those cases.}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Canvas sites
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusCanvasSites}{%
+  \SyllabusItem{Canvas\\Sites}{%
+    This course uses two Canvas sites. Links and their distinct purposes are listed below.
+    \vi
+
+    \fbox{\textbf{Link:} \SyllabusOptionalLink{\InstructorCanvasSite}{\underline{Canvas Site for Sections \LectureSections~only}}}
+    \begin{itemize}[topsep=-1pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+        \item Section-specific announcements from your instructor
+        \item Course materials (e.g., lecture notes)
+        \item Pearson MyLab Math access information and assignment links
+        \item Scores on individual assessments and scanned midterm exams
+    \end{itemize}
+    \vi
+
+    \fbox{\textbf{Link:} \SyllabusOptionalLink{\AllSectionsCanvasSite}{\underline{Canvas Site for ``Math 152 All Sections''}}}
+    \begin{itemize}[topsep=-1pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+        \item Course-wide announcements from the Course Coordinator
+        \item Exam and study resources
+    \end{itemize}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Grade components
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusGradeComponents}{%
+  \SyllabusItem{Grade\\Components}{%
+    The table below lists the components of your \textbf{weighted course average}, including each component’s weight, the number of assignments, and the number dropped. The table to the right shows how your weighted average (rounded to the nearest integer) converts to a letter grade.
+  }%
+}
+
+\newcommand{\SyllabusGradingTable}{%
+  \SyllabusItem{\phantom{Grading}}{%
+\begin{center}
+  \begin{tabular}[t]{lrrr@{\hspace{2em}}cc}
+    \textbf{Component}
+      & \textbf{Wt.}
+      & \textbf{Assn.}
+      & \textbf{Dropped}
+      & \textbf{Letter}
+      & \textbf{Minimum Score}
+      \\
+    \cmidrule(r{1.5em}){1-4}\cmidrule(l{-0.5em}){5-6}
+
+    Homework (MyLab)
+      & 5\% & 23 & 3
+      & A\phantom{+} & 90\%
+      \\
+
+    Recitation Write-Ups
+      & 5\% & 13 & 3
+      & B+ & 85\%
+      \\
+
+    Quizzes:
+      & 10\% & 13 & 3
+      & B\phantom{+} & 75\%
+      \\
+
+    Midterm Exams:
+      & 48\% & 3 & 0
+      & C+ & 70\%
+      \\
+
+    Final Exam:
+      & 32\% & 1 & 0
+      & C\phantom{+} & 60\%
+      \\
+
+    TOTAL:
+      & 100\% & & 
+      & D\phantom{+} & 55\%
+      \\
+  \end{tabular}
+\end{center}
+
+The numbers in this table may be slightly adjusted at the end of the semester based on our analysis of grade data collected throughout the semester, and the adjustment might be different for each class. But the grade you receive will be at least as high as indicated by the above table. That is, you might get a higher letter grade at the end of the semester than the table indicates; you will not get a grade lower than the table indicates. The course coordinator or your lecturer will announce any changes on Canvas.
+  }%
+}
+
+\newcommand{\SyllabusGradingItems}{%
+  \SyllabusItem{\phantom{Grading}}{%
+    \begin{itemize}[topsep=4pt,itemsep=-1ex,partopsep=-1ex,parsep=1ex]
+      \item \textbf{Homework (MyLab):}
+        You will need to complete online homework regularly on Pearson MyLab. There is a homework assignment for each lecture. 
+      \item \textbf{Recitation Write-Ups:}
+        During the recitation meeting, you will work together with 3-4 other students. The emphasis will be on problem-solving strategies and multi-step problems. This small-group work will be directed by the recitation instructor for our course. You will also be assisted by an undergraduate learning assistant. You will need to submit your individual Write-Up of the problems at the end of recitation, and it will be graded for effort and completion.
+      \item \textbf{Quizzes:}
+        In recitation; dates and coverage announced on Canvas.
+      \item \textbf{Midterm Exams:}
+        Given in class; date and coverage listed below.
+      \item \textbf{Final Exam:}
+        Location announced on Canvas; date and coverage listed below. You must take the Final Exam to pass the course, regardless of your Course Average. If you do not take the Final Exam, your letter grade will be F.
+    \end{itemize}
+    \begin{center}
+      \begin{tabular}[t]{lrllr}
+        \textbf{Exam}
+          & \textbf{Wt.}
+          & \textbf{Date}
+          & \textbf{Time}
+          & \textbf{Coverage (Textbook Sections)}
+          \\\toprule
+        \textit{Midterm Exam \#1}
+          & 16\%
+          & \MidtermOneDate
+          & in class
+          & \S 5.5, 5.6, 6.1--6.4 \\
+        \textit{Midterm Exam \#2}
+          & 16\%
+          & \MidtermTwoDate
+          & in class
+          & \S 8.2--8.4, 8.8, 10.1, 10.2 \\
+        \textit{Midterm Exam \#3}
+          & 16\%
+          & \MidtermThreeDate
+          & in class
+          & \S 10.3--10.10 \\          
+        \textit{Final Exam}
+          & 32\%
+          & \FinalExamDate
+          & \FinalExamTime
+          & all above plus \S11.1--11.5, 18.1 \\
+      \end{tabular}
+    \end{center}
+  }%
+}
+
+\endinput

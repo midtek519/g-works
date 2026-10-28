@@ -1,0 +1,362 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-utilities}
+  [2026/08/28 v0.3.0 Shared mathematics and typesetting utilities]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Packages                  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Mathematics
+\RequirePackage{mathtools}
+\RequirePackage{amsthm}
+\RequirePackage{amssymb}
+\RequirePackage{bm}
+\RequirePackage{esint}
+
+% General tools
+\RequirePackage{calc}
+\RequirePackage{graphicx}
+\RequirePackage{relsize}
+\RequirePackage{hyperref}
+
+% Lists, columns, and tables
+\RequirePackage{enumitem}
+\RequirePackage{multicol}
+\RequirePackage{booktabs}
+\RequirePackage{longtable}
+\RequirePackage{multirow}
+\RequirePackage{array}
+\RequirePackage{dcolumn}
+
+% Graphics and boxes
+\RequirePackage{xcolor}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\RequirePackage{pgfplotstable}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.markings}
+\usepgfplotslibrary{fillbetween}
+
+\pgfplotsset{compat=1.18}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% General utilities         %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Center a single table cell
+\newcommand{\mc}[1]{\multicolumn{1}{c}{#1}}
+
+% Decimal-aligned table column
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+
+% Apply a style to a table row
+\newcommand{\setrow}[1]{%
+  \gdef\rowmac{#1}#1\ignorespaces
+}
+
+\newcommand{\clearrow}{%
+  \global\let\rowmac\relax
+}
+
+% Vertical spacing
+\newcommand{\vi}{\vspace{0.15cm}}
+\newcommand{\Vi}{\vspace{0.4cm}}
+
+% Fill the current column and start the next
+\newcommand{\nextcolumn}{%
+  \vfill\null
+  \columnbreak
+}
+
+% Box around short text
+\newcommand{\widefbox}[1]{%
+  \fbox{\hspace{1em}#1\hspace{1em}}%
+}
+
+% Rectangular label
+\newcommand{\enrectangle}[1]{%
+  \begin{tikzpicture}[baseline=(char.base)]
+    \node[
+      draw,
+      fill=white,
+      shape=rectangle,
+      line width=0.3mm,
+      minimum width=0.1cm
+    ] (char) {\large\bfseries #1};
+  \end{tikzpicture}%
+}
+
+% Circled label
+\newcommand{\circled}[1]{%
+  \tikz[baseline=(char.base)]{%
+    \node[
+      shape=circle,
+      draw,
+      inner sep=2pt
+    ] (char) {#1};
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% General mathematics       %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ds}{\displaystyle}
+
+% True/false choices
+\newcommand{\tf}{%
+  \fbox{\large T}\,\,
+  \fbox{\large F}\,\,
+}
+
+% Large circled signs
+\newcommand{\om}{\mathbin{\scalebox{1.5}{$\ominus$}}}
+\newcommand{\op}{\mathbin{\scalebox{1.5}{$\oplus$}}}
+
+% Equality annotations
+\newcommand{\heq}{\stackrel{H}{=}}
+\newcommand{\qeq}{\stackrel{?}{=}}
+
+% Implication arrow
+\newcommand{\To}{%
+  \ {\color{gray!60}\bm{\Longrightarrow}}\ %
+}
+
+% Piecewise-function text
+\newcommand{\ifm}{\text{if }}
+
+% Evaluation bar
+\newcommand{\ebar}{\Big|}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Vector calculus           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\bnab}{\bm{\nabla}}
+\newcommand{\bi}{\bm{i}}
+\newcommand{\bj}{\bm{j}}
+\newcommand{\bk}{\bm{k}}
+
+\newcommand{\detcross}[7]{%
+  \left|
+    \begin{array}{#1}
+      \bi & \bj & \bk \\
+      #2  & #3  & #4 \\
+      #5  & #6  & #7
+    \end{array}
+  \right|
+}
+
+\newcommand{\lang}{\left\langle}
+\newcommand{\rang}{\right\rangle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Derivatives               %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\D}{\partial}
+\newcommand{\DD}[2]{\frac{\D #1}{\D #2}}
+\newcommand{\dd}[2]{\frac{d #1}{d #2}}
+
+% Upright capital beta
+\newcommand{\Beta}{\mathrm{B}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Math operators            %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathOperator{\erf}{erf}
+\DeclareMathOperator{\erfc}{erfc}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\Ai}{Ai}
+\DeclareMathOperator{\Mod}{mod}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\rref}{rref}
+\DeclareMathOperator{\rank}{Rank}
+\DeclareMathOperator{\nullity}{Nullity}
+\DeclareMathOperator{\Col}{Col}
+\DeclareMathOperator{\Null}{Null}
+\DeclareMathOperator{\Row}{Row}
+\DeclareMathOperator{\Span}{Span}
+\DeclareMathOperator{\Jac}{Jac}
+\DeclareMathOperator{\Grad}{grad}
+\DeclareMathOperator{\Div}{div}
+\DeclareMathOperator{\Curl}{curl}
+\DeclareMathOperator{\sech}{sech}
+\DeclareMathOperator{\csch}{csch}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Averaged integrals        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\Xint#1{%
+  \mathchoice
+    {\XXint\displaystyle\textstyle{#1}}
+    {\XXint\textstyle\scriptstyle{#1}}
+    {\XXint\scriptstyle\scriptscriptstyle{#1}}
+    {\XXint\scriptscriptstyle\scriptscriptstyle{#1}}
+  \!\int
+}
+
+\def\XXint#1#2#3{%
+  {%
+    \setbox0=\hbox{$#1{#2#3}{\int}$}%
+    \vcenter{\hbox{$#2#3$}}%
+    \kern-.5\wd0
+  }%
+}
+
+\def\ddashint{\Xint=}
+\def\dashint{\Xint-}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% PGFPlots defaults         %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pgfplotsset{
+  every axis/.style={
+    axis lines=center,
+    thick,
+    grid=major,
+    axis equal image=true,
+    trig format=rad,
+    xlabel=\empty,
+    ylabel=\empty,
+    label style={font=\small},
+    tick label style={font=\small},
+    restrict x to domain=xmin:xmax,
+    restrict y to domain=ymin:ymax,
+    xtick distance=1,
+    ytick distance=1,
+    cycle list={{}},
+  },
+  every axis plot/.style={
+    very thick,
+    blue,
+    smooth,
+    no marks
+  },
+  soldot/.style={
+    only marks,
+    mark=*
+  },
+  holdot/.style={
+    only marks,
+    mark=*,
+    fill=white
+  },
+  layers/shaded graph/.define layer set={
+    axis background,
+    pre main,
+    axis grid,
+    axis ticks,
+    axis lines,
+    axis tick labels,
+    main,
+    axis descriptions,
+    axis foreground
+  }{
+    /pgfplots/layers/standard
+  }
+}
+
+\tikzset{
+  graph/.style={
+    very thick,
+    blue
+  }
+}
+
+\newcommand{\xm}{\pgfkeysvalueof{/pgfplots/xmin}}
+\newcommand{\xM}{\pgfkeysvalueof{/pgfplots/xmax}}
+\newcommand{\ym}{\pgfkeysvalueof{/pgfplots/ymin}}
+\newcommand{\yM}{\pgfkeysvalueof{/pgfplots/ymax}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Hyperlink setup           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=mhExerciseBlue,
+  citecolor=mhExerciseBlue,
+  urlcolor=mhExerciseBlue,
+  pdfstartview=FitH,
+  bookmarksopen=true,
+  bookmarksnumbered=true
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Plot environments         %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentEnvironment{cta}{ m O{} }
+  {%
+    \begin{center}
+    \begin{tikzpicture}[alt={#1}]
+    \begin{axis}[#2]
+  }
+  {%
+    \end{axis}
+    \end{tikzpicture}
+    \end{center}
+  }
+
+\NewDocumentEnvironment{ctatikz}{ m O{} }
+  {%
+    \begin{center}
+    \begin{tikzpicture}[alt={#1},#2]
+  }
+  {%
+    \end{tikzpicture}
+    \end{center}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Standard exercise instructions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\EvaluateLimits}{%
+  For each part, evaluate the limit. Use $+\infty$ or $-\infty$ for an
+  infinite limit and ``DNE'' otherwise if the limit does not exist.%
+}
+
+\newcommand{\TrueFalse}{%
+  For each statement, fill in ``T'' if the statement is true or ``F'' if the statement is false.%
+}
+
+\newcommand{\TrueFalseExplain}{%
+  For each statement, fill in ``T'' for true or ``F'' for false, and briefly justify your answer.%
+}
+
+\newcommand{\CalculateDerivatives}{%
+  For each part, calculate the indicated derivative. Do not simplify your answer.%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Specialized helpers       %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentCommand{\fillblank}{ O{0.8cm} m }{%
+  \raisebox{-0.5\height+0.5ex}{%
+    \fbox{%
+      \rule{0pt}{#1}%
+      \makebox[#2]{}%
+    }%
+  }%
+}
+
+\NewDocumentCommand{\blankaxes}{ O{} m m m m }{%
+  \begin{cta}{Blank coordinate axes for sketching a graph.}[
+    xmin=#2,
+    xmax=#3,
+    ymin=#4,
+    ymax=#5,
+    #1
+  ]
+  \end{cta}%
+}
+
+\endinput

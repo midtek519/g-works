@@ -1,0 +1,255 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-152-exam-data}[2026/10/13 Fall 2026 coordinated exam versions]
+\RequirePackage{mh-assessment}
+\usetikzlibrary{perspective,shapes.geometric,3d}
+\tikzset{light gray/.style={fill=gray!10},dark gray/.style={fill=gray!60},mid gray/.style={fill=gray!40}}
+\newcommand{\MathExamStudentBreak}{\IfMathAssessmentT{\IfMathStudentT{\clearpage}}}
+\newcommand{\MathExamAnswerSpace}[1]{\IfMathAssessmentT{\IfMathStudentT{\answerbox[centered][1.5cm]{Answer:}{0.8\linewidth}\workspace{#1}}}}
+\newcommand{\MathExamOneOneParameters}{%
+\def\ExamA{\vary{{3};{5};{7};{8}}}
+}
+\newcommand{\MathExamOneTwoParameters}{%
+\def\ExamM{\vary{{1};{2};{4};{5}}}
+\def\ExamExp{\vary{{4};{8};{9};{7}}}
+}
+\newcommand{\MathExamOneTwoChoices}{\vary{{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\frac12\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\frac12\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item $\ds\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item None of the above
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\frac12\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item $\ds\frac12\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item None of the above
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\frac12\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\frac12\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item $\ds\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item None of the above
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\frac12\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item $\ds\frac12\int(u-\ExamM)u^{\ExamExp}\,du$
+\item $\ds\int(u-\ExamM)^{3/2}u^{\ExamExp}\,du$
+\item None of the above
+\end{enumerate}}}}
+\newcommand{\MathExamOneThreeParameters}{%
+\def\ExamD{\vary{{-7};{-4};{-6};{-3}}}
+\def\ExamE{\vary{{2};{7};{6};{3}}}
+\def\ExamBound{\vary{{6};{2};{4};{5}}}
+}
+\newcommand{\MathExamOneFourParameters}{%
+\def\ExamK{\vary{{5};{8};{6};{4}}}
+\def\ExamXBound{\vary{{3};{4};{5};{2}}}
+}
+\newcommand{\MathExamOneFiveParameters}{%
+\def\ExamPow{\vary{{6};{9};{3};{5}}}
+\def\ExamL{\vary{{4};{5};{7};{2}}}
+\def\ExamHorAxis{\vary{{3};{5};{1};{6}}}
+}
+\newcommand{\MathExamOneSixParameters}{%
+\def\ExamParabola{\vary{{8-x^2};{7-x^2};{3-x^2};{6-x^2}}}
+\def\ExamHeight{\vary{{8};{7};{3};{6}}}
+\def\ExamAxis{\vary{{7};{3};{6};{5}}}
+\def\ExamShapeMethod{\vary{{washer};{shell};{washer};{shell}}}
+}
+\newcommand{\MathExamOneSevenParameters}{%
+\def\ExamLine{\vary{{1-2x};{\frac{1-x}{2}};{1-2x};{\frac{1-x}{2}}}}
+}
+\newcommand{\MathExamOneSevenChoices}{\vary{{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item The washer method can be done with a single integral.
+\item The washer method requires a sum of two integrals.
+\item The shell method can be done with a single integral.
+\item The shell method requires a sum of two integrals.
+\item None of the above statements is correct.
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item The washer method can be done with a single integral.
+\item The washer method requires a sum of two integrals.
+\item The shell method can be done with a single integral.
+\item The shell method requires a sum of two integrals.
+\item None of the above statements is correct.
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item The washer method can be done with a single integral.
+\item The washer method requires a sum of two integrals.
+\item The shell method can be done with a single integral.
+\item The shell method requires a sum of two integrals.
+\item None of the above statements is correct.
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item The washer method can be done with a single integral.
+\item The washer method requires a sum of two integrals.
+\item The shell method can be done with a single integral.
+\item The shell method requires a sum of two integrals.
+\item None of the above statements is correct.
+\end{enumerate}}}}
+\newcommand{\MathExamOneEightParameters}{%
+\def\ExamP{\vary{{8};{4};{6};{10}}}
+\def\ExamHalfP{\vary{{4};{2};{3};{5}}}
+}
+\newcommand{\MathExamOneEightChoices}{\vary{{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\int_0^1\frac\pi2(\ExamP x)^2\,dx$
+\item $\ds\int_0^1\pi(\ExamP x)^2\,dx$
+\item $\ds\int_0^1\pi(\ExamHalfP x)^2\,dx$
+\item $\ds\int_0^1\frac\pi2(\ExamHalfP x)^2\,dx$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\int_0^1\pi(\ExamP x)^2\,dx$
+\item $\ds\int_0^1\pi(\ExamHalfP x)^2\,dx$
+\item $\ds\int_0^1\frac\pi2(\ExamP x)^2\,dx$
+\item $\ds\int_0^1\frac\pi2(\ExamHalfP x)^2\,dx$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\int_0^1\pi(\ExamP x)^2\,dx$
+\item $\ds\int_0^1\frac\pi2(\ExamP x)^2\,dx$
+\item $\ds\int_0^1\frac\pi2(\ExamHalfP x)^2\,dx$
+\item $\ds\int_0^1\pi(\ExamHalfP x)^2\,dx$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ds\int_0^1\frac\pi2(\ExamP x)^2\,dx$
+\item $\ds\int_0^1\pi(\ExamHalfP x)^2\,dx$
+\item $\ds\int_0^1\frac\pi2(\ExamHalfP x)^2\,dx$
+\item $\ds\int_0^1\pi(\ExamP x)^2\,dx$
+\item None of these
+\end{enumerate}}}}
+\newcommand{\MathExamOneNineParameters}{%
+\def\ExamB{\vary{{5};{3};{6};{2}}}
+\def\ExamC{\vary{{7};{17};{13};{11}}}
+\def\ExamBSq{\vary{{25};{9};{36};{4}}}
+\def\ExamUBound{\vary{{\sqrt{3}/5};{1/3};{\sqrt{3}/6};{1/2}}}
+\def\ExamAngle{\vary{{\pi/3};{\pi/4};{\pi/3};{\pi/4}}}
+}
+\newcommand{\MathExamTwoOneParameters}{%
+\def\ExamA{\vary{{9};{7};{3};{5}}}
+\def\ExamS{\vary{{7};{4};{5};{6}}}
+\def\ExamSMinus{\vary{{6};{3};{4};{5}}}
+\def\ExamB{\vary{{2};{3};{5};{6}}}
+\def\ExamFourB{\vary{{8};{12};{20};{24}}}
+\def\ExamFunc{\vary{{\cos};{\sin};{\cos};{\sin}}}
+\def\ExamSign{\vary{{+};{-};{+};{-}}}
+\def\ExamExpB{\vary{{20};{16};{14};{12}}}
+\def\ExamEP{\vary{{21};{17};{15};{13}}}
+\def\ExamET{\vary{{23};{19};{17};{15}}}
+\def\ExamEF{\vary{{25};{21};{19};{17}}}
+}
+\newcommand{\MathExamTwoTwoParameters}{%
+\def\ExamK{\vary{{2};{5};{3};{4}}}
+\def\ExamL{\vary{{3};{6};{5};{9}}}
+\def\ExamRadicand{\vary{{4x^2-9};{36x^2-25};{25-9x^2};{16-81x^2}}}
+}
+\newcommand{\MathExamTwoTwoChoices}{\vary{{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $x=\frac{\ExamL}{\ExamK}\sin(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sin(\theta)$
+\item $x=\frac{\ExamL}{\ExamK}\sec(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sec(\theta)$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $x=\frac{\ExamL}{\ExamK}\sin(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sin(\theta)$
+\item $x=\frac{\ExamL}{\ExamK}\sec(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sec(\theta)$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $x=\frac{\ExamL}{\ExamK}\sin(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sin(\theta)$
+\item $x=\frac{\ExamL}{\ExamK}\sec(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sec(\theta)$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $x=\frac{\ExamL}{\ExamK}\sin(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sin(\theta)$
+\item $x=\frac{\ExamL}{\ExamK}\sec(\theta)$
+\item $x=\frac{\ExamK}{\ExamL}\sec(\theta)$
+\item None of these
+\end{enumerate}}}}
+\newcommand{\MathExamTwoThreeParameters}{%
+\def\ExamM{\vary{{4};{6};{5};{3}}}
+\def\ExamMSq{\vary{{16};{36};{25};{9}}}
+}
+\newcommand{\MathExamTwoFourParameters}{%
+\def\ExamVA{\vary{{2};{3};{4};{6}}}
+\def\ExamUpper{\vary{{11};{9};{13};{8}}}
+\def\ExamExp{\vary{{7};{9};{6};{4}}}
+}
+\newcommand{\MathExamTwoFiveParameters}{%
+\def\ExamC{\vary{{6};{5};{3};{7}}}
+\def\ExamCMOne{\vary{{5};{4};{2};{6}}}
+\def\ExamD{\vary{{7};{3};{8};{5}}}
+\def\ExamCD{\vary{{42};{15};{24};{35}}}
+}
+\newcommand{\MathExamTwoSixParameters}{%
+\def\ExamE{\vary{{5};{6};{3};{7}}}
+\def\ExamF{\vary{{8};{7};{2};{8}}}
+}
+\newcommand{\MathExamTwoSevenParameters}{%
+\def\ExamBase{\vary{{5};{3};{4};{6}}}
+}
+\newcommand{\MathExamTwoSevenChoices}{\vary{{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ExamBase^{-1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item $0\leq b_n\leq\ExamBase^{1/n}$
+\item $-\ExamBase^{1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item $\ExamBase n\leq b_n\leq\ExamBase^n$
+\item None of the above
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $0\leq b_n\leq\ExamBase^{1/n}$
+\item $-\ExamBase^{1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item $\ExamBase n\leq b_n\leq\ExamBase^n$
+\item $\ExamBase^{-1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item None of the above
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ExamBase^{-1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item $-\ExamBase^{1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item $\ExamBase n\leq b_n\leq\ExamBase^n$
+\item $0\leq b_n\leq\ExamBase^{1/n}$
+\item None of the above
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\ExamBase^{-1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item $0\leq b_n\leq\ExamBase^{1/n}$
+\item $-\ExamBase^{1/n}\leq b_n\leq\ExamBase^{1/n}$
+\item $\ExamBase n\leq b_n\leq\ExamBase^n$
+\item None of the above
+\end{enumerate}}}}
+\newcommand{\MathExamTwoEightParameters}{%
+\def\ExamU{\vary{{5};{4};{3};{6}}}
+\def\ExamV{\vary{{6};{5};{4};{7}}}
+\def\ExamW{\vary{{7};{3};{5};{5}}}
+\def\ExamWV{\vary{{42};{15};{20};{35}}}
+\def\ExamUSq{\vary{{25};{16};{9};{36}}}
+}
+\newcommand{\MathExamTwoEightChoices}{\vary{{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\frac{\ExamW}{\ExamU}$
+\item $\frac{\ExamW}{\ExamV}$
+\item Diverges
+\item $\ExamWV$
+\item $\frac{\ExamWV}{\ExamUSq}$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\frac{\ExamW}{\ExamU}$
+\item $\frac{\ExamW}{\ExamV}$
+\item $\frac{\ExamWV}{\ExamUSq}$
+\item $\ExamWV$
+\item Diverges
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\frac{\ExamW}{\ExamU}$
+\item Diverges
+\item $\ExamWV$
+\item $\frac{\ExamW}{\ExamV}$
+\item $\frac{\ExamWV}{\ExamUSq}$
+\item None of these
+\end{enumerate}};{\begin{enumerate}[label={\(\bigcirc\)~(\Alph*)},itemsep=2pt]
+\item $\frac{\ExamWV}{\ExamUSq}$
+\item $\frac{\ExamW}{\ExamV}$
+\item $\frac{\ExamW}{\ExamU}$
+\item Diverges
+\item $\ExamWV$
+\item None of these
+\end{enumerate}}}}
+\newcommand{\MathExamTwoNineParameters}{%
+\def\ExamN{\vary{{3};{7};{9};{5}}}
+\def\ExamO{\vary{{4};{8};{6};{10}}}
+\def\ExamQ{\vary{{4};{2};{6};{10}}}
+\def\ExamR{\vary{{17};{15};{11};{13}}}
+}

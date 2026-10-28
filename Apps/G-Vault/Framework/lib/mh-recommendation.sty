@@ -1,0 +1,41 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-recommendation}[2026/10/13 v0.2 Shared standard letterhead]
+\newif\ifmhRecModern
+\DeclareOption{standard}{}
+% Retain source compatibility while using one standard layout for all letters.
+\DeclareOption{balanced}{}
+\DeclareOption{classic}{}
+\DeclareOption{palatino}{\mhRecModernfalse}
+\DeclareOption{modern}{\mhRecModerntrue}
+\DeclareOption*{\PackageError{mh-recommendation}{Unknown option \CurrentOption}{Use standard, palatino or modern.}}
+\ProcessOptions\relax
+\@ifclassloaded{mhletter}{}{\PackageError{mh-recommendation}{mhletter class required}{Use documentclass mhletter.}}
+\ifmhRecModern\renewcommand{\rmdefault}{lmr}\fi
+\newcommand{\mhRecSalutation}{Dear Members of the Selection Committee:}
+\newcommand{\mhRecRunningLabel}{Letter of recommendation}
+\newcommand{\mhRecLetterheadFile}{}
+\newcommand{\mhRecClosing}{Sincerely,}
+\newcommand{\mhRecClosingLines}{\mhLetterName\par\mhLetterTitle}
+\newcommand{\RecommendationSalutation}[1]{\renewcommand{\mhRecSalutation}{#1}}
+\newcommand{\RecommendationRunningLabel}[1]{\renewcommand{\mhRecRunningLabel}{#1}}
+\newcommand{\RecommendationLetterheadFile}[1]{\renewcommand{\mhRecLetterheadFile}{#1}}
+\newcommand{\RecommendationClosing}[1]{\renewcommand{\mhRecClosing}{#1}}
+\newcommand{\RecommendationClosingLines}[1]{\renewcommand{\mhRecClosingLines}{#1}}
+\fancypagestyle{mhrecommendationcontinuation}{%
+  \fancyhf{}
+  \fancyhead[L]{\begin{minipage}[b]{0.70\textwidth}\raggedright\small\mhRecRunningLabel\end{minipage}}
+  \fancyhead[R]{\small\mhLetterDate}
+  \fancyfoot[R]{\small\thepage}
+  \renewcommand{\headrulewidth}{0.2pt}\renewcommand{\footrulewidth}{0pt}}
+\pagestyle{mhrecommendationcontinuation}
+\newcommand{\MakeRecommendationOpening}{%
+  \LetterSalutation{\mhRecSalutation}%
+  \ifx\mhRecLetterheadFile\empty\else
+    \renewcommand{\MakeLetterHeader}{\noindent\includegraphics[width=\linewidth,height=1.12in,keepaspectratio]{\mhRecLetterheadFile}\par}%
+  \fi
+  \MakeLetterOpening
+}
+\newcommand{\MakeRecommendationClosing}{%
+  \LetterClosing{\mhRecClosing}\LetterClosingLines{\mhRecClosingLines}\MakeLetterClosing
+}
+\endinput

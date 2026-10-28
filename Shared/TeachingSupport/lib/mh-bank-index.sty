@@ -1,0 +1,516 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesExplPackage
+  {mh-bank-index}
+  {2026-08-27}
+  {0.2.0}
+  {Printable reference tables for the Math exercise database}
+
+\RequirePackage{longtable}
+\RequirePackage{array}
+\RequirePackage{booktabs}
+
+\ExplSyntaxOn
+\cs_generate_variant:Nn \prop_item:Nn { Ne }
+\cs_generate_variant:Nn \clist_map_inline:nn { en }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local working data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\seq_new:N \l_mh_reference_topics_seq
+\seq_new:N \l_mh_reference_objectives_seq
+\seq_new:N \l_mh_reference_exercises_seq
+\prop_new:N \l_mh_topic_counts_prop
+\prop_new:N \l_mh_topic_approved_counts_prop
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Topic sorting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_reference_topics_sort:
+  {
+    \seq_set_eq:NN
+      \l_mh_reference_topics_seq
+      \g_mh_topics_seq
+
+    \seq_sort:Nn
+      \l_mh_reference_topics_seq
+      {
+        \int_compare:nNnTF
+          {
+            \prop_item:Nn
+              \g_mh_topic_order_prop
+              {##1}
+          }
+          >
+          {
+            \prop_item:Nn
+              \g_mh_topic_order_prop
+              {##2}
+          }
+          { \sort_return_swapped: }
+          { \sort_return_same: }
+      }
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Objective sorting
+%
+% Objectives are grouped by the canonical order of their associated
+% topic. Within the same topic, declaration order is preserved.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_reference_objectives_sort:
+  {
+    \seq_set_eq:NN
+      \l_mh_reference_objectives_seq
+      \g_mh_objectives_seq
+
+    \seq_sort:Nn
+      \l_mh_reference_objectives_seq
+      {
+        \int_compare:nNnTF
+          {
+            \prop_item:Ne
+              \g_mh_topic_order_prop
+              {
+                \prop_item:Nn
+                  \g_mh_objective_topic_prop
+                  {##1}
+              }
+          }
+          >
+          {
+            \prop_item:Ne
+              \g_mh_topic_order_prop
+              {
+                \prop_item:Nn
+                  \g_mh_objective_topic_prop
+                  {##2}
+              }
+          }
+          { \sort_return_swapped: }
+          { \sort_return_same: }
+      }
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exercise sorting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_reference_exercises_sort:
+  {
+    \seq_set_eq:NN
+      \l_mh_reference_exercises_seq
+      \g_mh_exercises_seq
+
+    \seq_sort:Nn
+      \l_mh_reference_exercises_seq
+      {
+        \str_compare:nNnTF
+          {##1}
+          >
+          {##2}
+          { \sort_return_swapped: }
+          { \sort_return_same: }
+      }
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Count exercises by topic
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_compute_topic_coverage:
+  {
+    % Start with all counts equal to zero.
+    \prop_clear:N \l_mh_topic_counts_prop
+    \prop_clear:N \l_mh_topic_approved_counts_prop
+
+    \seq_map_inline:Nn
+      \g_mh_topics_seq
+      {
+        \prop_put:Nnn
+          \l_mh_topic_counts_prop
+          {##1}
+          {0}
+
+        \prop_put:Nnn
+          \l_mh_topic_approved_counts_prop
+          {##1}
+          {0}
+      }
+
+    % Visit every registered exercise.
+    \seq_map_inline:Nn
+      \g_mh_exercises_seq
+      {
+        \clist_map_inline:en
+          {
+            \prop_item:Nn
+              \g_mh_exercise_topics_prop
+              {##1}
+          }
+          {
+            % Increment total exercise count.
+            \prop_put:Nnx
+              \l_mh_topic_counts_prop
+              {####1}
+              {
+                \int_eval:n
+                  {
+                    \prop_item:Nn
+                      \l_mh_topic_counts_prop
+                      {####1}
+                    + 1
+                  }
+              }
+
+            % Increment approved count when appropriate.
+            \str_if_eq:eeT
+              {
+                \prop_item:Nn
+                  \g_mh_exercise_status_prop
+                  {##1}
+              }
+              { approved }
+              {
+                \prop_put:Nnx
+                  \l_mh_topic_approved_counts_prop
+                  {####1}
+                  {
+                    \int_eval:n
+                      {
+                        \prop_item:Nn
+                          \l_mh_topic_approved_counts_prop
+                          {####1}
+                        + 1
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exercise statistics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\int_new:N \l_mh_total_exercises_int
+\int_new:N \l_mh_approved_exercises_int
+
+\cs_new_protected:Npn \mh_compute_exercise_statistics:
+  {
+    \int_set:Nn
+      \l_mh_total_exercises_int
+      { \seq_count:N \g_mh_exercises_seq }
+
+    \int_zero:N
+      \l_mh_approved_exercises_int
+
+    \seq_map_inline:Nn
+      \g_mh_exercises_seq
+      {
+        \str_if_eq:eeT
+          {
+            \prop_item:Nn
+              \g_mh_exercise_status_prop
+              {##1}
+          }
+          { approved }
+          {
+            \int_incr:N
+              \l_mh_approved_exercises_int
+          }
+      }
+  }
+
+\cs_new_protected:Npn \mh_print_exercise_statistics:
+  {
+    \mh_compute_exercise_statistics:
+
+    \begin{tabular}
+      {
+        >{\bfseries}l
+        r
+      }
+      Total~exercises:
+        &
+      \int_use:N \l_mh_total_exercises_int
+      \\
+
+      Approved~exercises:
+        &
+      \int_use:N \l_mh_approved_exercises_int
+      \\
+    \end{tabular}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Printable topic reference
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_print_topics:
+  {
+    \mh_reference_topics_sort:
+
+    \begin{longtable}
+      {
+        >{\ttfamily\raggedright\arraybackslash}p{0.27\linewidth}
+        >{\raggedright\arraybackslash}p{0.16\linewidth}
+        >{\raggedright\arraybackslash}p{0.47\linewidth}
+      }
+
+      \toprule
+      \normalfont\bfseries Identifier
+        &
+      \bfseries Section
+        &
+      \bfseries Title
+      \\
+      \midrule
+      \endfirsthead
+
+      \toprule
+      \normalfont\bfseries Identifier
+        &
+      \bfseries Section
+        &
+      \bfseries Title
+      \\
+      \midrule
+      \endhead
+
+      \bottomrule
+      \endfoot
+
+      \seq_map_inline:Nn
+        \l_mh_reference_topics_seq
+        {
+          ##1
+            &
+          \normalfont
+          \prop_item:Nn
+            \g_mh_topic_section_prop
+            {##1}
+            &
+          \normalfont
+          \prop_item:Nn
+            \g_mh_topic_title_prop
+            {##1}
+          \\
+        }
+    \end{longtable}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Printable objective reference
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_print_objectives:
+  {
+    \mh_reference_objectives_sort:
+
+    \begin{longtable}
+      {
+        >{\ttfamily\raggedright\arraybackslash}p{0.25\linewidth}
+        >{\ttfamily\raggedright\arraybackslash}p{0.22\linewidth}
+        >{\raggedright\arraybackslash}p{0.43\linewidth}
+      }
+
+      \toprule
+      \normalfont\bfseries Identifier
+        &
+      \normalfont\bfseries Topic
+        &
+      \bfseries Learning~Objective
+      \\
+      \midrule
+      \endfirsthead
+
+      \toprule
+      \normalfont\bfseries Identifier
+        &
+      \normalfont\bfseries Topic
+        &
+      \bfseries Learning~Objective
+      \\
+      \midrule
+      \endhead
+
+      \bottomrule
+      \endfoot
+
+      \seq_map_inline:Nn
+        \l_mh_reference_objectives_seq
+        {
+          ##1
+            &
+          \prop_item:Nn
+            \g_mh_objective_topic_prop
+            {##1}
+            &
+          \normalfont
+          \prop_item:Nn
+            \g_mh_objective_short_prop
+            {##1}
+          \\
+        }
+
+    \end{longtable}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Printable exercise summary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_print_exercise_summary:
+  {
+    \mh_reference_exercises_sort:
+
+    \begin{longtable}
+      {
+        >{\ttfamily\raggedright\arraybackslash}p{0.16\linewidth}
+        >{\ttfamily\raggedright\arraybackslash}p{0.14\linewidth}
+        >{\ttfamily\raggedright\arraybackslash}p{0.42\linewidth}
+        >{\ttfamily\raggedright\arraybackslash}p{0.18\linewidth}
+      }
+
+      \toprule
+      \normalfont\bfseries ID
+        &
+      \normalfont\bfseries Status
+        &
+      \normalfont\bfseries Topic(s)
+        &
+      \normalfont\bfseries Type
+      \\
+      \midrule
+      \endfirsthead
+
+      \toprule
+      \normalfont\bfseries ID
+        &
+      \normalfont\bfseries Status
+        &
+      \normalfont\bfseries Topic(s)
+        &
+      \normalfont\bfseries Type
+      \\
+      \midrule
+      \endhead
+
+      \bottomrule
+      \endfoot
+
+      \seq_map_inline:Nn
+        \l_mh_reference_exercises_seq
+        {
+          ##1
+            &
+          \prop_item:Nn
+            \g_mh_exercise_status_prop
+            {##1}
+            &
+          \prop_item:Nn
+            \g_mh_exercise_topics_prop
+            {##1}
+            &
+          \prop_item:Nn
+            \g_mh_exercise_type_prop
+            {##1}
+          \\
+        }
+
+    \end{longtable}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Printable topic coverage report
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_print_topic_coverage:
+  {
+    \mh_compute_topic_coverage:
+    \mh_reference_topics_sort:
+
+    \begin{longtable}
+      {
+        >{\ttfamily\raggedright\arraybackslash}p{0.58\linewidth}
+        >{\raggedleft\arraybackslash}p{0.14\linewidth}
+        >{\raggedleft\arraybackslash}p{0.14\linewidth}
+      }
+
+      \toprule
+      \normalfont\bfseries Topic
+        &
+      \normalfont\bfseries Exercises
+        &
+      \normalfont\bfseries Approved
+      \\
+      \midrule
+      \endfirsthead
+
+      \toprule
+      \normalfont\bfseries Topic
+        &
+      \normalfont\bfseries Exercises
+        &
+      \normalfont\bfseries Approved
+      \\
+      \midrule
+      \endhead
+
+      \bottomrule
+      \endfoot
+
+      \seq_map_inline:Nn
+        \l_mh_reference_topics_seq
+        {
+          ##1
+            &
+          \normalfont
+          \prop_item:Nn
+            \l_mh_topic_counts_prop
+            {##1}
+            &
+          \normalfont
+          \prop_item:Nn
+            \l_mh_topic_approved_counts_prop
+            {##1}
+          \\
+        }
+
+    \end{longtable}
+  }
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Public interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentCommand{\PrintMathTopics}{}
+  {
+    \mh_print_topics:
+  }
+
+\NewDocumentCommand{\PrintMathObjectives}{}
+  {
+    \mh_print_objectives:
+  }
+
+\NewDocumentCommand{\PrintExerciseSummary}{}
+  {
+    \mh_print_exercise_summary:
+  }
+
+\NewDocumentCommand{\PrintTopicCoverage}{}
+  {
+    \mh_print_topic_coverage:
+  }
+
+\NewDocumentCommand{\PrintExerciseStatistics}{}
+  {
+    \mh_print_exercise_statistics:
+  }
+\ExplSyntaxOff
+
+\endinput

@@ -1,0 +1,17 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-integrity}[2026/10/13 v0.1 Integrity letter information]
+\RequirePackage{tabularx}
+\newcommand{\IntegrityInfo}[6]{%
+  \par\addvspace{0.5em}\begingroup
+  \small\renewcommand{\arraystretch}{1.2}%
+  \noindent\begin{tabularx}{\linewidth}{@{}X X@{}}
+    \textbf{Student name:} #1 & \textbf{Semester:} #5\\
+    \multicolumn{2}{@{}p{\linewidth}@{}}{\textbf{Course:} #4}\\
+    \multicolumn{2}{@{}l@{}}{\if\relax\detokenize{#2}\relax\else\textbf{RUID:} #2\fi}\\
+    \if\relax\detokenize{#3}\relax\else\multicolumn{2}{@{}l@{}}{\textbf{Sent electronically to:} #3}\\\fi
+    \if\relax\detokenize{#6}\relax\else
+      \multicolumn{2}{@{}p{\linewidth}@{}}{\textbf{Assignment / assessment:} #6}\\
+    \fi
+  \end{tabularx}\par\endgroup\addvspace{0.5em}%
+}
+\endinput

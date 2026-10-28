@@ -1,0 +1,7 @@
+my $sep = ($^O eq 'MSWin32') ? ';' : ':';
+
+$ENV{'TEXINPUTS'} =
+    '../lib//' . $sep .
+    '../../lib//' . $sep .
+    './lib//' . $sep .
+    ($ENV{'TEXINPUTS'} // '');

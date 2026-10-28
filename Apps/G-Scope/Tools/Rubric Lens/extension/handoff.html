@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>G-Rater · Rutgers Copilot handoff</title><link rel="stylesheet" href="options.css"><link rel="stylesheet" href="handoff.css"></head>
+<body><main>
+<p class="eyebrow">RUBRIC LENS / RUTGERS COPILOT</p><h1>Review. Copy. Ask Copilot.</h1>
+<p class="intro">Only the selected pixels appear below. Check that neither crop contains a name, ID, or other information you meant to exclude.</p>
+<div id="ready" hidden>
+<div class="actions"><button id="copyImage">1 · Copy images</button><button id="openCopilot" class="secondary">Open Rutgers Copilot</button><button id="copyPrompt">2 · Copy grading prompt</button><button id="clear" class="secondary">Clear this handoff</button></div>
+<p class="hint">In Copilot, confirm you are using your Rutgers Connect work account. Paste the image, return here to copy the prompt, then paste and send it. Start a fresh chat per submission. The extension cannot verify which Microsoft account is signed in.</p>
+<p class="hint">Copying puts student work on the Windows clipboard. If clipboard history or cross-device sync is enabled, Windows may retain or sync it. After pasting, use Clear this handoff; also clear Windows clipboard history if enabled.</p>
+<div class="crops"><figure><figcaption>Student work</figcaption><img id="work" alt="Selected student work"></figure><figure><figcaption>Rubric</figcaption><img id="rubric" alt="Selected rubric"></figure></div>
+<details><summary>View the grading prompt</summary><pre id="prompt"></pre></details>
+</div><p id="status" role="status" aria-live="polite">Loading cropped images…</p>
+<p class="hint">Nothing is uploaded by this page. You control what you paste and send in Copilot. This handoff expires after five minutes and clears when you leave or close the page.</p>
+</main><script type="module" src="handoff.js"></script></body></html>

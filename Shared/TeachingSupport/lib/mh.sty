@@ -1,0 +1,1257 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesExplPackage
+  {mh}
+  {2026-10-12}
+  {0.6.0}
+  {Core engine for the MathHouse exercise database}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purpose
+%
+% This package provides the public interface and central engine for the
+% MathHouse exercise database.
+%
+% It defines the machinery used by curriculum and metadata files but
+% contains no course-specific declarations.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{xsim}
+\RequirePackage{mh-colors}
+\RequirePackage{mh-utilities}
+\RequirePackage{l3keys2e}
+
+\ExplSyntaxOn
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Large-bank auxiliary output
+%
+% XSIM serializes each property, including all exercise/solution bodies,
+% as one physical line. A full bank can exceed TeX's default input buffer.
+% Wrap at existing spaces without expanding body macros or changing XSIM's
+% capture mode. Both the normal .xsim file and use-aux mode are supported.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_eq:NN \mh_xsim_write_aux_unwrapped:n \xsim_write_to_aux:n
+\cs_set_protected:Npn \xsim_write_to_aux:n #1
+  {
+    \iow_wrap:nnnN
+      { \tl_to_str:n {#1} }
+      { }
+      { \int_set:Nn \l_iow_line_count_int { 1000 } }
+      \mh_xsim_write_aux_unwrapped:n
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Messages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\msg_new:nnn { mh } { duplicate-topic }
+  {
+    The~topic~'#1'~has~already~been~declared.
+  }
+
+\msg_new:nnn { mh } { unknown-topic }
+  {
+    The~topic~'#1'~has~not~been~declared.
+  }
+
+\msg_new:nnn { mh } { duplicate-objective }
+  {
+    The~objective~'#1'~has~already~been~declared.
+  }
+
+\msg_new:nnn { mh } { unknown-objective }
+  {
+    The~objective~'#1'~has~not~been~declared.
+  }
+
+\msg_new:nnn { mh } { duplicate-metadata }
+  {
+    The~#1~identifier~'#2'~has~already~been~declared.
+  }
+
+\msg_new:nnn { mh } { unknown-metadata }
+  {
+    The~#1~identifier~'#2'~has~not~been~declared.
+  }
+
+\msg_new:nnn { mh } { invalid-exercise-value }
+  {
+    Exercise~'#1'~has~undeclared~#2~value~'#3'.~Load~the
+    ~appropriate~declarations~or~correct~the~value.
+  }
+
+\msg_new:nnn { mh } { conflicting-exercise-id }
+  {
+    Exercise~ID~'#1'~was~reused~with~different~#2~metadata.~The
+    ~registry~retains~the~first~record;~review~this~reuse.
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Package options
+%%
+%% The framework has three independent axes:
+%%
+%%   document type:   document / manual / assessment / worksheet
+%%   output mode:     student / solutions / developer
+%%   accessibility:   standard / accessible
+%%
+%% Defaults:
+%%
+%%   document, student, standard
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tl_new:N \g_mh_document_type_tl
+\tl_new:N \g_mh_mode_tl
+\tl_new:N \g_mh_accessibility_tl
+
+\bool_new:N \g_mh_print_solutions_bool
+\bool_new:N \g_mh_developer_mode_bool
+\bool_new:N \g_mh_accessible_mode_bool
+
+% Convenience state for document-type tests.
+\bool_new:N \g_mh_document_bool
+\bool_new:N \g_mh_manual_bool
+\bool_new:N \g_mh_assessment_bool
+\bool_new:N \g_mh_worksheet_bool
+
+% Defaults when no package options are supplied.
+\tl_gset:Nn \g_mh_document_type_tl { document }
+\tl_gset:Nn \g_mh_mode_tl          { student }
+\tl_gset:Nn \g_mh_accessibility_tl { standard }
+
+\keys_define:nn { mh / package }
+  {
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Document type
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    type .choice:,
+
+    type / document .code:n =
+      {
+        \tl_gset:Nn \g_mh_document_type_tl { document }
+      },
+
+    type / manual .code:n =
+      {
+        \tl_gset:Nn \g_mh_document_type_tl { manual }
+      },
+
+    type / assessment .code:n =
+      {
+        \tl_gset:Nn \g_mh_document_type_tl { assessment }
+      },
+
+    type / worksheet .code:n =
+      {
+        \tl_gset:Nn \g_mh_document_type_tl { worksheet }
+      },
+
+    document .meta:n =
+      { type = document },
+
+    manual .meta:n =
+      { type = manual },
+
+    assessment .meta:n =
+      { type = assessment },
+
+    worksheet .meta:n =
+      { type = worksheet },
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Output mode
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    mode .choice:,
+
+    mode / student .code:n =
+      {
+        \tl_gset:Nn \g_mh_mode_tl { student }
+      },
+
+    mode / solutions .code:n =
+      {
+        \tl_gset:Nn \g_mh_mode_tl { solutions }
+      },
+
+    mode / developer .code:n =
+      {
+        \tl_gset:Nn \g_mh_mode_tl { developer }
+      },
+
+    student .meta:n =
+      { mode = student },
+
+    solutions .meta:n =
+      { mode = solutions },
+
+    developer .meta:n =
+      { mode = developer },
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Accessibility
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    accessibility .choice:,
+
+    accessibility / standard .code:n =
+      {
+        \tl_gset:Nn \g_mh_accessibility_tl { standard }
+      },
+
+    accessibility / accessible .code:n =
+      {
+        \tl_gset:Nn \g_mh_accessibility_tl { accessible }
+      },
+
+    standard .meta:n =
+      { accessibility = standard },
+
+    accessible .meta:n =
+      { accessibility = accessible },
+  }
+
+\ProcessKeysOptions{mh / package}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Document-type initialization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_document_type_initialize:
+  {
+    \bool_gset_false:N \g_mh_document_bool
+    \bool_gset_false:N \g_mh_manual_bool
+    \bool_gset_false:N \g_mh_assessment_bool
+    \bool_gset_false:N \g_mh_worksheet_bool
+
+    \str_case:VnF \g_mh_document_type_tl
+      {
+        { document }
+          {
+            \bool_gset_true:N \g_mh_document_bool
+          }
+
+        { manual }
+          {
+            \bool_gset_true:N \g_mh_manual_bool
+          }
+
+        { assessment }
+          {
+            \bool_gset_true:N \g_mh_assessment_bool
+          }
+
+        { worksheet }
+          {
+            \bool_gset_true:N \g_mh_worksheet_bool
+          }
+      }
+      {
+        % Controlled options should make this unreachable.
+        \tl_gset:Nn \g_mh_document_type_tl { document }
+        \bool_gset_true:N \g_mh_document_bool
+      }
+  }
+
+\mh_document_type_initialize:
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Output-mode initialization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cs_new_protected:Npn \mh_mode_initialize:
+  {
+    \bool_gset_false:N \g_mh_print_solutions_bool
+    \bool_gset_false:N \g_mh_developer_mode_bool
+
+    \str_case:VnF \g_mh_mode_tl
+      {
+        { student }
+          {
+            \bool_gset_false:N
+              \g_mh_print_solutions_bool
+          }
+
+        { solutions }
+          {
+            \bool_gset_true:N
+              \g_mh_print_solutions_bool
+          }
+
+        { developer }
+          {
+            \bool_gset_true:N
+              \g_mh_print_solutions_bool
+
+            \bool_gset_true:N
+              \g_mh_developer_mode_bool
+          }
+      }
+      {
+        % Controlled options should make this unreachable.
+        \tl_gset:Nn \g_mh_mode_tl { student }
+      }
+
+    \bool_if:NTF \g_mh_print_solutions_bool
+      {
+        \xsimsetup
+          {
+            solution / print = true
+          }
+      }
+      {
+        \xsimsetup
+          {
+            solution / print = false
+          }
+      }
+  }
+
+\mh_mode_initialize:
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Accessibility initialization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bool_gset_false:N \g_mh_accessible_mode_bool
+
+\tl_if_eq:NnT \g_mh_accessibility_tl { accessible }
+  {
+    \bool_gset_true:N \g_mh_accessible_mode_bool
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Layout selection
+%%
+%% Each document type passes its corresponding layout mode to mh-layout.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tl_if_eq:NnT \g_mh_document_type_tl { document }
+  {
+    \PassOptionsToPackage{document}{mh-layout}
+  }
+
+\tl_if_eq:NnT \g_mh_document_type_tl { manual }
+  {
+    \PassOptionsToPackage{manual}{mh-layout}
+  }
+
+\tl_if_eq:NnT \g_mh_document_type_tl { assessment }
+  {
+    \PassOptionsToPackage{assessment}{mh-layout}
+  }
+
+\tl_if_eq:NnT \g_mh_document_type_tl { worksheet }
+  {
+    \PassOptionsToPackage{worksheet}{mh-layout}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Public option conditionals
+%%
+%% External packages and documents should use these commands rather
+%% than access internal option state directly.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Document type: document
+
+\NewDocumentCommand{\IfMathDocumentT}{+m}
+  {
+    \bool_if:NT \g_mh_document_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathDocumentF}{+m}
+  {
+    \bool_if:NF \g_mh_document_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathDocumentTF}{+m +m}
+  {
+    \bool_if:NTF \g_mh_document_bool
+      {#1}
+      {#2}
+  }
+
+% Document type: manual
+
+\NewDocumentCommand{\IfMathManualT}{+m}
+  {
+    \bool_if:NT \g_mh_manual_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathManualF}{+m}
+  {
+    \bool_if:NF \g_mh_manual_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathManualTF}{+m +m}
+  {
+    \bool_if:NTF \g_mh_manual_bool
+      {#1}
+      {#2}
+  }
+
+% Document type: exam
+
+\NewDocumentCommand{\IfMathAssessmentT}{+m}
+  {
+    \bool_if:NT \g_mh_assessment_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathAssessmentF}{+m}
+  {
+    \bool_if:NF \g_mh_assessment_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathAssessmentTF}{+m +m}
+  {
+    \bool_if:NTF \g_mh_assessment_bool
+      {#1}
+      {#2}
+  }
+
+
+% Document type: worksheet
+
+\NewDocumentCommand{\IfMathWorksheetT}{+m}
+  {
+    \bool_if:NT \g_mh_worksheet_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathWorksheetF}{+m}
+  {
+    \bool_if:NF \g_mh_worksheet_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathWorksheetTF}{+m +m}
+  {
+    \bool_if:NTF \g_mh_worksheet_bool
+      {#1}
+      {#2}
+  }
+
+% Output mode: student
+
+\NewDocumentCommand{\IfMathStudentT}{+m}
+  {
+    \tl_if_eq:NnT \g_mh_mode_tl { student }
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathStudentF}{+m}
+  {
+    \tl_if_eq:NnF \g_mh_mode_tl { student }
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathStudentTF}{+m +m}
+  {
+    \tl_if_eq:NnTF \g_mh_mode_tl { student }
+      {#1}
+      {#2}
+  }
+
+% Solution-bearing output: solutions and developer.
+% Developer is the solution view with an additional metadata preheader.
+% Keep these public tests consistent with automatic XSIM solution printing,
+% including explicit solution insertion by stored-question loaders.
+
+\NewDocumentCommand{\IfMathSolutionsT}{+m}
+  {
+    \bool_if:NT \g_mh_print_solutions_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathSolutionsF}{+m}
+  {
+    \bool_if:NF \g_mh_print_solutions_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathSolutionsTF}{+m +m}
+  {
+    \bool_if:NTF \g_mh_print_solutions_bool
+      {#1}
+      {#2}
+  }
+
+% Output mode: developer
+
+\NewDocumentCommand{\IfMathDeveloperT}{+m}
+  {
+    \tl_if_eq:NnT \g_mh_mode_tl { developer }
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathDeveloperF}{+m}
+  {
+    \tl_if_eq:NnF \g_mh_mode_tl { developer }
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathDeveloperTF}{+m +m}
+  {
+    \tl_if_eq:NnTF \g_mh_mode_tl { developer }
+      {#1}
+      {#2}
+  }
+
+% Accessibility
+
+\NewDocumentCommand{\IfMathAccessibleT}{+m}
+  {
+    \bool_if:NT \g_mh_accessible_mode_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathAccessibleF}{+m}
+  {
+    \bool_if:NF \g_mh_accessible_mode_bool
+      {#1}
+  }
+
+\NewDocumentCommand{\IfMathAccessibleTF}{+m +m}
+  {
+    \bool_if:NTF \g_mh_accessible_mode_bool
+      {#1}
+      {#2}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Public metadata interface
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentCommand{\DeclareMathTopic}{mm}
+  {
+    \mh_topic_declare:nn {#1} {#2}
+  }
+
+\NewDocumentCommand{\DeclareMathObjective}{mm}
+  {
+    \mh_objective_declare:nn {#1} {#2}
+  }
+
+\NewDocumentCommand{\DeclareMathType}{mm}
+  {
+    \mh_metadata_declare:nnn { type } {#1} {#2}
+  }
+
+\NewDocumentCommand{\DeclareMathTrait}{mm}
+  {
+    \mh_metadata_declare:nnn { trait } {#1} {#2}
+  }
+
+\NewDocumentCommand{\DeclareMathLevel}{mm}
+  {
+    \mh_metadata_declare:nnn { level } {#1} {#2}
+  }
+
+\NewDocumentCommand{\DeclareMathStatus}{mm}
+  {
+    \mh_metadata_declare:nnn { status } {#1} {#2}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Public metadata lookup
+%%
+%% Used by templates and documents.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentCommand{\MathTopicLabel}{m}
+  {
+    \exp_args:Ne \mh_topic_label:n {#1}
+  }
+
+\NewDocumentCommand{\MathTopicLabels}{m}
+  {
+    \exp_args:Ne \mh_topics_labels:n {#1}
+  }
+
+\NewDocumentCommand{\MathObjectiveLabel}{m}
+  {
+    \exp_args:Ne \mh_objective_short:n {#1}
+  }
+
+\NewDocumentCommand{\MathObjectiveLabels}{m}
+  {
+    \exp_args:Ne \mh_objectives_short:n {#1}
+  }
+
+\NewDocumentCommand{\MathTypeLabel}{m}
+  {
+    \exp_args:Nne
+      \mh_metadata_label:nn
+      { type }
+      {#1}
+  }
+
+\NewDocumentCommand{\MathLevelLabel}{m}
+  {
+    \exp_args:Nne
+      \mh_metadata_label:nn
+      { level }
+      {#1}
+  }
+
+\NewDocumentCommand{\MathStatusLabel}{m}
+  {
+    \exp_args:Nne
+      \mh_metadata_label:nn
+      { status }
+      {#1}
+  }
+
+\NewDocumentCommand{\MathTraitLabels}{m}
+  {
+    \exp_args:Nne
+      \mh_metadata_labels:nn
+      { trait }
+      {#1}
+  }
+
+\NewDocumentCommand{\MathExerciseNumber}{m}
+  {
+    \exp_args:Ne \mh_exercise_number:n {#1}
+  }
+
+\NewDocumentCommand{\MathRegisterCurrentExercise}{}
+  {
+    \mh_exercise_register:eeeeeeee
+      { \GetExerciseProperty{ID} }
+      { \GetExerciseProperty{topics} }
+      { \GetExerciseProperty{objectives} }
+      { \GetExerciseProperty{type} }
+      { \GetExerciseProperty{traits} }
+      { \GetExerciseProperty{level} }
+      { \GetExerciseProperty{sets} }
+      { \GetExerciseProperty{status} }
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Template hooks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewDocumentCommand{\MathPreExerciseHeader}{}
+  {
+    \bool_if:NT \g_mh_developer_mode_bool
+      {
+        \MathDeveloperExerciseHeader
+      }
+  }
+
+\NewDocumentCommand{\MathPreSolutionHeader}{}{}
+
+\ProvideDocumentCommand{\MathDeveloperExerciseHeader}{}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Topic registry
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\prop_new:N \g_mh_topic_title_prop
+\prop_new:N \g_mh_topic_short_title_prop
+\prop_new:N \g_mh_topic_section_prop
+\prop_new:N \g_mh_topic_order_prop
+\seq_new:N \g_mh_topics_seq
+
+\tl_new:N  \l_mh_topic_title_tl
+\tl_new:N  \l_mh_topic_short_title_tl
+\tl_new:N  \l_mh_topic_section_tl
+\int_new:N \l_mh_topic_order_int
+
+\keys_define:nn { mh / topic }
+  {
+    title .tl_set:N =
+      \l_mh_topic_title_tl,
+
+    short-title .tl_set:N =
+      \l_mh_topic_short_title_tl,
+
+    section .tl_set:N =
+      \l_mh_topic_section_tl,
+
+    order .int_set:N =
+      \l_mh_topic_order_int,
+
+    title .value_required:n = true,
+    section .value_required:n = true
+  }
+
+\cs_new_protected:Npn \mh_topic_declare:nn #1#2
+  {
+    \prop_if_in:NnTF \g_mh_topic_title_prop {#1}
+      {
+        \msg_error:nnn { mh } { duplicate-topic } {#1}
+      }
+      {
+        \tl_clear:N \l_mh_topic_title_tl
+        \tl_clear:N \l_mh_topic_short_title_tl
+        \tl_clear:N \l_mh_topic_section_tl
+        \int_zero:N \l_mh_topic_order_int
+
+        \keys_set:nn { mh / topic } {#2}
+
+        \tl_if_blank:VTF \l_mh_topic_short_title_tl
+          {
+            \tl_set_eq:NN
+              \l_mh_topic_short_title_tl
+              \l_mh_topic_title_tl
+          }
+          { }
+
+        \prop_gput:NnV
+          \g_mh_topic_title_prop
+          {#1}
+          \l_mh_topic_title_tl
+
+        \prop_gput:NnV
+          \g_mh_topic_short_title_prop
+          {#1}
+          \l_mh_topic_short_title_tl
+
+        \prop_gput:NnV
+          \g_mh_topic_section_prop
+          {#1}
+          \l_mh_topic_section_tl
+
+        \prop_gput:Nnx
+          \g_mh_topic_order_prop
+          {#1}
+          { \int_use:N \l_mh_topic_order_int }
+
+        \seq_gput_right:Nn
+          \g_mh_topics_seq
+          {#1}
+      }
+  }
+
+\prg_new_conditional:Npnn \mh_topic_if_exist:n #1 { T, F, TF }
+  {
+    \prop_if_in:NnTF \g_mh_topic_title_prop {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% Variant used when the topic identifier is stored in a token-list variable.
+\prg_generate_conditional_variant:Nnn
+  \mh_topic_if_exist:n
+  { V }
+  { T, F, TF }
+
+\cs_new:Npn \mh_topic_title:n #1
+  {
+    \prop_item:Nn \g_mh_topic_title_prop {#1}
+  }
+
+\cs_new:Npn \mh_topic_short_title:n #1
+  {
+    \prop_item:Nn \g_mh_topic_short_title_prop {#1}
+  }
+
+\cs_new:Npn \mh_topic_section:n #1
+  {
+    \prop_item:Nn \g_mh_topic_section_prop {#1}
+  }
+
+\cs_new:Npn \mh_topic_label:n #1
+  {
+    \tl_if_blank:eTF
+      {
+        \prop_item:Nn
+          \g_mh_topic_section_prop
+          {#1}
+      }
+      {
+        % No section
+        \prop_item:Nn
+          \g_mh_topic_title_prop
+          {#1}
+      }
+      {
+        % Has section
+        \S
+        \prop_item:Nn
+          \g_mh_topic_section_prop
+          {#1}
+        \c_space_tl
+        \prop_item:Nn
+          \g_mh_topic_title_prop
+          {#1}
+      }
+  }
+
+\seq_new:N \l_mh_topics_seq
+\int_new:N \l_mh_topic_index_int
+
+\cs_new_protected:Npn \mh_topics_labels:n #1
+  {
+    \group_begin:
+
+      % Store the supplied topic identifiers as a sequence.
+      \seq_set_from_clist:Nn
+        \l_mh_topics_seq
+        {#1}
+
+      % Validate all identifiers before attempting to sort them.
+      \seq_map_inline:Nn
+        \l_mh_topics_seq
+        {
+          \mh_topic_if_exist:nF {##1}
+            {
+              \msg_error:nnn
+                { mh }
+                { unknown-topic }
+                {##1}
+            }
+        }
+
+      % Sort according to the canonical order stored in the registry.
+      \seq_sort:Nn
+        \l_mh_topics_seq
+        {
+          \int_compare:nNnTF
+            {
+              \prop_item:Nn
+                \g_mh_topic_order_prop
+                {##1}
+            }
+            >
+            {
+              \prop_item:Nn
+                \g_mh_topic_order_prop
+                {##2}
+            }
+            { \sort_return_swapped: }
+            { \sort_return_same: }
+        }
+
+      % Print the sorted topic labels.
+      \int_zero:N \l_mh_topic_index_int
+
+      \seq_map_inline:Nn
+        \l_mh_topics_seq
+        {
+          \int_incr:N \l_mh_topic_index_int
+
+          \int_compare:nNnT
+            { \l_mh_topic_index_int }
+            >
+            { 1 }
+            {
+              \c_space_tl
+              \textperiodcentered
+              \c_space_tl
+            }
+
+          \mh_topic_label:n {##1}
+        }
+
+    \group_end:
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Objective registry
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\prop_new:N \g_mh_objective_topic_prop
+\prop_new:N \g_mh_objective_short_prop
+\prop_new:N \g_mh_objective_long_prop
+\seq_new:N \g_mh_objectives_seq
+
+\tl_new:N \l_mh_objective_topic_tl
+\tl_new:N \l_mh_objective_short_tl
+\tl_new:N \l_mh_objective_long_tl
+
+\keys_define:nn { mh / objective }
+  {
+    topic .tl_set:N =
+      \l_mh_objective_topic_tl,
+
+    description .tl_set:N =
+      \l_mh_objective_short_tl,
+
+    short .tl_set:N =
+      \l_mh_objective_short_tl,
+
+    long .tl_set:N =
+      \l_mh_objective_long_tl,
+
+    topic .value_required:n = true,
+    short .value_required:n = true
+  }
+
+\cs_new_protected:Npn \mh_objective_declare:nn #1#2
+  {
+    \prop_if_in:NnTF \g_mh_objective_short_prop {#1}
+      {
+        \msg_error:nnn { mh } { duplicate-objective } {#1}
+      }
+      {
+        \tl_clear:N \l_mh_objective_topic_tl
+        \tl_clear:N \l_mh_objective_short_tl
+        \tl_clear:N \l_mh_objective_long_tl
+
+        \keys_set:nn { mh / objective } {#2}
+
+        % Universal objectives describe the task independently of a course.
+        % Preserve validation when older sources explicitly associate a topic.
+        \tl_if_blank:VF \l_mh_objective_topic_tl
+          {
+            \mh_topic_if_exist:VF
+              \l_mh_objective_topic_tl
+              {
+                \msg_error:nnx
+                  { mh }
+                  { unknown-topic }
+                  { \tl_use:N \l_mh_objective_topic_tl }
+              }
+          }
+
+        \tl_if_blank:VTF \l_mh_objective_long_tl
+          {
+            \tl_set_eq:NN
+              \l_mh_objective_long_tl
+              \l_mh_objective_short_tl
+          }
+          { }
+
+        \prop_gput:NnV
+          \g_mh_objective_topic_prop
+          {#1}
+          \l_mh_objective_topic_tl
+
+        \prop_gput:NnV
+          \g_mh_objective_short_prop
+          {#1}
+          \l_mh_objective_short_tl
+
+        \prop_gput:NnV
+          \g_mh_objective_long_prop
+          {#1}
+          \l_mh_objective_long_tl
+
+        \seq_gput_right:Nn
+          \g_mh_objectives_seq
+          {#1}
+      }
+  }
+
+\prg_new_conditional:Npnn \mh_objective_if_exist:n #1 { T, F, TF }
+  {
+    \prop_if_in:NnTF \g_mh_objective_short_prop {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\cs_new:Npn \mh_objective_short:n #1
+  {
+    \mh_objective_if_exist:nTF {#1}
+      {
+        \prop_item:Nn \g_mh_objective_short_prop {#1}
+      }
+      {
+        \msg_error:nnn { mh } { unknown-objective } {#1}
+      }
+  }
+
+\cs_new:Npn \mh_objective_long:n #1
+  {
+    \mh_objective_if_exist:nTF {#1}
+      {
+        \prop_item:Nn \g_mh_objective_long_prop {#1}
+      }
+      {
+        \msg_error:nnn { mh } { unknown-objective } {#1}
+      }
+  }
+
+\clist_new:N \l_mh_objectives_clist
+\int_new:N \l_mh_objective_index_int
+
+\cs_new_protected:Npn \mh_objectives_short:n #1
+  {
+    \group_begin:
+      \clist_set:Nn \l_mh_objectives_clist {#1}
+      \int_zero:N \l_mh_objective_index_int
+
+      \clist_map_inline:Nn
+        \l_mh_objectives_clist
+        {
+          \int_incr:N \l_mh_objective_index_int
+
+          \int_compare:nNnT
+            { \l_mh_objective_index_int }
+            >
+            { 1 }
+            {
+              ;\c_space_tl
+            }
+
+          \mh_objective_short:n {##1}
+        }
+    \group_end:
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Controlled metadata registries
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\prop_new:N \g_mh_type_prop
+\prop_new:N \g_mh_trait_prop
+\prop_new:N \g_mh_level_prop
+\prop_new:N \g_mh_status_prop
+
+\cs_new_protected:Npn \mh_metadata_declare:nnn #1#2#3
+  {
+    \prop_if_in:cnTF
+      { g_mh_#1_prop }
+      {#2}
+      {
+        \msg_error:nnnn
+          { mh }
+          { duplicate-metadata }
+          {#1}
+          {#2}
+      }
+      {
+        \prop_gput:cnn
+          { g_mh_#1_prop }
+          {#2}
+          {#3}
+      }
+  }
+
+\prg_new_conditional:Npnn \mh_metadata_if_exist:nn #1#2
+  { T, F, TF }
+  {
+    \prop_if_in:cnTF
+      { g_mh_#1_prop }
+      {#2}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\cs_new:Npn \mh_metadata_label:nn #1#2
+  {
+    \mh_metadata_if_exist:nnTF {#1} {#2}
+      {
+        \prop_item:cn
+          { g_mh_#1_prop }
+          {#2}
+      }
+      {
+        \msg_error:nnnn
+          { mh }
+          { unknown-metadata }
+          {#1}
+          {#2}
+      }
+  }
+
+\clist_new:N \l_mh_metadata_clist
+\int_new:N \l_mh_metadata_index_int
+
+\cs_new_protected:Npn \mh_metadata_labels:nn #1#2
+  {
+    \group_begin:
+      \clist_set:Nn \l_mh_metadata_clist {#2}
+      \int_zero:N \l_mh_metadata_index_int
+
+      \clist_map_inline:Nn
+        \l_mh_metadata_clist
+        {
+          \int_incr:N \l_mh_metadata_index_int
+
+          \int_compare:nNnT
+            { \l_mh_metadata_index_int }
+            >
+            { 1 }
+            {
+              \c_space_tl
+              \textperiodcentered
+              \c_space_tl
+            }
+
+          \mh_metadata_label:nn {#1} {##1}
+        }
+    \group_end:
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Exercise identifier formatting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tl_new:N \l_mh_exercise_id_tl
+\seq_new:N \l_mh_exercise_id_parts_seq
+
+\cs_new_protected:Npn \mh_exercise_number:n #1
+  {
+    \group_begin:
+      \tl_set:Ne \l_mh_exercise_id_tl {#1}
+
+      \seq_set_split:NnV
+        \l_mh_exercise_id_parts_seq
+        { - }
+        \l_mh_exercise_id_tl
+
+      \int_eval:n
+        {
+          \seq_item:Nn
+            \l_mh_exercise_id_parts_seq
+            { -1 }
+        }
+    \group_end:
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Exercise registry
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\seq_new:N \g_mh_exercises_seq
+
+\prop_new:N \g_mh_exercise_topics_prop
+\prop_new:N \g_mh_exercise_objectives_prop
+\prop_new:N \g_mh_exercise_type_prop
+\prop_new:N \g_mh_exercise_traits_prop
+\prop_new:N \g_mh_exercise_level_prop
+\prop_new:N \g_mh_exercise_sets_prop
+\prop_new:N \g_mh_exercise_status_prop
+
+% Missing metadata is allowed for ad hoc coursework. Validate every supplied
+% controlled value, even if the current output template does not display it.
+% `sets` remains an author-defined collection label rather than a vocabulary.
+\cs_new_protected:Npn \mh_exercise_validate:nnnn #1#2#3#4
+  {
+    \clist_map_inline:nn {#4}
+      {
+        \prop_if_in:cnF {#3} {##1}
+          {
+            \msg_error:nnnnn { mh } { invalid-exercise-value }
+              {#1} {#2} {##1}
+          }
+      }
+  }
+
+\cs_new_protected:Npn \mh_exercise_compare:nnn #1#2#3
+  {
+    \prop_get:cnN { g_mh_exercise_#2_prop } {#1} \l_tmpa_tl
+    \tl_if_eq:NnF \l_tmpa_tl {#3}
+      {
+        \msg_warning:nnnn { mh } { conflicting-exercise-id } {#1} {#2}
+      }
+  }
+
+\cs_new_protected:Npn \mh_exercise_register:nnnnnnnn #1#2#3#4#5#6#7#8
+  {
+    \mh_exercise_validate:nnnn {#1} {topics}
+      {g_mh_topic_title_prop} {#2}
+    \mh_exercise_validate:nnnn {#1} {objectives}
+      {g_mh_objective_short_prop} {#3}
+    \mh_exercise_validate:nnnn {#1} {type}
+      {g_mh_type_prop} {#4}
+    \mh_exercise_validate:nnnn {#1} {traits}
+      {g_mh_trait_prop} {#5}
+    \mh_exercise_validate:nnnn {#1} {level}
+      {g_mh_level_prop} {#6}
+    \mh_exercise_validate:nnnn {#1} {status}
+      {g_mh_status_prop} {#8}
+
+    % Repeated use of an unchanged exercise is permitted. Conflicting metadata
+    % must be visible rather than being silently discarded from the registry.
+    \seq_if_in:NnTF
+      \g_mh_exercises_seq
+      {#1}
+      {
+        \mh_exercise_compare:nnn {#1} {topics} {#2}
+        \mh_exercise_compare:nnn {#1} {objectives} {#3}
+        \mh_exercise_compare:nnn {#1} {type} {#4}
+        \mh_exercise_compare:nnn {#1} {traits} {#5}
+        \mh_exercise_compare:nnn {#1} {level} {#6}
+        \mh_exercise_compare:nnn {#1} {sets} {#7}
+        \mh_exercise_compare:nnn {#1} {status} {#8}
+      }
+      {
+        \seq_gput_right:Nn
+          \g_mh_exercises_seq
+          {#1}
+
+        \prop_gput:Nnn
+          \g_mh_exercise_topics_prop
+          {#1}
+          {#2}
+
+        \prop_gput:Nnn
+          \g_mh_exercise_objectives_prop
+          {#1}
+          {#3}
+
+        \prop_gput:Nnn
+          \g_mh_exercise_type_prop
+          {#1}
+          {#4}
+
+        \prop_gput:Nnn
+          \g_mh_exercise_traits_prop
+          {#1}
+          {#5}
+
+        \prop_gput:Nnn
+          \g_mh_exercise_level_prop
+          {#1}
+          {#6}
+
+        \prop_gput:Nnn
+          \g_mh_exercise_sets_prop
+          {#1}
+          {#7}
+
+        \prop_gput:Nnn
+          \g_mh_exercise_status_prop
+          {#1}
+          {#8}
+      }
+  }
+
+\cs_generate_variant:Nn
+  \mh_exercise_register:nnnnnnnn
+  { eeeeeeee }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Exercise property definitions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% XSIM already provides the user-facing property `ID`.
+% We use that for permanent identifiers such as M135-0001.
+
+\DeclareExerciseProperty{topics}
+\DeclareExerciseProperty{objectives}
+\DeclareExerciseProperty{type}
+\DeclareExerciseProperty{traits}
+\DeclareExerciseProperty{level}
+\DeclareExerciseProperty{sets}
+\DeclareExerciseProperty{status}
+
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Package initialization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{mh-layout}
+\RequirePackage{mh-accessibility}
+\RequirePackage{mh-assessment}
+\RequirePackage{mh-metadata}
+\RequirePackage{mh-bank-index}
+\RequirePackage{mh-syllabus}
+\RequirePackage{mh-templates}
+
+\endinput

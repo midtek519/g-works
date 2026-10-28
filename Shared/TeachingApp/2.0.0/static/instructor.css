@@ -1,0 +1,28 @@
+/* Rutgers palette: scarlet #cc0033, charcoal, white. State colors stay semantic. */
+:root{--ink:#222;--accent:#cc0033;--hover:#fbe9ed;--paper:#f7f7f7;--line:#dedede;--muted:#666;--gold:#96691d;--red:#a12139}
+.topbar{background:#fff;border-top:4px solid #cc0033;border-bottom-color:#d8d8d8}
+aside{background:#f0f0f0;border-right-color:#d8d8d8}
+.brand strong{color:#222}.brand small{color:#666}
+.local{color:#555}.local:before{background:#cc0033}
+.nav-item.active,.course.active{border-color:#cc0033;background:#fff;box-shadow:inset 3px 0 #cc0033,0 2px 7px #0000000a}
+.nav-item .nav-icon{color:#a50029}.nav-item.active{color:#a50029}
+.nav-item:hover:not(:disabled){background:#fbe9ed}
+button.primary:hover:not(:disabled){background:#a50029;border-color:#a50029}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #a50029;outline-offset:2px}
+input,select,textarea{border-color:#c9c9c9}
+.question-row.chosen,.material-row.chosen,.support-material-row.chosen{background:#fbe9ed}
+.support-material-row.chosen{box-shadow:inset 3px 0 #cc0033}
+.document,.question-row{border-color:#e5e5e5}
+.tag.ready{background:#f6e9ed;color:#8e0d18;border-color:#e7c4ce}
+.output,.assignment-question,.suitability thead,pre{background:#f5f5f5}
+.preview-image{background:#eee}.viewer-toolbar{background:#f7f7f7}
+.sb-toolbar,.sb-paper{border-color:#d8d8d8}
+.sb-modes button.active{background:#fbe9ed;color:#a50029;border-color:#dba5b3}
+.sb-setup{background:#fff5f7;border-color:#e2b0bd;border-left-color:#cc0033;box-shadow:none}
+.sb-step-number{background:#cc0033}.sb-start-heading h2{color:#8e0d18}.sb-start-heading p{color:#655259}
+.sb-paper-heading h2,.sb-review-heading h2,.sb-pretty,.sb-readable{color:#333}
+.sb-locked,.sb-shared{background:#f1f2f3;border-color:#ddd}
+.sb-builder .sb-refresh-defaults,.sb-source>summary{color:#a50029}
+.sb-page-break{background:#fafafa;border-color:#aaa;color:#666}
+#toast{background:#222}dialog::backdrop{background:#2226}
+@media(max-width:700px){.brand strong{font-size:15px;letter-spacing:-.2px}.brand small{font-size:10px}.brand{gap:9px}}

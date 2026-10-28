@@ -1,0 +1,837 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "https://cm.maxient.com",
+    "path": "/reportingform.php"
+  },
+  "description": "Form structure only; no entered answers, selected choices, hidden inputs, login data, or URL query parameters.",
+  "field_count": 34,
+  "frame_count": 0,
+  "fields": [
+    {
+      "index": 1,
+      "tag": "input",
+      "type": "text",
+      "id": "reporters_full_name",
+      "name": "reporters_full_name",
+      "label": "Instructor's Name:",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "max_length": "80"
+    },
+    {
+      "index": 2,
+      "tag": "input",
+      "type": "text",
+      "id": "reporters_title",
+      "name": "reporters_title",
+      "label": "AIF's name (if applicable):",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "max_length": "80"
+    },
+    {
+      "index": 3,
+      "tag": "input",
+      "type": "text",
+      "id": "reporters_phone_number",
+      "name": "reporters_phone_number",
+      "label": ":",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": false,
+      "group_legend": "",
+      "max_length": "20"
+    },
+    {
+      "index": 4,
+      "tag": "input",
+      "type": "email",
+      "id": "reporters_email_address",
+      "name": "reporters_email_address",
+      "label": "Your RUTGERS email:",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "max_length": "80"
+    },
+    {
+      "index": 5,
+      "tag": "input",
+      "type": "text",
+      "id": "reporters_physical_address",
+      "name": "reporters_physical_address",
+      "label": ":",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": false,
+      "group_legend": "",
+      "max_length": "80"
+    },
+    {
+      "index": 6,
+      "tag": "input",
+      "type": "date",
+      "id": "date_of_incident",
+      "name": "date_of_incident",
+      "label": "Date of incident(Required):Format is MM/DD/YYYY.",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "max_length": "10"
+    },
+    {
+      "index": 7,
+      "tag": "input",
+      "type": "text",
+      "id": "time_of_incident",
+      "name": "time_of_incident",
+      "label": "Time of incident:",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": false,
+      "group_legend": "",
+      "max_length": "10"
+    },
+    {
+      "index": 8,
+      "tag": "select",
+      "type": "select",
+      "id": "location_of_incident",
+      "name": "location_of_incident",
+      "label": "Unit where incident occurred(Required):",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please select a unit ...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "01 - SAS - New Brunswick",
+          "value": "01 - SAS - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "04 - School of Communication & Information - New Brunswick",
+          "value": "04 - School of Communication & Information - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "05 - Graduate School of Education - New Brunswick (undergraduate)",
+          "value": "05 - Graduate School of Education - New Brunswick (undergraduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "07 - MGSA - New Brunswick",
+          "value": "07 - MGSA - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "09 - School of Social Work - New Brunswick (undergraduate)",
+          "value": "09 - School of Social Work - New Brunswick (undergraduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "10 - Bloustein School - New Brunswick",
+          "value": "10 - Bloustein School - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "11 - SEBS - New Brunswick",
+          "value": "11 - SEBS - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "14 - School of Engineering - New Brunswick",
+          "value": "14 - School of Engineering - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "15 - Graduate School of Education - New Brunswick (graduate)",
+          "value": "15 - Graduate School of Education - New Brunswick (graduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "16 - School of Graduate Studies - New Brunswick",
+          "value": "16 - School of Graduate Studies - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "18 - GSAPP - New Brunswick",
+          "value": "18 - GSAPP - New Brunswick",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "19 - School of Social Work - New Brunswick (graduate)",
+          "value": "19 - School of Social Work - New Brunswick (graduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "22 - Rutgers Business School - Newark/New Brunswick (graduate)",
+          "value": "22 - Rutgers Business School - Newark/New Brunswick (graduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "29/33 - Rutgers Business School - Newark/New Brunswick (undergraduate)",
+          "value": "29/33 - Rutgers Business School - Newark/New Brunswick (undergraduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "37 - School of Management & Labor Relations - New Brunswick (undergraduate)",
+          "value": "37 - School of Management & Labor Relations - New Brunswick (undergraduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "38 - School of Management & Labor Relations - New Brunswick (graduate)",
+          "value": "38 - School of Management & Labor Relations - New Brunswick (graduate)",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "99 - Other/Unknown",
+          "value": "99 - Other/Unknown",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "tag": "input",
+      "type": "text",
+      "id": "location_of_incident_specific",
+      "name": "location_of_incident_specific",
+      "label": "Specific location:",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": false,
+      "group_legend": "",
+      "max_length": "100"
+    },
+    {
+      "index": 10,
+      "tag": "input",
+      "type": "text",
+      "id": "person_0",
+      "name": "person[]",
+      "label": "Student's full name",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Involved party 1",
+      "max_length": "50"
+    },
+    {
+      "index": 11,
+      "tag": "input",
+      "type": "text",
+      "id": "sid_0",
+      "name": "sid[]",
+      "label": "RUID number (XXX-00-XXXX)",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Involved party 1",
+      "max_length": "30"
+    },
+    {
+      "index": 12,
+      "tag": "input",
+      "type": "email",
+      "id": "email_0",
+      "name": "email[]",
+      "label": "Student's email",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Involved party 1",
+      "max_length": "50"
+    },
+    {
+      "index": 13,
+      "tag": "input",
+      "type": "text",
+      "id": "aq[1][answer]",
+      "name": "aq[1][answer]",
+      "label": "Course name (ex. Introduction to Financial Accounting)(Required)",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "max_length": "100"
+    },
+    {
+      "index": 14,
+      "tag": "input",
+      "type": "text",
+      "id": "aq[2][answer]",
+      "name": "aq[2][answer]",
+      "label": "Course number (ex. 33:010:272)(Required)",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "max_length": "100"
+    },
+    {
+      "index": 15,
+      "tag": "input",
+      "type": "text",
+      "id": "aq[3][answer]",
+      "name": "aq[3][answer]",
+      "label": "Name of assignment(s) in question (ex. Homework 4, Quiz 3, Final Exam, etc.)(Required)",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "max_length": "100"
+    },
+    {
+      "index": 16,
+      "tag": "select",
+      "type": "select",
+      "id": "aq[4][answer]",
+      "name": "aq[4][answer]",
+      "label": "Plagiarism",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please Choose...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "Plagiarism Level 1 — not responsible",
+          "value": "Plagiarism Level 1 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Plagiarism Level 1 — responsible",
+          "value": "Plagiarism Level 1 — responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Plagiarism Level 2 — not responsible",
+          "value": "Plagiarism Level 2 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Plagiarism Level 2 — responsible",
+          "value": "Plagiarism Level 2 — responsible",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "tag": "select",
+      "type": "select",
+      "id": "aq[5][answer]",
+      "name": "aq[5][answer]",
+      "label": "Cheating",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please Choose...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "Cheating Level 1 — not responsible",
+          "value": "Cheating Level 1 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Cheating Level 1 — responsible",
+          "value": "Cheating Level 1 — responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Cheating Level 2 — not responsible",
+          "value": "Cheating Level 2 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Cheating Level 2 — responsible",
+          "value": "Cheating Level 2 — responsible",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "tag": "select",
+      "type": "select",
+      "id": "aq[6][answer]",
+      "name": "aq[6][answer]",
+      "label": "Fabrication",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please Choose...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "Fabrication Level 1 — not responsible",
+          "value": "Fabrication Level 1 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Fabrication Level 1 — responsible",
+          "value": "Fabrication Level 1 — responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Fabrication Level 2 — not responsible",
+          "value": "Fabrication Level 2 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Fabrication Level 2 — responsible",
+          "value": "Fabrication Level 2 — responsible",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "tag": "select",
+      "type": "select",
+      "id": "aq[7][answer]",
+      "name": "aq[7][answer]",
+      "label": "Facilitation of dishonesty",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please Choose...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "Facilitation of dishonesty Level 1 — not responsible",
+          "value": "Facilitation of dishonesty Level 1 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Facilitation of dishonesty Level 1 — responsible",
+          "value": "Facilitation of dishonesty Level 1 — responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Facilitation of dishonesty Level 2 — not responsible",
+          "value": "Facilitation of dishonesty Level 2 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Facilitation of dishonesty Level 2 — responsible",
+          "value": "Facilitation of dishonesty Level 2 — responsible",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "tag": "select",
+      "type": "select",
+      "id": "aq[8][answer]",
+      "name": "aq[8][answer]",
+      "label": "Academic sabotage",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please Choose...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "Academic sabotage Level 1 — not responsible",
+          "value": "Academic sabotage Level 1 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Academic sabotage Level 1 — responsible",
+          "value": "Academic sabotage Level 1 — responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Academic sabotage Level 2 — not responsible",
+          "value": "Academic sabotage Level 2 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Academic sabotage Level 2 — responsible",
+          "value": "Academic sabotage Level 2 — responsible",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "tag": "select",
+      "type": "select",
+      "id": "aq[9][answer]",
+      "name": "aq[9][answer]",
+      "label": "Violation of research or professional ethics",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please Choose...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "Violation of research or professional ethics Level 1 — not responsible",
+          "value": "Violation of research or professional ethics Level 1 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Violation of research or professional ethics Level 1 — responsible",
+          "value": "Violation of research or professional ethics Level 1 — responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Violation of research or professional ethics Level 2 — not responsible",
+          "value": "Violation of research or professional ethics Level 2 — not responsible",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Violation of research or professional ethics Level 2 — responsible",
+          "value": "Violation of research or professional ethics Level 2 — responsible",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "tag": "textarea",
+      "type": "textarea",
+      "id": "aq[10][answer]",
+      "name": "aq[10][answer]",
+      "label": "Additional violations, notes, special circumstances, etc.",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": ""
+    },
+    {
+      "index": 23,
+      "tag": "textarea",
+      "type": "textarea",
+      "id": "aq[11][answer]",
+      "name": "aq[11][answer]",
+      "label": "Rationale for each decision (attach supporting documentation below)(Required)",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": ""
+    },
+    {
+      "index": 24,
+      "tag": "textarea",
+      "type": "textarea",
+      "id": "aq[12][answer]",
+      "name": "aq[12][answer]",
+      "label": "Recommended sanction(s) (if applicable) (see Academic Integrity Sanctions for potential sanctions)(Required)",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": ""
+    },
+    {
+      "index": 25,
+      "tag": "textarea",
+      "type": "textarea",
+      "id": "aq[13][answer]",
+      "name": "aq[13][answer]",
+      "label": "Rationale for sanction(s) (Why did you choose this particular sanction?)(Required)",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": ""
+    },
+    {
+      "index": 26,
+      "tag": "input",
+      "type": "radio",
+      "id": "",
+      "name": "aq[14][answer]",
+      "label": "Yes",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Did the student meet or communicate with you about this allegation?(Required)",
+      "option_value": "Yes"
+    },
+    {
+      "index": 27,
+      "tag": "input",
+      "type": "radio",
+      "id": "",
+      "name": "aq[14][answer]",
+      "label": "No",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Did the student meet or communicate with you about this allegation?(Required)",
+      "option_value": "No"
+    },
+    {
+      "index": 28,
+      "tag": "input",
+      "type": "radio",
+      "id": "",
+      "name": "aq[15][answer]",
+      "label": "Yes",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Did the student admit responsibility?(Required)",
+      "option_value": "Yes"
+    },
+    {
+      "index": 29,
+      "tag": "input",
+      "type": "radio",
+      "id": "",
+      "name": "aq[15][answer]",
+      "label": "No",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Did the student admit responsibility?(Required)",
+      "option_value": "No"
+    },
+    {
+      "index": 30,
+      "tag": "input",
+      "type": "radio",
+      "id": "",
+      "name": "aq[15][answer]",
+      "label": "No meeting/communication",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "Did the student admit responsibility?(Required)",
+      "option_value": "No meeting/communication"
+    },
+    {
+      "index": 31,
+      "tag": "textarea",
+      "type": "textarea",
+      "id": "aq[16][answer]",
+      "name": "aq[16][answer]",
+      "label": "If the student met/communicated with you about this allegation, what explanation did they offer?",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": ""
+    },
+    {
+      "index": 32,
+      "tag": "select",
+      "type": "select",
+      "id": "aq[17][answer]",
+      "name": "aq[17][answer]",
+      "label": "Did this incident involve the use of artificial intelligence (AI) in violation of course policy?(Required)",
+      "placeholder": "",
+      "required": true,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "options": [
+        {
+          "label": "Please Choose...",
+          "value": "",
+          "disabled": true,
+          "group": ""
+        },
+        {
+          "label": "YES",
+          "value": "YES",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "NO",
+          "value": "NO",
+          "disabled": false,
+          "group": ""
+        },
+        {
+          "label": "Not Sure",
+          "value": "Not Sure",
+          "disabled": false,
+          "group": ""
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "tag": "input",
+      "type": "file",
+      "id": "filer_input",
+      "name": "uploadedFiles[]",
+      "label": "Please attach: 1) A copy of the outcome letter you sent to the student; 2) Documentation supporting the finding (ONLY documents that were not already submitted with the original report); 3) Investigation Report (ONLY NECESSARY if you are recommending a sanction that includes an XF grade, suspension, or expulsion). 5GB maximum total size.Attachments require time to upload, so please be patient after submitting this form.",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": true,
+      "visible": true,
+      "group_legend": "",
+      "accept": ""
+    },
+    {
+      "index": 34,
+      "tag": "input",
+      "type": "checkbox",
+      "id": "sendCopyToAuthor",
+      "name": "sendCopyToAuthor",
+      "label": "Email me a copy of this report",
+      "placeholder": "",
+      "required": false,
+      "disabled": false,
+      "multiple": false,
+      "visible": true,
+      "group_legend": "",
+      "option_value": "Yes"
+    }
+  ]
+}

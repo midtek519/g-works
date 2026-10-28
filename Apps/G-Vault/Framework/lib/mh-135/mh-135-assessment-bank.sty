@@ -1,0 +1,49 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-135-assessment-bank}[2026/10/13 Math 135 separate assessment bank]
+\RequirePackage{mh-135-coursework}
+\ExplSyntaxOn
+\bool_new:N \g_mh_calc_one_assessment_loaded_bool
+\clist_new:N \g_mh_calc_one_assessment_ids_clist
+\tl_new:N \l_mh_calc_one_assessment_id_tl
+\tl_new:N \l_mh_calc_one_assessment_points_tl
+\keys_define:nn {mh/135/assessment}
+  {points .tl_set:N = \l_mh_calc_one_assessment_points_tl}
+% Load without printing or advancing displayed question numbers.
+% Stored bodies, figures, metadata, and solutions belong to this separate bank.
+\NewDocumentCommand{\LoadAssessmentExercises}{}
+  {
+    \bool_if:NF \g_mh_calc_one_assessment_loaded_bool
+      {
+        \group_begin:
+          \ForEachUsedExerciseByID
+            {\ExerciseSetProperty{##1}{##2}{use}{false}}
+          \xsimsetup
+            {
+              exercise/use=false,exercise/print=false,solution/print=false,
+              exercise/print-false-hook=
+                {\clist_gput_right:Nx\g_mh_calc_one_assessment_ids_clist{\GetExerciseProperty{ID}}}
+            }
+          \file_input:n {mh-135-course-documents/assessment-manual/exercises/current-assessments.tex}
+        \group_end:
+        \bool_gset_true:N \g_mh_calc_one_assessment_loaded_bool
+      }
+  }
+\NewDocumentCommand{\UseAssessmentExercise}{O{}m}
+  {
+    \group_begin:
+      \tl_clear:N \l_mh_calc_one_assessment_points_tl
+      \keys_set:nn {mh/135/assessment}{#1}
+      \clist_if_in:NnTF \g_mh_calc_one_assessment_ids_clist {#2}
+        {
+          \tl_set:Nx \l_mh_calc_one_assessment_id_tl {\GetExerciseIdForProperty{ID}{#2}}
+          \exp_args:NnV \ExerciseSetProperty {exercise}\l_mh_calc_one_assessment_id_tl {use}{true}
+          \tl_if_blank:VF \l_mh_calc_one_assessment_points_tl
+            {\exp_args:NnV \ExerciseSetExpandedProperty {exercise}\l_mh_calc_one_assessment_id_tl {points}{\l_mh_calc_one_assessment_points_tl}}
+          \printexercise{exercise}{#2}
+          \IfMathSolutionsT{\printsolution{exercise}{#2}}
+        }
+        {\PackageError{mh-135-assessment-bank}{Assessment~ID~#2~was~not~loaded}{Call~\string\LoadAssessmentExercises~and~check~assessment-index.csv.}}
+    \group_end:
+  }
+\ExplSyntaxOff
+\endinput

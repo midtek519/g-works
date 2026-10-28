@@ -1,0 +1,61 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-letter}[2026/10/13 v0.2 Shared historical letter layout]
+\RequirePackage{mathpazo}
+\RequirePackage{helvet}
+\geometry{left=0.9in,right=0.9in,top=1.78in,bottom=0.75in,headheight=1.12in,headsep=0.16in,includehead=false}
+\setlength{\parskip}{0.7em}
+\setlength{\emergencystretch}{1.5em}
+\clubpenalty=10000
+\widowpenalty=10000
+% Use the existing syllabus artwork. Local builds add mh-git/img to TEXINPUTS.
+\newcommand{\mhLetterLogo}{RSUNJ_H_RED_RGB.png}
+\IfFileExists{img/RSUNJ_H_RED_RGB.png}{\renewcommand{\mhLetterLogo}{img/RSUNJ_H_RED_RGB.png}}{}
+\newcommand{\mhLetterUnitLines}{School of Arts and Sciences\\Rutgers University--New Brunswick\\Hill Center for Mathematical Sciences\\110 Frelinghuysen Road\\Piscataway, NJ 08854-8019}
+\newcommand{\mhLetterAuthorContact}{\mhLetterContact}
+\newcommand{\mhLetterSalutation}{}
+\newcommand{\mhLetterClosingText}{Sincerely,}
+\newcommand{\mhLetterClosingLines}{\mhLetterName\par\mhLetterTitle}
+\newcommand{\LetterLogoFile}[1]{\renewcommand{\mhLetterLogo}{#1}}
+\newcommand{\LetterUnitLines}[1]{\renewcommand{\mhLetterUnitLines}{#1}}
+\newcommand{\LetterAuthorContact}[1]{\renewcommand{\mhLetterAuthorContact}{#1}}
+\newcommand{\LetterSalutation}[1]{\renewcommand{\mhLetterSalutation}{#1}}
+\newcommand{\LetterClosing}[1]{\renewcommand{\mhLetterClosingText}{#1}}
+\newcommand{\LetterClosingLines}[1]{\renewcommand{\mhLetterClosingLines}{#1}}
+\newcommand{\MakeLetterHeader}{%
+  \noindent\makebox[\linewidth][l]{%
+    \begin{minipage}[t][0.90in][t]{2.15in}\vspace{0pt}%
+      \hspace*{0pt}%
+      \ifx\mhLetterLogo\empty\else
+        \IfFileExists{\mhLetterLogo}{\includegraphics[width=2.15in]{\mhLetterLogo}}{\PackageError{mh-letter}{Letterhead logo missing}{Add mh-git/lib to TEXINPUTS or set LetterLogoFile.}}%
+      \fi
+    \end{minipage}\hspace{0.20in}%
+    \begin{minipage}[t][0.90in][t]{2.15in}\vspace{0pt}%
+      \sffamily\fontsize{7.5}{11}\selectfont\raggedright
+      \textbf{\mhLetterDepartment}\par\mhLetterUnitLines
+    \end{minipage}%
+    \hspace{0.20in}%
+    \begin{minipage}[t][0.90in][t]{2.0in}\vspace{0pt}%
+      \sffamily\fontsize{7.5}{11}\selectfont\raggedright
+      \textbf{\mhLetterName}\par\mhLetterTitle\par\mhLetterAuthorContact
+    \end{minipage}%
+  }\par
+}
+\renewcommand{\MakeLetterOpening}{%
+  \thispagestyle{mhletterfirst}%
+  \ifx\mhLetterStatus\empty\else{\small\sffamily\mhLetterStatus\par}\fi
+  \mhLetterDate\par
+  \ifx\mhLetterRecipient\empty\else\mhLetterRecipient\par\fi
+  \ifx\mhLetterSubject\empty\else\textbf{\mhLetterSubject}\par\fi
+  \ifx\mhLetterSalutation\empty\else\mhLetterSalutation\par\fi
+}
+\renewcommand{\MakeLetterClosing}{%
+  \par\addvspace{0.7em}\noindent\begin{minipage}{\linewidth}
+    \mhLetterClosingText\par\vspace{0.25em}
+    \ifx\mhLetterSignature\empty\vspace{0.5in}\else
+      \IfFileExists{\mhLetterSignature}{\includegraphics[width=2.15in,height=0.65in,keepaspectratio]{\mhLetterSignature}\par}{\PackageError{mh-letter}{Signature file missing}{Check the private local path.}}%
+    \fi
+    \mhLetterClosingLines\par
+  \end{minipage}\par
+}
+\fancypagestyle{mhletterfirst}{\fancyhf{}\fancyhead[L]{\MakeLetterHeader}\renewcommand{\headrulewidth}{0pt}\renewcommand{\footrulewidth}{0pt}}
+\endinput

@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% mh-accessibility.sty
+%
+% Shared accessibility helpers for MathHouse documents.
+%
+% IMPORTANT:
+% Accessible documents must include the following metadata block BEFORE
+% \documentclass. It cannot be loaded automatically by this package.
+%
+% \DocumentMetadata{
+%   lang = en-US,
+%   pdfstandard = ua-2,
+%   pdfversion = 2.0,
+%   tagging = on,
+%   tagging-setup = {
+%     math/setup = mathml-SE
+%   }
+% }
+%
+% Then use the appropriate accessible MathHouse document class, e.g.,
+%
+% \documentclass[worksheet,student,accessible]{mhdocument}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-accessibility}
+  [2026/08/29 v0.1.0 Accessibility helpers for MathHouse documents]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Accessible level-1 heading
+%
+% \AccessibleHeading{...}
+%
+% Produces a genuine level-1 chapter heading without forcing a page break.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\AccessibleHeading}[1]{%
+  \begingroup
+  \let\clearpage\relax
+  \let\cleardoublepage\relax
+  \chapter*{#1}%
+  \endgroup
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PDF metadata
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Default author for MathHouse accessible documents.
+\hypersetup{
+  pdfauthor={Rutgers University}
+}
+
+\newcommand{\SetMathPDFTitle}[1]{%
+  \hypersetup{
+    pdftitle={#1}
+  }%
+}
+
+\newcommand{\SetMathPDFAuthor}[1]{%
+  \hypersetup{
+    pdfauthor={#1}
+  }%
+}
+
+\newcommand{\SetMathPDFSubject}[1]{%
+  \hypersetup{
+    pdfsubject={#1}
+  }%
+}
+
+\endinput

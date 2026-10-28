@@ -1,0 +1,6 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-135-reference}[2026/10/13 Math 135 formula sheet compatibility command]
+\RequirePackage{mh}
+\RequirePackage{tabularx}
+\newcommand{\ReferenceSheet}{\IfMathExamT{\IfMathStudentT{\input{mh-135-course-documents/support/formula-sheet-content.tex}}}}
+\endinput

@@ -1,0 +1,176 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-135-coursework}
+  [2026/10/18 v0.2.2 Math 135 coursework formatting]
+
+\RequirePackage{mh-assessment}
+\RequirePackage{mh-135-topics}
+\RequirePackage{mh-135-objectives}
+\RequirePackage{tabularx}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exam front matter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ExamFrontMatter}{%
+  \IfMathExamT{%
+    \IfMathStudentT{%
+
+      % Student information and honor pledge
+      \begin{center}
+        \begin{tabularx}{\linewidth}{|X|p{0.32\linewidth}|}
+          \hline
+
+          % Name
+          \multicolumn{2}{|l|}{%
+            \begin{minipage}[c][.85in][b]{0.96\linewidth}
+              {\Large Name:\,\rule{0.91\linewidth}{0.75pt}}
+              \vspace{0.20in}
+            \end{minipage}%
+          }
+          \\ \hline
+
+          % Lecturer and netID
+          \begin{minipage}[c][0.85in][b]{\linewidth}
+            {\Large Lecturer:\,\rule{0.80\linewidth}{0.75pt}}
+            \vspace{0.20in}
+          \end{minipage}
+          &
+          \begin{minipage}[c][0.85in][b]{\linewidth}
+            {\Large NetID:\,\rule{0.65\linewidth}{0.75pt}}
+            \vspace{0.1in}
+            \hspace*{0.7in}{\small(e.g., \texttt{kdh47})}
+          \end{minipage}
+          \\ \hline
+
+          % Honor pledge and signature
+          \multicolumn{2}{|c|}{%
+            \begin{minipage}[c][1.25in][b]{0.94\linewidth}
+              \centering
+
+              \textit{On my honor, I have neither received nor given}\\
+              \textit{any unauthorized assistance on this exam.}
+
+              \vspace{2.7em}
+
+              {\Large Signature:\,\rule{\dimexpr\linewidth-0.95in\relax}{0.75pt}}
+              \vspace{0.15in}
+            \end{minipage}%
+          }
+          \\ \hline
+        \end{tabularx}
+      \end{center}
+
+      % Instructions
+      \begin{center}
+        \underline{\textbf{Instructions}}
+      \end{center}
+
+      \begin{enumerate}[label=\arabic*.]
+
+        \item \textbf{This exam is closed book.}
+
+        Calculators, electronic devices, notes, books, formula sheets
+        (except for the formula sheet provided), and other outside materials
+        are not allowed.
+
+        \item \textbf{Show all work.}
+
+        Answers must be justified using techniques that have been taught in
+        this course, and an answer without such justification may receive
+        less than full credit---or no credit at all---even if the answer is
+        correct.
+
+        \item \textbf{Answers must be exact.}
+
+        Unless otherwise stated, give exact answers: e.g., write $\pi$
+        (instead of $3.14$) or $\sqrt{2}$ (instead of $1.41$).
+
+        \item \textbf{Write your responses in the designated spaces.}
+
+        E.g., if you are answering question \#1, do not write your response
+        in the space under question \#2. The software we use to sort exams
+        will locate your response only if it is in the space below the
+        question.
+
+        \item \textbf{Multiple-choice questions.}
+
+        Shade the entire box for each selected answer. Select one choice
+        unless the question says to select all that apply.
+
+      \end{enumerate}
+
+      \vfill
+
+      \begin{flushright}
+        \fbox{\textbf{\AssessmentTotalPoints\ pts}}
+      \end{flushright}
+
+    }%
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Quiz front matter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\QuizFrontMatter}{%
+  \IfMathExamT{%
+    \IfMathStudentT{%
+
+      % Instructions
+      \vspace*{-12mm}
+      \begin{center}
+        \fbox{%
+          \begin{minipage}{0.92\linewidth}
+            \small
+            \textbf{\underline{Instructions:}}
+            \begin{itemize}[
+              topsep=0pt,
+              itemsep=0pt,
+            ]
+              \item Answer the questions in the spaces provided and show all of your work.
+              \item Responses with no work may receive no credit even if the answer is correct.
+            \end{itemize}
+          \end{minipage}%
+        }%
+      \end{center}%
+
+      \vspace{0.5em}%
+
+      % Student information
+      \noindent
+      \begin{tabularx}{\linewidth}
+        {@{}l X @{\hspace{2em}} l p{0.24\linewidth}@{}}
+        Name: & \hrulefill
+          & netID: & \hrulefill
+      \end{tabularx}%
+
+      \par
+
+    }%
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Worksheet front matter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\WorksheetFrontMatter}{%
+  \IfMathWorksheetT{%
+    \IfMathStudentT{%
+
+      \noindent
+      \begin{tabularx}{\linewidth}
+        {@{}l X @{\hspace{2em}} l p{0.24\linewidth}@{}}
+        Name: & \hrulefill
+          & netID: & \hrulefill
+      \end{tabularx}%
+
+      \par
+      \vspace{-0.8em}%
+
+    }%
+  }%
+}
+
+\endinput

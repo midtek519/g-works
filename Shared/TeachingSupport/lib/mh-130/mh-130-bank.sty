@@ -1,0 +1,73 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-130-bank}[2026/10/13 Math 130 bank reuse by permanent ID]
+\RequirePackage{mh-130-coursework}
+\RequirePackage{needspace}
+\usetikzlibrary{patterns}
+\ExplSyntaxOn
+\clist_new:N \g_mh_business_bank_lectures_clist
+\clist_new:N \g_mh_business_bank_ids_clist
+\tl_new:N \l_mh_business_bank_points_tl
+\tl_new:N \l_mh_business_bank_workspace_tl
+\tl_new:N \l_mh_business_bank_top_tl
+\tl_new:N \l_mh_business_bank_id_tl
+\keys_define:nn {mh/130/question}
+  {
+    points .tl_set:N = \l_mh_business_bank_points_tl,
+    workspace .tl_set:N = \l_mh_business_bank_workspace_tl,
+    workspace-top .tl_set:N = \l_mh_business_bank_top_tl
+  }
+% Load the specified lecture files without printing or counting their contents.
+% Default XSIM body storage is deliberate: no generated body-file cache is needed.
+\NewDocumentCommand{\LoadCourseExercises}{m}
+  {
+    \group_begin:
+      % An earlier assessment run may have saved use=true on selected IDs.
+      % Clear those flags before reading the bank so hidden loading cannot
+      % consume question numbers in lecture order on a later compile.
+      \ForEachUsedExerciseByID
+        {\ExerciseSetProperty{##1}{##2}{use}{false}}
+      \xsimsetup
+        {
+          exercise/use=false,exercise/print=false,solution/print=false,
+          exercise/print-false-hook={\clist_gput_right:Nx\g_mh_business_bank_ids_clist{\GetExerciseProperty{ID}}}
+        }
+      \clist_map_inline:nn {#1}
+        {
+          \clist_if_in:NnF \g_mh_business_bank_lectures_clist {##1}
+            {
+              \file_input:n {mh-130-course-documents/manual/exercises/lec##1.tex}
+              \clist_gput_right:Nn \g_mh_business_bank_lectures_clist {##1}
+            }
+        }
+    \group_end:
+  }
+\NewDocumentCommand{\UseCourseExercise}{O{}m}
+  {
+    \group_begin:
+      \tl_clear:N \l_mh_business_bank_points_tl
+      \tl_clear:N \l_mh_business_bank_workspace_tl
+      \tl_set:Nn \l_mh_business_bank_top_tl {2mm}
+      \keys_set:nn {mh/130/question}{#1}
+      \clist_if_in:NnTF \g_mh_business_bank_ids_clist {#2}
+        {
+          \tl_set:Nx \l_mh_business_bank_id_tl {\GetExerciseIdForProperty{ID}{#2}}
+          % XSIM insertion reuses stored properties. Set assessment properties
+          % through its public API before printing; insertion options alone do
+          % not update them in the installed XSIM version.
+          \exp_args:NnV \ExerciseSetProperty {exercise}\l_mh_business_bank_id_tl {use}{true}
+          \tl_if_blank:VF \l_mh_business_bank_points_tl
+            {\exp_args:NnV \ExerciseSetExpandedProperty {exercise}\l_mh_business_bank_id_tl {points}{\l_mh_business_bank_points_tl}}
+          \tl_if_blank:VF \l_mh_business_bank_workspace_tl
+            {
+              \exp_args:NnV \ExerciseSetProperty {exercise}\l_mh_business_bank_id_tl {workspace}{}
+              \exp_args:NnV \ExerciseSetExpandedProperty {exercise}\l_mh_business_bank_id_tl {workspace-top}{\l_mh_business_bank_top_tl}
+              \xsimsetup{exercise/end-hook={\workspace{\l_mh_business_bank_workspace_tl}}}
+            }
+          \printexercise{exercise}{#2}
+          \IfMathSolutionsT{\printsolution{exercise}{#2}}
+        }
+        {\PackageError{mh-130-bank}{Exercise~ID~#2~was~not~loaded}{Load~its~lecture~file~with~\string\LoadCourseExercises.}}
+    \group_end:
+  }
+\ExplSyntaxOff
+\endinput

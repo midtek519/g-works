@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "G-View - Canvas Course Organizer",
+  "short_name": "G-View",
+  "version": "0.2.2",
+  "description": "Search, group, and pin your Rutgers Canvas courses. A G-Whiz companion.",
+  "permissions": ["storage"],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "G-View - Open Canvas courses",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "20": "icons/icon-20.png",
+      "24": "icons/icon-24.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "background": {"service_worker": "background.js"},
+  "content_scripts": [{
+    "matches": ["https://rutgers.instructure.com/courses*"],
+    "js": ["core.js", "content.js"],
+    "css": ["styles.css"],
+    "run_at": "document_idle"
+  }]
+}

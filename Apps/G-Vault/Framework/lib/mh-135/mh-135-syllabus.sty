@@ -1,0 +1,320 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mh-135-syllabus}[2026/10/06 v1.0.0 Math 135 syllabus tools]
+
+\RequirePackage{mh-syllabus}
+
+\ExplSyntaxOn
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Default Math 135 lecture topics
+%
+% Fourth field = 1 means draw a horizontal rule after that row.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mhsyllabus_add_topic:nnnn {--} {--}
+  {Introduction~to~course,~perception~of~self~and~mathematics} {0}
+\mhsyllabus_add_topic:nnnn {1} {\S~3.3,~3.4}
+  {Rates~of~change,~definition~of~the~derivative} {0}
+\mhsyllabus_add_topic:nnnn {2} {\S~3.1}
+  {Limits~of~indeterminate~form~($0/0$~only)} {0}
+\mhsyllabus_add_topic:nnnn {3} {\S~4.1,~4.2}
+  {Derivative~rules,~product~rule,~quotient~rule} {0}
+\mhsyllabus_add_topic:nnnn {4} {\S~4.3}
+  {The~chain~rule} {0}
+\mhsyllabus_add_topic:nnnn {5} {\S~6.5}
+  {Linear~approximation} {0}
+\mhsyllabus_add_topic:nnnn {6} {\S~3.2}
+  {Continuity} {0}
+\mhsyllabus_add_topic:nnnn {7} {\S~3.1}
+  {Infinite~limits~and~limits~at~infinity} {0}
+\mhsyllabus_add_topic:nnnn {8} {\S~5.1,~5.2}
+  {Intervals~of~monotonicity,~relative~extrema} {0}
+\mhsyllabus_add_topic:nnnn {9} {\S~5.3}
+  {Intervals~of~concavity,~second~derivative~test} {0}
+\mhsyllabus_add_topic:nnnn {10} {\S~5.4}
+  {What~derivatives~tell~us~(synthesized~examples)} {0}
+\mhsyllabus_add_topic:nnnn {--} {--}
+  {Review~for~Midterm~Exam~\#1} {0}
+\mhsyllabus_add_topic:nnnn {--} {--}
+  {\textbf{Midterm~Exam~\#1~--~covers~\S~3.1--3.4,~4.1--4.3,~5.1--5.4,~6.5}} {1}
+\mhsyllabus_add_topic:nnnn {11} {\S~6.1}
+  {Absolute~extrema,~extreme~value~theorem} {0}
+\mhsyllabus_add_topic:nnnn {12a} {\S~6.2}
+  {Applied~optimization~(part~1~of~2)} {0}
+\mhsyllabus_add_topic:nnnn {12b} {\S~6.2}
+  {Applied~optimization~(part~2~of~2)} {0}
+\mhsyllabus_add_topic:nnnn {13} {\S~6.4}
+  {Related~rates} {0}
+\mhsyllabus_add_topic:nnnn {14} {\S~7.1}
+  {Antiderivatives,~initial-value~problems} {0}
+\mhsyllabus_add_topic:nnnn {15} {\S~7.2}
+  {Substitution~rule,~initial-value~problems} {0}
+\mhsyllabus_add_topic:nnnn {16} {\S~11.1}
+  {Exponential~growth,~limited~growth} {0}
+\mhsyllabus_add_topic:nnnn {17} {\S~11.1}
+  {Logistic~growth} {0}
+\mhsyllabus_add_topic:nnnn {18} {\S~7.3}
+  {Area~and~the~integral} {0}
+\mhsyllabus_add_topic:nnnn {19} {\S~7.4}
+  {Fundamental~theorem~of~calculus} {0}
+\mhsyllabus_add_topic:nnnn {--} {--}
+  {Review~for~Midterm~Exam~\#2} {0}
+\mhsyllabus_add_topic:nnnn {--} {--}
+  {\textbf{Midterm~Exam~\#2~--~covers~\S~6.1--6.4,~7.1--7.4,~11.1}} {1}
+\mhsyllabus_add_topic:nnnn {S1} {--}
+  {Synthesis~(part~1~of~3)} {0}
+\mhsyllabus_add_topic:nnnn {S2} {--}
+  {Synthesis~(part~2~of~3)} {0}
+\mhsyllabus_add_topic:nnnn {S3} {--}
+  {Synthesis~(part~3~of~3)} {0}
+
+% Default exam positions; civil dates follow the selected calendar.
+\SetMidtermTopic{1}{13}
+\SetMidtermTopic{2}{25}
+\renewcommand{\RecitationIntroduction}{Introduction,~Prerequisites~review}
+
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course description
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusCourseDescription}{%
+  \SyllabusItem{Course\\Description}{%
+    This course is an introduction to differential and integral calculus with emphasis on conceptual understanding, modeling, and interpretation of quantitative relationships in the life sciences. Students in other majors should take 01:640:130 or 01:640:151, as appropriate for their program.
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course learning goals
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusLearningGoals}{%
+  \SyllabusItem{Course\\Learning\\Goals}{%
+    By the end of this course, learners will be able to:
+    \begin{enumerate}[label=\textbf{[\arabic*]},topsep=2pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+        \item Apply calculus concepts to life sciences.
+        \item Articulate ideas of calculus in English.
+        \item Demonstrate competence with core tasks of calculus, such as:
+        \begin{itemize}[topsep=-1pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+            \item solving problems involving related rates of change
+            \item describing the relationships among a function and its first two derivatives
+            \item solving optimization problems
+            \item estimating change using the method of linear approximation
+            \item calculating area under a graph as an integral
+        \end{itemize}
+        \item See oneself as capable of engaging with mathematics.
+    \end{enumerate}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Prerequisites
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusPrerequisites}{%
+  \SyllabusItem{Prerequisites}{%
+    You must have sufficient mastery of topics in intermediate algebra and precalculus. The official prerequisite for Math 135 is Precalculus (Math 115 or 111--112), or placement into Calculus I through the ALEKS placement exam.
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Textbook and MyLab
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusTextbook}{%
+  \SyllabusItem{Textbook \&\\MyLab}{%
+    \textit{Calculus for the Life Sciences (Second Edition)}, Greenwell, Ritchey, and Lial. Pearson, 2015. (ISBN: 978-0321964038)
+    \vi
+
+    By enrolling in this course, you are automatically enrolled in the Barnes \& Noble First Day Program, which adds a charge to your term bill for a Pearson MyLab Math license. This license includes access to the e-textbook and homework assignments.
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Absences and makeups
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusAbsences}{%
+  \SyllabusItem{Absences \&\\Makeups}{%
+    You are expected to attend all classes and take all quizzes and exams at the scheduled times.
+
+    \begin{itemize}[itemsep=0pt,topsep=2pt]
+      \item \textbf{Lectures:}
+        Regular attendance is expected and crucial for your success.
+
+      \item \textbf{Quizzes:}
+        There are no makeups for quizzes for any reason. Instead, the dropped quizzes will account for absences due to minor illness and other unforeseen circumstances. You may also be excused from a quiz for religious observance.
+
+      \item \textbf{Exams:}
+        If you must miss an exam, you must notify your professor as soon as possible. A makeup exam or other arrangement can be offered only if the absence is due to a religious observance or an unavoidable, verifiable emergency.
+    \end{itemize}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Canvas sites
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusCanvasSites}{%
+  \SyllabusItem{Canvas\\Sites}{%
+    This course uses two Canvas sites. Links and their distinct purposes are listed below.
+    \vi
+
+    \fbox{\textbf{Link:} \SyllabusOptionalLink{\InstructorCanvasSite}{\underline{Canvas Site for Sections \LectureSections~only}}}
+    \begin{itemize}[topsep=-1pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+        \item Section-specific announcements from your instructor
+        \item Course materials (Exercise Manual, lecture notes, lecture videos)
+        \item Pearson MyLab Math access information and assignment links
+        \item Individual assignment scores and scanned quizzes
+    \end{itemize}
+    \vi
+
+    \fbox{\textbf{Link:} \SyllabusOptionalLink{\AllSectionsCanvasSite}{\underline{Canvas Site for ``Math 135 All Sections''}}}
+    \begin{itemize}[topsep=-1pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+        \item Course-wide announcements from the Course Coordinator
+        \item Course materials (Exercise Manual, lecture notes, lecture videos)
+        \item Exam resources (reference sheets, selected sample exams, rescheduling instructions)
+        \item Category scores and scanned midterm exams
+    \end{itemize}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Grade components
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusGradeComponents}{%
+  \SyllabusItem{Grade\\Components}{%
+    The table below lists the components of your \textbf{weighted course average}, including each component’s weight, the number of assignments, and the number dropped. The table to the right shows how your weighted average (rounded to the nearest integer) converts to a letter grade.
+  }%
+}
+
+\newcommand{\SyllabusGradingTable}{%
+  \SyllabusItem{\phantom{Grading}}{%
+\begin{center}
+  \begin{tabular}[t]{lrrr@{\hspace{2em}}cc}
+    \textbf{Component}
+      & \textbf{Wt.}
+      & \textbf{Assn.}
+      & \textbf{Dropped}
+      & \textbf{Letter}
+      & \textbf{Minimum Score}
+      \\
+    \cmidrule(r{1.5em}){1-4}\cmidrule(l{-0.5em}){5-6}
+
+    Homework (MyLab)
+      & 4\% & 22 & 4
+      & A\phantom{+} & 85\%
+      \\
+
+    Exam Wrappers \& Surveys
+      & 4\% & 5 & 0
+      & B+ & 78\%
+      \\
+
+    Quizzes:
+      & 20\% & 13 & 3
+      & B\phantom{+} & 70\%
+      \\
+
+    Midterm Exams:
+      & 36\% & 2 & 0
+      & C+ & 63\%
+      \\
+
+    Final Exam:
+      & 36\% & 1 & 0
+      & C\phantom{+} & 55\%
+      \\
+
+    TOTAL:
+      & 100\% & & 
+      & D\phantom{+} & 52\%
+      \\
+  \end{tabular}
+\end{center}
+  }%
+}
+
+\newcommand{\SyllabusGradingItems}{%
+  \SyllabusItem{\phantom{Grading}}{%
+    \begin{itemize}[topsep=4pt,itemsep=-1ex,partopsep=-1ex,parsep=1ex]
+      \item \textbf{Homework (MyLab):}
+        Online assignments completed via Pearson in Canvas.
+      \item \textbf{Exam Wrappers \& Surveys:}
+        Online self-reflective assignments on Canvas.
+      \item \textbf{Quizzes:}
+        In recitation; dates and coverage announced on Canvas.
+      \item \textbf{Midterm Exams:}
+        Given in class; date and coverage listed below.
+      \item \textbf{Final Exam:}
+        Location announced on Canvas; date and coverage listed below.
+    \end{itemize}
+    \begin{center}
+      \begin{tabular}[t]{lrllr}
+        \textbf{Exam}
+          & \textbf{Wt.}
+          & \textbf{Date}
+          & \textbf{Time}
+          & \textbf{Coverage (Textbook Sections)}
+          \\\toprule
+        \textit{Midterm Exam \#1}
+          & 18\%
+          & \MidtermOneDate
+          & in class
+          & \S 3.1--3.4, 4.1--4.3, 5.1--5.4, 6.5 \\
+        \textit{Midterm Exam \#2}
+          & 18\%
+          & \MidtermTwoDate
+          & in class
+          & \S 6.1--6.4, 7.1--7.4, 11.1 \\
+        \textit{Final Exam}
+          & 36\%
+          & \FinalExamDate
+          & \FinalExamTime
+          & all sections listed above \\
+      \end{tabular}
+    \end{center}
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Final grades
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\SyllabusFinalGrades}{%
+  \SyllabusItem{Final\\Grades}{%
+    Your final letter grade in the course is calculated as follows:
+    \begin{enumerate}[
+      label=\textbf{[\arabic*]},
+      topsep=4pt,
+      itemsep=-1ex,
+      partopsep=-1ex,
+      parsep=1ex
+    ]
+      \item
+        Your \textbf{weighted course average} is converted to a letter ($X$) using the table above.
+      \item
+        Your score on the final exam is converted to a letter ($Y$) using the table above.
+      \item
+        If $Y$ is a better grade than $X$, then your final letter grade in the course is the next highest letter above $X$. Otherwise, your final letter grade in the course is $X$.
+    \end{enumerate}
+
+    \textbf{Note:} Your \textbf{weighted course average} includes the 36\% weight of the Final Exam.
+
+    \vi
+
+    Here are a few examples:
+    \begin{itemize}[topsep=4pt,itemsep=-1ex,partopsep=-1ex,parsep=1ex]
+      \item
+        \textbf{Example:} Your weighted course average is 65\% (C+) and your final exam score is 65\% (C+). Your final letter grade in the course is C+.
+      \item
+        \textbf{Example:} Your weighted course average is 65\% (C+) and your final exam score is 80\% (B+). Your final letter grade in the course is B.
+      \item
+        \textbf{Example:} Your weighted course average is 65\% (C+) and your final exam score is 60\% (C). Your final letter grade in the course is C+.
+    \end{itemize}
+  }%
+}
+
+\endinput
