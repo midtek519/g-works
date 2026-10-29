@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "G-View",
   "short_name": "G-View",
-  "version": "1.0.0.20303",
+  "version": "1.0.0.20304",
   "description": "Search, group, and pin your Rutgers Canvas courses. A G-Whiz companion.",
   "permissions": [
     "storage"
@@ -40,5 +40,5 @@
       "run_at": "document_idle"
     }
   ],
-  "version_name": "1.0.0-beta.3.3"
+  "version_name": "1.0.0-beta.3.4"
 }

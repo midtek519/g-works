@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse,json,os,shutil,subprocess,sys,secrets
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from tex_compile import compile_document
+from tex_lookup import missing as missing_files
 
 def enabled(root):
     for path in (Path(root)/'Data/edition.json',Path(root)/'edition.json'):
@@ -36,13 +37,7 @@ def probe(root,folder):
         if version.returncode:return None
         distribution='miktex' if 'miktex' in version.stdout.lower() else 'texlive' if 'TeX Live' in version.stdout else None
         if not distribution:return None
-        missing=[]
-        for file in requirements()['required_files']:
-            # MiKTeX's compatibility kpsewhich is a lookup-only command and
-            # does not accept the compiler's --disable-installer option.
-            query=[kpse,file]
-            result=run(query,env=env)
-            if result.returncode or not result.stdout.strip():missing.append(file)
+        missing=missing_files(folder,distribution,requirements()['required_files'],env=env,runner=run)
         if distribution=='texlive':
             latexmk=program(folder,'latexmk')
             if not latexmk or run([latexmk,'-version'],env=env).returncode:missing.append('latexmk')

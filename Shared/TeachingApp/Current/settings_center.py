@@ -12,6 +12,7 @@ sys.path.insert(0,str(HERE))
 sys.path.insert(0,str(HERE/'private_module_ui'));sys.path.insert(0,str(HERE/'Desktop'))
 import appearance,general_ai,local_ai_config,chatgpt_account,shared_signature
 import shared_tex,local_ai_discovery
+import tex_health
 from material_folders import folder_patterns
 from runtime_paths import registered_suite as suite_root,canonical_settings_root as settings_root
 # Resolve the installed app catalog before selecting the settings context.
@@ -21,7 +22,7 @@ APPS={key:value['name'] for key,value in APP_SPECS.items()}
 SUITE_APPS={suite:tuple(key for key,value in APP_SPECS.items() if value['suite']==suite) for suite in ('professional','personal')}
 
 PAGES=('app','appearance','ai','tex','storage')
-SETTINGS_UI_VERSION=8
+SETTINGS_UI_VERSION=12
 SECRET=re.compile(r'password|secret|credential|access_token|refresh_token|api_key',re.I)
 
 
@@ -142,7 +143,7 @@ class Settings:
  def __init__(self,root,selected=None,page='app'):
   selected=selected or 'whiz'
   if selected not in APPS or page not in PAGES:raise ValueError('Choose an app and settings page.')
-  self.root=settings_root(root);self.selected=selected;self.selected_page=page;self.window=None;self.pending_app=None;self.pending_page=None;self.show_revision=0;self.mutex=threading.RLock()
+  self.root=settings_root(root);self.tex_checks=tex_health.Checks(self.root);self.selected=selected;self.selected_page=page;self.window=None;self.pending_app=None;self.pending_page=None;self.show_revision=0;self.mutex=threading.RLock()
   self.account=chatgpt_account.Account(app_directory(self.root,selected if not APP_SPECS[selected].get('entry') else 'whiz'))
  def context(self):
   suite='personal' if SUITE_APPS['personal'] else 'professional'
@@ -270,6 +271,12 @@ def make_server(settings,port=0):
     if url.path=='/api/app':return self.send(200,settings.configuration(query.get('app',[settings.selected])[0]))
     if url.path=='/api/ai':return self.send(200,settings.ai())
     if url.path=='/api/tex':return self.send(200,shared_tex.document(settings.root))
+    if url.path=='/api/tex/check/latest':return self.send(200,settings.tex_checks.latest())
+    if url.path.startswith('/api/tex/check/'):
+     parts=url.path.strip('/').split('/')
+     if len(parts)==4:return self.send(200,settings.tex_checks.read(parts[3]))
+     if len(parts)==5 and parts[4]=='log':
+      file=settings.tex_checks.log(parts[3]);raw=file.read_bytes() if file.is_file() else b'No check output yet.\n';self.send_response(200);self.send_header('Content-Type','text/plain; charset=utf-8');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Cache-Control','no-store');self.send_header('Content-Length',str(len(raw)));self.send_header('Content-Disposition','attachment; filename="TeX-check-'+parts[3]+'.txt"');self.end_headers();self.wfile.write(raw);return
     if url.path=='/api/tex/detect':return self.send(200,{'installations':shared_tex.discover(settings.root)})
     if url.path=='/api/local-models':return self.send(200,settings.local_models())
     if url.path=='/api/local-detect':return self.send(200,{'servers':local_ai_discovery.discover(local_ai_config.settings(settings.root/'Shared/Settings/local-ai.json'))})
@@ -300,7 +307,13 @@ def make_server(settings,port=0):
       return self.send(200,{'updated':current})
      if path=='/api/external-settings':return self.send(200,settings.external_settings(data.get('app')))
      if path=='/api/app':return self.send(200,settings.save_document(data))
-     if path=='/api/tex':settings.idle();return self.send(200,shared_tex.save(settings.root,data))
+     if path=='/api/tex/check':settings.idle();return self.send(200,settings.tex_checks.start(data))
+     if path=='/api/tex':
+      settings.idle()
+      if data.get('skipCheck') is not True:
+       checked=settings.tex_checks.read(data.get('checkId',''))
+       if checked['status']!='ready' or checked['requested_value']!=data.get('value'):raise ValueError('Check this TeX installation before saving, or explicitly skip the package check in Advanced.')
+      return self.send(200,shared_tex.save(settings.root,data))
      if path=='/api/local-models':return self.send(200,settings.local_models(data))
      if path=='/api/appearance':
       appearance.save(settings.app(data.get('app')),data.get('theme'));return self.send(200,settings.configuration(data['app']))

@@ -207,6 +207,7 @@ def tex_requirements(root, staged, options):
     required = set(manifest['required_files']) if set(options['apps']) & {'vault', 'whiz', 'scope'} else {'article.cls'}
     libraries = []
     math_libraries = []
+    alternatives = []
     if set(options['apps']) & {'vault', 'whiz', 'scope'}:
         support = installed_support(root, staged, options, 'TeachingSupport')
         if support is None or not (support / 'lib/mhdocument.cls').is_file():
@@ -221,17 +222,15 @@ def tex_requirements(root, staged, options):
             libraries.append(root / 'Apps/Application/dnd-git/lib')
         if not libraries:
             raise ValueError('The Application TeX library is missing from this release.')
-        owned = {p.stem for library in libraries for p in library.iterdir() if p.suffix in ('.sty', '.cls')}
-        for library in libraries:
-            for source in library.iterdir():
-                if source.suffix not in ('.sty', '.cls'):
-                    continue
-                for group in re.findall('\\\\RequirePackage(?:\\[[^\\]]*\\])?\\{([^{}]+)\\}', source.read_text('utf-8')):
-                    required.update((name + '.sty' for name in group.split(',') if re.fullmatch('[A-Za-z][A-Za-z0-9-]*', name) and name not in owned))
-    return (helpers, manifest, sorted(required), libraries, math_libraries)
+        spec = importlib.util.spec_from_file_location('gworks_tex_dependencies', helpers / 'tex_lookup.py')
+        lookup = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(lookup)
+        external, alternatives = lookup.dependencies(libraries, engine='luatex')
+        required.update(external)
+    return (helpers, manifest, sorted(required), libraries, math_libraries, alternatives)
 
 def verify_tex(root, staged, options, report):
-    helpers, manifest, required, libraries, math_libraries = tex_requirements(root, staged, options)
+    helpers, manifest, required, libraries, math_libraries, alternatives = tex_requirements(root, staged, options)
     folder = Path(options['_tex_bin'])
     kpse = folder / 'kpsewhich.exe'
     if not kpse.is_file():
@@ -241,7 +240,10 @@ def verify_tex(root, staged, options, report):
     env['TEXINPUTS'] = os.pathsep.join((p.as_posix() + '//' for p in libraries + math_libraries)) + os.pathsep + env.get('TEXINPUTS', '') + os.pathsep
 
     def missing():
-        return [name for name in required if not subprocess.run([str(kpse), name], capture_output=True, text=True, env=env, timeout=30, creationflags=134217728).stdout.strip()]
+        spec = importlib.util.spec_from_file_location('gworks_tex_lookup', helpers / 'tex_lookup.py')
+        lookup = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(lookup)
+        return lookup.missing_requirements(folder, options['_tex_distribution'], required, alternatives, env=env)
     report('Checking required TeX packages.')
     absent = missing()
     repair = bool(options.get('repair_packages'))

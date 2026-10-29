@@ -104,10 +104,11 @@ def make_server(desk,port=0):
     if path.path=='/api/builds':return self.reply(200,{'builds':desk.history(),'active':desk.active})
     if parts[:2]==['api','builds']:
      if len(parts)==3:return self.reply(200,desk.batch(parts[2]))
+     if len(parts)==4 and parts[3]=='log':return self.file(desk.compile_log(parts[2]),'Compile-log-'+parts[2]+'.txt',attachment=q.get('download')=='1')
      if len(parts)==5 and parts[4]in('pdf','log'):
-      b=desk.batch(parts[2]);i=int(parts[3]);return self.file(desk.artifact(parts[2],i,parts[4]),b['jobs'][i]['name']+'.pdf'if parts[4]=='pdf'else'Compile-log.txt')
+      b=desk.batch(parts[2]);i=int(parts[3]);return self.file(desk.artifact(parts[2],i,parts[4]),b['jobs'][i]['name']+'.pdf'if parts[4]=='pdf'else'Compile-log-'+parts[2]+'-'+str(i+1)+'.txt',attachment=parts[4]=='log' and q.get('download')=='1')
      if len(parts)==6 and parts[4]=='page':return self.file(desk.artifact(parts[2],parts[3],'image',parts[5]))
-    assets={'/vault-workspaces.js':'vault-workspaces.js','/':'index.html','/app.js':'app.js','/style.css':'style.css','/preview.html':'preview.html','/preview.js':'preview.js','/g-whiz.svg':'g-whiz.svg','/syllabus.js':'syllabus.js','/syllabus.css':'syllabus.css','/pretty.js':'pretty.js','/pretty.css':'pretty.css','/bank.js':'bank.js','/bank.css':'bank.css','/workflow.js':'workflow.js'}
+    assets={'/build-logs.js':'build-logs.js','/vault-workspaces.js':'vault-workspaces.js','/':'index.html','/app.js':'app.js','/style.css':'style.css','/preview.html':'preview.html','/preview.js':'preview.js','/g-whiz.svg':'g-whiz.svg','/syllabus.js':'syllabus.js','/syllabus.css':'syllabus.css','/pretty.js':'pretty.js','/pretty.css':'pretty.css','/bank.js':'bank.js','/bank.css':'bank.css','/workflow.js':'workflow.js'}
     if path.path in assets:return self.file(static/assets[path.path])
     if path.path.startswith('/vendor/katex/'):
      vendor=(static/'vendor/katex').resolve();asset=(static/path.path.lstrip('/')).resolve()
@@ -186,6 +187,9 @@ def make_server(desk,port=0):
       import webbrowser
       result={'opened':bool(webbrowser.open('https://chatgpt.com/settings/usage'))}
      else:raise ValueError('Choose an AI settings action.')
+    elif path=='/api/tex/settings':
+     import settings_center
+     result={'opened':bool(settings_center.open_center(desk.root,page='tex'))}
     elif path=='/api/configuration/browse':result=browse_folder(desk,data)
     elif path=='/api/configuration':result=desk.save_configuration(data)
     elif path=='/api/courses/create':result=course_workspaces.create(desk,data)

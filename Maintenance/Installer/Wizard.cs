@@ -142,7 +142,7 @@ namespace GWorks {
       aiChoice.DropDownStyle=ComboBoxStyle.DropDownList;aiChoice.Items.AddRange(new object[]{"Keep current local AI (existing installation)","Use / install Ollama","Use another local AI server"});aiChoice.SelectedIndex=localInstall||sharedAiExternallyManaged?0:1;
       localUrl.Text="http://127.0.0.1:11434";
       aiChoice.SelectedIndexChanged+=(s,e)=>{if(!loadingDetection){localUrl.Text=aiChoice.SelectedIndex==2?"http://127.0.0.1:1234":"http://127.0.0.1:11434";revision.Clear();if(aiChoice.SelectedIndex==1)model.Text="qwen3-vl:4b";}UpdateAiFields();};
-      verifyTex.Text="Check required TeX packages and compile a test PDF";verifyTex.Checked=true;
+      verifyTex.Text="Check required TeX packages and compile a test PDF";verifyTex.Checked=true;verifyTex.Enabled=localInstall;
       repairTex.Text="Install missing TeX packages if required";verifyTex.CheckedChanged+=(s,e)=>repairTex.Enabled=verifyTex.Checked;
       chatgpt.Text="Open General AI settings after setup to connect ChatGPT (optional)";
       latest.Text="Check the public G-Works release channel";latest.Checked=suite=="professional"&&!localInstall;latest.Enabled=suite=="professional";

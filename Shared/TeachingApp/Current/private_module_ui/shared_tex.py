@@ -38,9 +38,9 @@ def executable(root,name,fallback=None):
  if not candidate.is_file():raise ValueError(name+' is unavailable in the shared TeX folder. Check Shared settings → TeX distribution.')
  return str(candidate)
 
-def discover(root):
+def discover(root,configured=True):
  """Inspect known local paths; never install packages or change the selection."""
- folders=[read(root).get('tex_bin','')]
+ folders=[read(root).get('tex_bin','')] if configured else []
  for name in ('pdflatex','latexmk','xelatex','lualatex'):
   found=shutil.which(name)
   if found:folders.append(str(Path(found).parent))

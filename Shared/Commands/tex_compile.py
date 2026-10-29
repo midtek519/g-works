@@ -9,8 +9,11 @@ def compile_document(compiler,source,output,*,miktex=True,install=False,cwd=None
     previous=None;console=[];started=time.monotonic()
     for number in range(1,7):
         remaining=timeout-(time.monotonic()-started)
-        if remaining<=0:raise subprocess.TimeoutExpired(args,timeout)
-        result=subprocess.run(args+[str(source)],cwd=cwd,env=env,capture_output=True,text=True,errors='replace',timeout=remaining,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+        if remaining<=0:raise subprocess.TimeoutExpired(args,timeout,output='\n'.join(console))
+        try:result=subprocess.run(args+[str(source)],cwd=cwd,env=env,capture_output=True,text=True,errors='replace',timeout=remaining,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+        except subprocess.TimeoutExpired as exc:
+            captured=lambda value:value.decode('utf-8',errors='replace') if isinstance(value,bytes) else str(value or '')
+            raise subprocess.TimeoutExpired(args,timeout,output='\n'.join(console)+'\n'+captured(exc.stdout),stderr=captured(exc.stderr)) from exc
         console.append('G-Whiz pdfLaTeX pass '+str(number)+'\n'+result.stdout+result.stderr)
         if result.returncode:return subprocess.CompletedProcess(args,result.returncode,'\n'.join(console),'')
         # The supplied Math 135 documents use LaTeX cross references, not BibTeX.
@@ -32,7 +35,9 @@ def main():
     try:
         result=compile_document(args.compiler,args.source,args.output,cwd=Path.cwd())
         print(result.stdout);return result.returncode
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as exc:
+        for value in (exc.stdout,exc.stderr):
+            if value:print(value.decode('utf-8',errors='replace') if isinstance(value,bytes) else value)
         print('Compilation exceeded four minutes.');return 124
 
 if __name__=='__main__':raise SystemExit(main())

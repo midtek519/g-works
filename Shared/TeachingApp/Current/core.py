@@ -290,6 +290,7 @@ class Desk:
    from private_module_ui import shared_tex
    miktex=self.edition.get('edition') in ('materials',) and shared_tex.selection(self.root)['tex_distribution']=='miktex'
    latexmk=executable(self.root,'pdflatex' if miktex else 'latexmk')
+   b.update(compiler=str(latexmk or ''),tex_distribution='miktex' if miktex else shared_tex.selection(self.root)['tex_distribution'])
    if not Path(latexmk).is_file():raise ValueError('The TeX compiler is unavailable.')
    env=os.environ.copy();env['PATH']=str(Path(latexmk).parent)+os.pathsep+env.get('PATH','');env['TEXINPUTS']=(self.repo/'lib').as_posix()+'//'+os.pathsep+env.get('TEXINPUTS','')+os.pathsep;cache=self.temp/'Builds/tex-cache';cache.mkdir(exist_ok=True);env['TEXMFVAR']=str(cache);env['TEXMFCACHE']=str(cache)
    for i,j in enumerate(b['jobs']):
@@ -300,20 +301,24 @@ class Desk:
     cmd=([sys.executable,'-I','-B',str(Path(__file__).with_name('tex_compile.py')),'--compiler',latexmk,'--source',str(wrapper),'--output',str(work)] if miktex else [latexmk,'-norc','-r','latexmkrc','-pdf','-interaction=nonstopmode','-halt-on-error','-file-line-error','-latexoption=-no-shell-escape','-outdir='+str(work),str(wrapper)]);began=time.monotonic()
     try:
      result=subprocess.run(cmd,cwd=self.repo,env=env,capture_output=True,text=True,errors='replace',timeout=300,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));console=result.stdout+result.stderr;code=result.returncode
-    except subprocess.TimeoutExpired as exc:console='Compilation exceeded five minutes. Review this document separately.';code=124
+    except subprocess.TimeoutExpired as exc:
+     captured=lambda value:value.decode('utf-8',errors='replace') if isinstance(value,bytes) else str(value or '')
+     console=captured(exc.stdout)+captured(exc.stderr)+'\nCompilation exceeded five minutes. Review this document separately.';code=124
     (work/'console.txt').write_text(console,encoding='utf8');log=(work/'document.log').read_text(encoding='utf8',errors='replace')if(work/'document.log').is_file()else'';pdf=work/'document.pdf';unresolved=bool(re.search('There were undefined references|There were undefined citations',log));ok=code==0 and pdf.is_file()and not unresolved
-    j.update(status='ready'if ok else'failed',seconds=round(time.monotonic()-began,1),message='PDF ready to review'if ok else'Unresolved references'if unresolved else self._error(console),warnings=re.findall(r'(?:LaTeX|Package [^\n]+) Warning:[^\n]*',log)[:12],pages=self._pages(pdf)if ok else 0)
+    j.update(exit_code=code,status='ready'if ok else'failed',seconds=round(time.monotonic()-began,1),message='PDF ready to review'if ok else'Unresolved references'if unresolved else self._error(console),warnings=re.findall(r'(?:LaTeX|Package [^\n]+) Warning:[^\n]*',log)[:12],pages=self._pages(pdf)if ok else 0)
     if ok:j['pdf_sha256']=hash_file(pdf)
     save(self._batch_path(identity),b)
    b['phase']='verify';b['message']='Verifying compiled inputs…';save(self._batch_path(identity),b)
    b['status']='ready'if all(j['status']=='ready'for j in b['jobs'])else'failed'
    if self._job_fingerprint(b['course'],b['jobs'],version=b.get('fingerprintVersion'))!=b['source_fingerprint']:b['status']='stale';b['message']='Course sources changed during compilation. Compile again before publishing.'
-   b['phase']='complete';b['message']='PDFs ready to review.' if b['status']=='ready' else b.get('message','Compilation needs review.')
+   b['phase']='complete';b['message']='PDFs ready to review.' if b['status']=='ready' else next((j.get('message') for j in b['jobs'] if j['status']=='failed'),'Compilation needs review.')
    if b['status']=='ready' and b.get('publish_when_ready'):
     save(self._batch_path(identity),b);b=self.publish(identity)
   except Exception as exc:
    if b is None:raise
-   b.update(status='failed',message=str(exc)[:500])
+   b.update(status='failed',message=str(exc)[:500],log_error=str(exc))
+   for job in b['jobs']:
+    if job['status'] in ('queued','running'):job.update(status='failed' if job['status']=='running' else 'skipped',message=str(exc)[:500])
   finally:
    try:
     if b is not None:save(self._batch_path(identity),b)
@@ -327,11 +332,14 @@ class Desk:
   try:
    r=subprocess.run([exe,str(pdf)],capture_output=True,text=True,timeout=20,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));m=re.search(r'Pages:\s+(\d+)',r.stdout);return int(m[1])if m else 1
   except Exception:return 1
+ def compile_log(self,identity,index=None):
+  from compilation_logs import report
+  return report(self,identity,index)
  def artifact(self,identity,index,kind='pdf',page=1):
   b=self.batch(identity);index=int(index)
   if not 0<=index<len(b['jobs']):raise ValueError('Choose an output in this build.')
   work=self.temp/'Builds'/identity/str(index);j=b['jobs'][index]
-  if kind=='log':return work/'console.txt'
+  if kind=='log':return self.compile_log(identity,index)
   if j['status']!='ready':raise ValueError('This PDF is not ready.')
   if kind=='pdf':return work/'document.pdf'
   page=int(page)

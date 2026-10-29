@@ -10,7 +10,7 @@ using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 namespace GWorks {
- class AppChoice {public string Id,Name,Folder,Description,Color,SecondaryId,SecondaryLabel,Icon;}
+ class AppChoice {public bool RequiresTex;public string Id,Name,Folder,Description,Color,SecondaryId,SecondaryLabel,Icon;}
  class Target {public string File,Arguments,Directory;public bool Shell;}
  class CompanionChoice {public string id,label,parent,description,icon;}
  class LauncherAction {public string Id,Label,Icon,UnavailableLabel,Parent,ShortLabel;}
@@ -18,9 +18,9 @@ namespace GWorks {
   public virtual string Name {get{return "G-Works";}}
   public virtual string Icon {get{return "g-works";}}
   public virtual AppChoice[] Apps {get{return new[]{
-   new AppChoice{Id="whiz",Name="G-Whiz",Folder="G-Whiz",Description="Courses, questions & teaching materials",Color="#B72D49",Icon="g-whiz",SecondaryId="g-view",SecondaryLabel="G-View"},
-   new AppChoice{Id="scope",Name="G-Scope",Folder="G-Scope",Description="Scans, rubrics & grading",Color="#A96A13",Icon="g-scope",SecondaryId="g-rater",SecondaryLabel="G-Rater"},
-   new AppChoice{Id="vault",Name="G-Vault",Folder="G-Vault",Description="Grades, letters & integrity records",Color="#245FB6",Icon="g-vault",SecondaryId="g-report",SecondaryLabel="G-Report"}
+   new AppChoice{RequiresTex=true,Id="whiz",Name="G-Whiz",Folder="G-Whiz",Description="Courses, questions & teaching materials",Color="#B72D49",Icon="g-whiz",SecondaryId="g-view",SecondaryLabel="G-View"},
+   new AppChoice{RequiresTex=true,Id="scope",Name="G-Scope",Folder="G-Scope",Description="Scans, rubrics & grading",Color="#A96A13",Icon="g-scope",SecondaryId="g-rater",SecondaryLabel="G-Rater"},
+   new AppChoice{RequiresTex=true,Id="vault",Name="G-Vault",Folder="G-Vault",Description="Grades, letters & integrity records",Color="#245FB6",Icon="g-vault",SecondaryId="g-report",SecondaryLabel="G-Report"}
   };}}
   public virtual string AppFolder(AppChoice app){return Path.Combine(Program.Root,"Apps",app.Folder);}
   public virtual CompanionChoice[] ExtraCompanions {get{return new CompanionChoice[0];}}
@@ -29,7 +29,7 @@ namespace GWorks {
   public virtual Target ResolveExtra(string id){return null;}
  }
  static partial class Program {
-  public const string Version="1.0.0-beta.3.3";
+  public const string Version="1.0.0-beta.3.4";
   public static string Root,Suite="professional";
   public static LauncherProfile Profile=new LauncherProfile();
   static partial void SelectProfile(ref LauncherProfile profile);
@@ -53,10 +53,10 @@ namespace GWorks {
   public static string AppFolder(AppChoice app){return Profile.AppFolder(app);}
   public static string Quote(string value){return "\""+value.Replace("\"","\\\"")+"\"";}
   public static Target Resolve(string id){
-   if(id=="settings"||id=="ai-settings"){
+   if(id=="settings"||id=="ai-settings"||id=="tex-settings"){
     foreach(var installedApp in Apps){
      string settingsRoot=AppFolder(installedApp),python=Path.Combine(settingsRoot,"Dependencies","python","pythonw.exe"),script=Path.Combine(settingsRoot,"Dependencies","TeachingApp","settings_center.py");
-     if(File.Exists(python)&&File.Exists(script))return new Target{File=python,Arguments="-I -B "+Quote(script)+" --root "+Quote(Directory.GetParent(Directory.GetParent(settingsRoot).FullName).FullName)+" --app "+installedApp.Id+(id=="ai-settings"?" --page ai":""),Directory=settingsRoot};
+     if(File.Exists(python)&&File.Exists(script))return new Target{File=python,Arguments="-I -B "+Quote(script)+" --root "+Quote(Directory.GetParent(Directory.GetParent(settingsRoot).FullName).FullName)+" --app "+installedApp.Id+(id=="ai-settings"?" --page ai":id=="tex-settings"?" --page tex":""),Directory=settingsRoot};
     }
     throw new Exception("Shared Settings is unavailable. Use Install / update to repair the desktop runtime.");
    }
@@ -82,6 +82,7 @@ namespace GWorks {
    string launch=Path.Combine(folder,"App","Launch.ps1");if(!File.Exists(launch))throw new Exception(app+" is not installed. Open Install / update to add it.");
    return new Target{File=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),"WindowsPowerShell","v1.0","powershell.exe"),Arguments="-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "+Quote(launch)+" -Desktop",Directory=folder};
   }
+  public static bool NeedsTexReadiness(){return Apps.Any(a=>a.RequiresTex&&Directory.Exists(AppFolder(a)));}
   public static bool NeedsAiReadiness(){return Apps.Any(a=>File.Exists(Path.Combine(AppFolder(a),"App","local_ai_startup.py")));}
   public static bool Available(string id){try{if(id=="extensions")return Companions.Length>0;var target=Resolve(id);return File.Exists(target.File)&&Directory.Exists(target.Directory);}catch{return false;}}
   public static string UnavailableReason(string id){try{Resolve(id);return "Required program files are missing.";}catch(Exception error){return error.Message;}}
@@ -141,18 +142,23 @@ namespace GWorks {
  class Hub:Form {
   readonly Label status=new Label();readonly ToolTip tips=new ToolTip();
   readonly System.Windows.Forms.Timer statusTimer=new System.Windows.Forms.Timer{Interval=4000};
-  readonly LinkLabel aiStatus=new LinkLabel();readonly RaisedButton installButton;bool checkingAi,canStartAi,aiNeedsSettings,checkingUpdates;
-  public Hub(){statusTimer.Tick+=(sender,args)=>{statusTimer.Stop();status.Text="";};Disposed+=(sender,args)=>statusTimer.Dispose();Text=Program.SuiteName+" — "+new SemVersion(Program.Version).Display;ClientSize=new Size(HubArt.Width,HubArt.Height);FormBorderStyle=FormBorderStyle.FixedSingle;MaximizeBox=false;StartPosition=FormStartPosition.CenterScreen;AutoScaleDimensions=new SizeF(96,96);AutoScaleMode=AutoScaleMode.Dpi;BackColor=HubArt.Canvas;DoubleBuffered=true;Icon=Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+  readonly ContextMenuStrip installerMenu=new ContextMenuStrip();readonly Action<string> installerAction;
+  readonly LinkLabel aiStatus=new LinkLabel(),texStatus=new LinkLabel();bool checkingTex;readonly RaisedButton installButton;bool checkingAi,canStartAi,aiNeedsSettings,checkingUpdates;
+  public Hub():this(null){}
+  internal Hub(Action<string> installerAction){this.installerAction=installerAction??LaunchInstaller;statusTimer.Tick+=(sender,args)=>{statusTimer.Stop();status.Text="";};Disposed+=(sender,args)=>{statusTimer.Dispose();installerMenu.Dispose();};Text=Program.SuiteName+" — "+new SemVersion(Program.Version).Display;ClientSize=new Size(HubArt.Width,HubArt.Height);FormBorderStyle=FormBorderStyle.FixedSingle;MaximizeBox=false;StartPosition=FormStartPosition.CenterScreen;AutoScaleDimensions=new SizeF(96,96);AutoScaleMode=AutoScaleMode.Dpi;BackColor=HubArt.Canvas;DoubleBuffered=true;Icon=Icon.ExtractAssociatedIcon(Application.ExecutablePath);
    for(int i=0;i<Program.Apps.Length;i++){
     AppChoice app=Program.Apps[i];RectangleF box=HubArt.TileBounds(i);var tile=new RaisedButton{App=app,SceneBounds=box,Bounds=Rectangle.Round(box),AccessibleName="Open "+app.Name,AccessibleDescription=app.Description,Enabled=Program.Available(app.Id),TabIndex=i*4};tile.Click+=(s,e)=>Run(app.Id);Controls.Add(tile);
    }
    for(int i=0;i<Program.Actions.Length;i++){var action=Program.Actions[i];var button=Utility(action.ShortLabel??action.Label,action.Icon,HubArt.Ink,HubArt.ActionBounds(i),20+i,action.Id);button.Enabled=Program.Available(action.Id);if(!button.Enabled){button.Detail=action.UnavailableLabel;button.AccessibleDescription=Program.UnavailableReason(action.Id);tips.SetToolTip(button,button.AccessibleDescription);}if(action.Parent!=null){button.Underlay=Controls.OfType<RaisedButton>().First(b=>b.App!=null&&b.App.Id==action.Parent);button.AccessibleName=action.Label;}Controls.Add(button);button.BringToFront();}
    installButton=Utility("Install / update","install",HubArt.Ink,HubArt.InstallBounds,12,"install");Controls.Add(installButton);
+   foreach(var entry in Program.Profile.Installers){var choice=entry;var item=installerMenu.Items.Add(choice.Label);item.Enabled=Program.Available(choice.Id);item.Click+=(s,e)=>{try{this.installerAction(choice.Id);}catch(Exception error){status.Text=error.Message;}};}
    Controls.Add(Utility("","folder",HubArt.Ink,HubArt.FolderBounds,13,"folder"));
    Controls.Add(Utility("","settings",HubArt.Ink,HubArt.SettingsBounds,14,"settings"));
    bool usesAi=Program.NeedsAiReadiness();
    aiStatus.SetBounds(26,HubArt.StatusY,(HubArt.Width-68)/2,23);aiStatus.TabIndex=15;aiStatus.LinkColor=HubArt.ColorOf("#176b70");aiStatus.ActiveLinkColor=Color.White;aiStatus.Font=new Font("Segoe UI",8.5f);aiStatus.BackColor=Color.Transparent;aiStatus.AutoEllipsis=true;aiStatus.Visible=usesAi;aiStatus.Text=usesAi?"Checking local LLM...":"";aiStatus.AccessibleName="Local LLM readiness";aiStatus.LinkClicked+=(s,e)=>{if(aiNeedsSettings)Run("ai-settings");else CheckAi(canStartAi);};if(usesAi)Controls.Add(aiStatus);
    if(usesAi)Shown+=(s,e)=>CheckAi(true);
+   bool usesTex=Program.NeedsTexReadiness();texStatus.SetBounds(HubArt.Width/2+8,HubArt.StatusY,(HubArt.Width-68)/2,23);texStatus.TabIndex=16;texStatus.LinkColor=HubArt.ColorOf("#176b70");texStatus.Font=new Font("Segoe UI",8.5f);texStatus.BackColor=Color.Transparent;texStatus.AutoEllipsis=true;texStatus.Text="Checking TeX requirements…";texStatus.AccessibleName="TeX readiness";texStatus.LinkClicked+=(s,e)=>Run("tex-settings");if(usesTex){Controls.Add(texStatus);Shown+=(s,e)=>CheckTex();}
+
    status.SetBounds(26,HubArt.StatusY+26,HubArt.Width-52,22);status.ForeColor=HubArt.ColorOf("#4f6069");status.BackColor=Color.Transparent;status.AutoEllipsis=true;status.Font=new Font("Segoe UI",9);Controls.Add(status);
    Shown+=(s,e)=>CheckUpdates(false);
   }
@@ -172,6 +178,28 @@ namespace GWorks {
    ReleaseUpdates.CheckAsync(this,Program.Root,Program.Version,
     notice=>{},null,force,
     (message,available)=>{checkingUpdates=false;SetUpdateAvailability(message,available);});
+  }
+  internal void SetTexReadiness(string message,bool warning){checkingTex=false;texStatus.Enabled=true;SetStatus(texStatus,message,warning);}
+  void CheckTex(){
+   if(checkingTex)return;checkingTex=true;texStatus.Enabled=false;
+   new Thread(()=>{string message="TeX check unavailable — Open TeX settings.";bool warning=true;
+    try{
+     string app=Program.Apps.Where(a=>a.RequiresTex).Select(Program.AppFolder).FirstOrDefault(p=>File.Exists(Path.Combine(p,"Dependencies","TeachingApp","tex_health.py")));
+     if(app==null)throw new Exception("TeX checking tools are unavailable.");
+     string python=Path.Combine(app,"Dependencies","python","python.exe"),helper=Path.Combine(app,"Dependencies","TeachingApp","tex_health.py");
+     string ids=string.Join(" ",Program.Apps.Where(a=>Directory.Exists(Program.AppFolder(a))).Select(a=>a.Id));
+     var start=new ProcessStartInfo(python,"-I -B "+Program.Quote(helper)+" --root "+Program.Quote(Program.Root)+" --apps "+ids){UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true,WorkingDirectory=app};
+     using(var process=Process.Start(start)){
+      var output=process.StandardOutput.ReadToEndAsync();var errors=process.StandardError.ReadToEndAsync();
+      if(!process.WaitForExit(60000)){process.Kill();throw new Exception("TeX check timed out.");}
+      if(process.ExitCode!=0)throw new Exception("TeX check could not run.");var data=new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(output.Result);
+      string state=Convert.ToString(data["state"]),label="TeX";object selection;if(data.TryGetValue("selection",out selection)){var value=(Dictionary<string,object>)selection;string kind=Convert.ToString(value["tex_distribution"]);label=kind=="miktex"?"MiKTeX":kind=="texlive"?"TeX Live":"TeX";}
+      warning=state!="ready"&&state!="not_required"&&state!="checking";message=state=="ready"?label+" requirements ready — Settings":state=="not_required"?"TeX is not required.":state=="checking"?"TeX check / repair running — Settings":label+" needs attention — TeX settings";
+      if(warning&&data.ContainsKey("message"))message+=". "+Convert.ToString(data["message"]);
+     }
+    }catch(Exception error){message+=" "+error.Message;}
+    try{if(!IsDisposed)BeginInvoke(new Action(()=>{if(!IsDisposed)SetTexReadiness(message,warning);}));}catch{}
+   }){IsBackground=true}.Start();
   }
   void CheckAi(bool start){
    if(checkingAi)return;checkingAi=true;aiStatus.Enabled=false;SetStatus(aiStatus,"Checking local LLM...",false);
@@ -193,7 +221,7 @@ namespace GWorks {
    }){IsBackground=true}.Start();
   }
   void LaunchInstaller(string id){var target=Program.Resolve(id);if(id=="install-professional"||!Program.Personal)ReleaseUpdates.OpenInstallerAsync(this,target.Directory,Program.Version);else Program.Open(id);}
-  void Run(string id){statusTimer.Stop();try{if(id=="install"&&Program.Profile.Installers.Length>1){var menu=new ContextMenuStrip();foreach(var entry in Program.Profile.Installers){var choice=entry;var item=menu.Items.Add(choice.Label);item.Enabled=Program.Available(choice.Id);item.Click+=(s,e)=>{try{LaunchInstaller(choice.Id);}catch(Exception error){status.Text=error.Message;}};}menu.Closed+=(s,e)=>menu.Dispose();menu.Show(installButton,new Point(0,installButton.Height));return;}if(id=="install"||id=="install-professional"){LaunchInstaller(id);return;}if(id=="extensions"){using(var window=new ExtensionMenu())window.ShowDialog(this);return;}Program.Open(id);var app=Program.Apps.FirstOrDefault(a=>a.Id==id);status.Text=app==null?"":"Opening "+app.Name+"...";if(status.Text.Length>0)statusTimer.Start();}catch(Exception error){status.Text=error.Message;}}
+  void Run(string id){statusTimer.Stop();try{if(id=="install"&&Program.Profile.Installers.Length>1){installerMenu.Show(installButton,new Point(0,installButton.Height));return;}if(id=="install"||id=="install-professional"){installerAction(id);return;}if(id=="extensions"){using(var window=new ExtensionMenu())window.ShowDialog(this);return;}Program.Open(id);var app=Program.Apps.FirstOrDefault(a=>a.Id==id);status.Text=app==null?"":"Opening "+app.Name+"...";if(status.Text.Length>0)statusTimer.Start();}catch(Exception error){status.Text=error.Message;}}
  }
  class ExtensionMenu:Form {
   public ExtensionMenu(){Text="Chrome Extensions";ClientSize=new Size(570,Math.Max(160,Program.Companions.Length*100+32));FormBorderStyle=FormBorderStyle.FixedDialog;MaximizeBox=false;MinimizeBox=false;StartPosition=FormStartPosition.CenterParent;Font=new Font("Segoe UI",9);BackColor=Color.FromArgb(255,253,248);AutoScaleMode=AutoScaleMode.Dpi;
